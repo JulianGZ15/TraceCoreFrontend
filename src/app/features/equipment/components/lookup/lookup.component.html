@@ -1,0 +1,7 @@
+<div class="lookup"><label [for]="id">{{label()}}</label>
+
+@if(kind()==='party'||kind()==='asset'){<div class="search"><input [id]="id+'-search'" [attr.aria-label]="'Buscar '+label()" [(ngModel)]="search" [ngModelOptions]="{standalone:true}" [disabled]="disabled" maxlength="100"/><button type="button" class="btn secondary" [disabled]="busy()||disabled" (click)="load(0)">Buscar opciones</button></div>}
+
+<select [id]="id" [value]="selected()" [disabled]="disabled||busy()" (change)="choose($event)" (blur)="touch()"><option value="">Selecciona una opción</option>@if(outside()){<option [value]="selected()">UUID seleccionado: {{selected()}}</option>}@for(row of rows();track row.uuid){<option [value]="row.uuid" [disabled]="unavailable(row)&&row.uuid!==selected()">{{name(row)}}{{unavailable(row)?' · No elegible':''}}</option>}</select><tc-feedback [message]="error()"/>
+
+<tc-pagination [offset]="offset()" [limit]="limit()" [count]="totalPage()" [busy]="busy()||disabled" (move)="load($event)" (resize)="resize($event)"/></div>

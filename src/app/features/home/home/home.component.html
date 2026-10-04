@@ -1,72 +1,73 @@
-<tc-page-heading
-  section="Espacio de trabajo"
-  [title]="'Hola, ' + firstName()"
-  description="Tu organización y tus accesos, en un mismo lugar."
-/>
-<section class="welcome-panel">
-  <div>
-    <p class="eyebrow">Empresa administradora</p>
-    <h2>{{ session.context()?.company?.name }}</h2>
-    <p>{{ session.context()?.company?.timezone }}</p>
-  </div>
-  <tc-status [active]="session.context()?.company?.active ?? false" />
-</section>
-<div class="section-heading">
-  <h2>Tu espacio de trabajo</h2>
-  <span class="small-muted">Accesos disponibles para tu cuenta</span>
-</div>
-<div class="access-cards">
-  @for (card of cards; track card.path) {
-    @if (session.can(card.permission)) {
-      <a [routerLink]="card.path" class="access-card"
-        ><span class="card-icon"><tc-icon [name]="card.icon" /></span>
-        <h3>{{ card.title }}</h3>
-        <p>{{ card.description }}</p>
-        <span class="card-link"
-          >Abrir {{ card.title.toLowerCase() }} <span aria-hidden="true">↗</span></span
-        ></a
-      >
-    }
-  }
-</div>
-@if (
-  !session.can('PARTY_READ') &&
-  (session.can('PARTY_MANAGE') || session.can('PARTY_APPROVE') || session.can('AVL_MANAGE'))
-) {
-  <div class="feedback info">
-    Tienes capacidades de gestión de terceros, pero necesitas PARTY_READ de empresa para consultar
-    sus expedientes.
-  </div>
-}
-@if (session.can('ORGANIZATION_MANAGE') && !session.can('ORGANIZATION_READ')) {
-  <div class="feedback info">
-    Tienes capacidad de administrar la empresa, pero necesitas ORGANIZATION_READ para consultar su
-    formulario.
-  </div>
-}
-@if (session.context()?.yards?.length) {
-  <section class="panel">
-    <div class="panel-heading">
-      <h2>Patios disponibles</h2>
-      <span class="small-muted">Según tu alcance de acceso</span>
-    </div>
-    <div class="yard-cards">
-      @for (yard of session.context()?.yards; track yard.uuid) {
-        <a class="yard-card" [routerLink]="['/organizacion/patios', yard.uuid]"
-          ><span class="eyebrow">{{ yard.code }}</span>
-          <h3>{{ yard.name }}</h3>
-          <tc-status [active]="yard.active" />
-          <p class="small-muted">{{ yard.timezone }}</p></a
-        >
-      }
-    </div>
-  </section>
-}
-<section class="help-strip">
-  <tc-icon name="person" />
-  <div>
-    <strong>Tu cuenta, siempre disponible</strong>
-    <p>Consulta tu perfil y actualiza tu contraseña.</p>
-  </div>
-  <a class="btn secondary" routerLink="/mi-cuenta">Mi cuenta</a>
-</section>
+<tc-page-heading
+  section="Espacio de trabajo"
+  [title]="'Hola, ' + firstName()"
+  description="Tu organización y tus accesos, en un mismo lugar."
+/>
+<section class="welcome-panel">
+  <div>
+    <p class="eyebrow">Empresa administradora</p>
+    <h2>{{ session.context()?.company?.name }}</h2>
+    <p>{{ session.context()?.company?.timezone }}</p>
+  </div>
+  <tc-status [active]="session.context()?.company?.active ?? false" />
+</section>
+<div class="section-heading">
+  <h2>Tu espacio de trabajo</h2>
+  <span class="small-muted">Accesos disponibles para tu cuenta</span>
+</div>
+<div class="access-cards">
+  @for (card of cards; track card.path) {
+    @if (session.can(card.permission)) {
+      <a [routerLink]="card.path" class="access-card"
+        ><span class="card-icon"><tc-icon [name]="card.icon" /></span>
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.description }}</p>
+        <span class="card-link"
+          >Abrir {{ card.title.toLowerCase() }} <span aria-hidden="true">↗</span></span
+        ></a
+      >
+    }
+  }
+</div>
+@if (
+  !session.can('PARTY_READ') &&
+  (session.can('PARTY_MANAGE') || session.can('PARTY_APPROVE') || session.can('AVL_MANAGE'))
+) {
+  <div class="feedback info">
+    Tienes capacidades de gestión de terceros, pero necesitas PARTY_READ de empresa para consultar
+    sus expedientes.
+  </div>
+}
+@if (session.can('ORGANIZATION_MANAGE') && !session.can('ORGANIZATION_READ')) {
+  <div class="feedback info">
+    Tienes capacidad de administrar la empresa, pero necesitas ORGANIZATION_READ para consultar su
+    formulario.
+  </div>
+}
+@if (session.context()?.yards?.length) {
+  <section class="panel">
+    <div class="panel-heading">
+      <h2>Patios disponibles</h2>
+      <span class="small-muted">Según tu alcance de acceso</span>
+    </div>
+    <div class="yard-cards">
+      @for (yard of session.context()?.yards; track yard.uuid) {
+        <a class="yard-card" [routerLink]="['/organizacion/patios', yard.uuid]"
+          ><span class="eyebrow">{{ yard.code }}</span>
+          <h3>{{ yard.name }}</h3>
+          <tc-status [active]="yard.active" />
+          <p class="small-muted">{{ yard.timezone }}</p></a
+        >
+      }
+    </div>
+  </section>
+}
+@if (!session.can('EQUIPMENT_READ') && (session.can('EQUIPMENT_MANAGE') || session.can('TECHNICAL_APPROVE') || session.can('OWNERSHIP_MANAGE'))) { <div class='feedback info'>Tienes capacidades de gestión de equipos, pero necesitas EQUIPMENT_READ de empresa para consultar el catálogo y los expedientes.</div> }
+<section class="help-strip">
+  <tc-icon name="person" />
+  <div>
+    <strong>Tu cuenta, siempre disponible</strong>
+    <p>Consulta tu perfil y actualiza tu contraseña.</p>
+  </div>
+  <a class="btn secondary" routerLink="/mi-cuenta">Mi cuenta</a>
+</section>

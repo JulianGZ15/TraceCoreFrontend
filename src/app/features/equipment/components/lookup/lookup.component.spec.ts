@@ -1,0 +1,44 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+
+
+import { LookupComponent } from './lookup.component';
+
+
+
+describe('LookupComponent', () => {
+
+  let component: LookupComponent;
+
+  let fixture: ComponentFixture<LookupComponent>;
+
+
+
+  beforeEach(async () => {
+
+    await TestBed.configureTestingModule({
+
+      imports: [LookupComponent],
+
+    }).compileComponents();
+
+
+
+    fixture = TestBed.createComponent(LookupComponent);
+
+    component = fixture.componentInstance;
+
+    await fixture.whenStable();
+
+  });
+
+
+
+  it('should create', () => {
+
+    expect(component).toBeTruthy();
+
+  });
+
+});
+

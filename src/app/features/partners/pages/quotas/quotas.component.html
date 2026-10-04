@@ -1,80 +1,81 @@
-<section class="panel">
-  <div class="panel-heading">
-    <h2>Cuotas de distribución</h2>
-    @if (session.can('PARTY_APPROVE')) {
-      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo registro</button>
-    }
-  </div>
-  <p>Compromisos contractuales; no reservan piezas ni restan inventario.</p>
-</section>
-<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
-<section class="panel table-panel" [attr.aria-busy]="busy()">
-  <div class="panel-heading">
-    <h3>Registros de cuotas de distribución</h3>
-    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
-    @if (busy()) {
-      <span role="status">Cargando…</span>
-    }
-  </div>
-  <div class="table-scroll" tabindex="0" aria-label="Cuotas de distribución">
-    <table>
-      <caption class="sr-only">
-        Cuotas de distribución del tercero
-      </caption>
-      <thead>
-        <tr>
-          <th>Ubicación / producto</th>
-          <th>Cantidad / periodo</th>
-          <th>Condiciones</th>
-          <th>Vínculo técnico</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (r of rows(); track r.uuid) {
-          <tr>
-            <td>
-              <span class="mono">{{ r.yardUuid ?? r.regionCode }}</span
-              ><small>{{ r.yardUuid ? 'Patio' : 'Región' }} · {{ r.productScope }}</small
-              ><small class="mono">{{ r.uuid }}</small>
-            </td>
-            <td>
-              {{ r.quantity }} · {{ state(r)
-              }}<small>{{ date(r.validFrom) }} → {{ date(r.validTo) }}</small>
-            </td>
-            <td>
-              <span class="findings">{{ r.conditions }}</span>
-            </td>
-            <td>
-              <span class="mono">{{ r.categoryUuid ?? r.modelUuid ?? 'Sin vínculo técnico' }}</span
-              ><small>Solo lectura · etapa 3</small>
-            </td>
-            <td>
-              @if (session.can('PARTY_APPROVE') && !r.revokedAt) {
-                <button class="btn danger" [disabled]="busy()" (click)="revoke(r)">
-                  Revocar cuota
-                </button>
-              }
-            </td>
-          </tr>
-        } @empty {
-          @if (!busy() && !error()) {
-            <tr>
-              <td class="empty-state" colspan="5">Todavía no hay registros en esta sección.</td>
-            </tr>
-          }
-        }
-      </tbody>
-    </table>
-  </div>
-  @if (paged) {
-    <tc-pagination
-      [offset]="offset()"
-      [limit]="limit()"
-      [count]="rows().length"
-      [busy]="busy()"
-      (move)="load($event)"
-      (resize)="resize($event)"
-    />
-  }
-</section>
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Cuotas de distribución</h2>
+    @if (session.can('PARTY_APPROVE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo registro</button>
+    }
+  </div>
+  <p>Compromisos contractuales; no reservan piezas ni restan inventario.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de cuotas de distribución</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Cuotas de distribución">
+    <table>
+      <caption class="sr-only">
+        Cuotas de distribución del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Ubicación / producto</th>
+          <th>Cantidad / periodo</th>
+          <th>Condiciones</th>
+          <th>Vínculo técnico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              <span class="mono">{{ r.yardUuid ?? r.regionCode }}</span
+              ><small>{{ r.yardUuid ? 'Patio' : 'Región' }} · {{ r.productScope }}</small
+              ><small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              {{ r.quantity }} · {{ state(r)
+              }}<small>{{ date(r.validFrom) }} → {{ date(r.validTo) }}</small>
+            </td>
+            <td>
+              <span class="findings">{{ r.conditions }}</span>
+            </td>
+            <td>
+              <span class="mono">{{ r.categoryUuid ?? r.modelUuid ?? 'Sin vínculo técnico' }}</span
+              ><small>{{ r.categoryUuid ? 'Categoría' : r.modelUuid ? 'Modelo' : 'Categoría o modelo; vínculo único' }}</small>
+            </td>
+            <td>
+              @if (session.can('PARTY_APPROVE') && session.can('EQUIPMENT_READ') && !r.revokedAt && !r.categoryUuid && !r.modelUuid) { <button class='btn secondary' [disabled]='busy()' (click)='bind(r)'>Vincular destino técnico</button> }
+              @if (session.can('PARTY_APPROVE') && !r.revokedAt) {
+                <button class="btn danger" [disabled]="busy()" (click)="revoke(r)">
+                  Revocar cuota
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="5">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>
