@@ -1,0 +1,73 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Condiciones comerciales</h2>
+    @if (session.can('PARTY_APPROVE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo registro</button>
+    }
+  </div>
+  <p>Cada divisa conserva su historial. Cerrar y crear son operaciones independientes.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de condiciones comerciales</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Condiciones comerciales">
+    <table>
+      <caption class="sr-only">
+        Condiciones comerciales del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Acuerdo</th>
+          <th>Crédito acordado</th>
+          <th>Vigencia</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              {{ r.currency }}<small>{{ r.paymentMethod }} · {{ r.paymentCondition }}</small
+              ><small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              {{ amount(r) }}<small>{{ r.creditDays }} días</small>
+            </td>
+            <td>
+              {{ state(r) }}<small>{{ date(r.validFrom) }} → {{ date(r.validTo) }}</small>
+            </td>
+            <td>
+              @if (session.can('PARTY_APPROVE') && (!r.validTo || now() < endTime(r.validTo))) {
+                <button class="btn secondary" [disabled]="busy()" (click)="close(r)">
+                  Cerrar vigencia
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

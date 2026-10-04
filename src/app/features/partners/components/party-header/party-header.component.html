@@ -1,0 +1,15 @@
+<header class="panel identity">
+  <a class="back-link" routerLink="/terceros">← Volver al directorio</a>
+  <p class="eyebrow">Expediente de tercero · {{ party().country }}</p>
+  <div class="panel-heading">
+    <h1 tabindex="-1">{{ party().legalName }}</h1>
+    <tc-status [active]="party().active" />
+  </div>
+  <p>{{ party().tradeName }}</p>
+  <p class="mono">{{ party().uuid }}</p>
+  <div class="row-actions">
+    @for (role of roles(); track role.uuid) {
+      <span class="badge neutral">{{ label(role.role) }} · {{ state(role) }}</span>
+    }
+  </div>
+</header>

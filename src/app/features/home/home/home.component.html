@@ -29,6 +29,15 @@
     }
   }
 </div>
+@if (
+  !session.can('PARTY_READ') &&
+  (session.can('PARTY_MANAGE') || session.can('PARTY_APPROVE') || session.can('AVL_MANAGE'))
+) {
+  <div class="feedback info">
+    Tienes capacidades de gestión de terceros, pero necesitas PARTY_READ de empresa para consultar
+    sus expedientes.
+  </div>
+}
 @if (session.can('ORGANIZATION_MANAGE') && !session.can('ORGANIZATION_READ')) {
   <div class="feedback info">
     Tienes capacidad de administrar la empresa, pero necesitas ORGANIZATION_READ para consultar su

@@ -34,12 +34,17 @@
         ><tc-icon name="history" />Auditoría</a
       >
     }
+    @if (session.can('PARTY_READ')) {
+      <a routerLink="/terceros" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="group" />Terceros y AVL</a
+      >
+    }
   </nav>
   <div class="nav-footer">
     <a routerLink="/mi-cuenta" routerLinkActive="active" (click)="close()"
       ><tc-icon name="person" />Mi cuenta</a
     ><button class="nav-logout" (click)="close(); session.logout()">
       <tc-icon name="logout" />Cerrar sesión</button
-    ><small>Organización y acceso · TraceCore</small>
+    ><small>Administración · TraceCore</small>
   </div>
 </div>

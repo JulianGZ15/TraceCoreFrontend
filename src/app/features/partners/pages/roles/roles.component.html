@@ -1,0 +1,72 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Roles del tercero</h2>
+    @if (session.can('PARTY_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Asignar rol</button>
+    }
+  </div>
+  <p>Roles simultáneos; revocar conserva el historial.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de roles del tercero</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Roles del tercero">
+    <table>
+      <caption class="sr-only">
+        Roles del tercero del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Rol</th>
+          <th>Vigencia</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              {{ label(r.role) }}<small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              {{ date(r.validFrom) }}<small>Fin exclusivo: {{ date(r.validTo) }}</small>
+            </td>
+            <td>
+              <span class="badge neutral">{{ state(r) }}</span>
+            </td>
+            <td>
+              @if (session.can('PARTY_MANAGE') && !r.revokedAt) {
+                <button class="btn danger" [disabled]="busy()" (click)="revoke(r)">
+                  Revocar rol
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

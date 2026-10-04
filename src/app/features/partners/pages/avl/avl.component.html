@@ -1,0 +1,81 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Evaluaciones AVL</h2>
+    @if (session.can('AVL_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nueva evaluación</button>
+    }
+  </div>
+  <p>Histórico manual por alcance exacto, sin edición ni eliminación.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<form class="panel form-grid" [formGroup]="scopeForm" (ngSubmit)="applyScope()">
+  <div class="field">
+    <label for="avl-scope">Filtrar por alcance exacto</label
+    ><input id="avl-scope" formControlName="scope" />
+  </div>
+  <div class="page-actions">
+    <button class="btn secondary" [disabled]="busy()">Aplicar alcance</button>
+  </div>
+</form>
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de evaluaciones avl</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Evaluaciones AVL">
+    <table>
+      <caption class="sr-only">
+        Evaluaciones AVL del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Alcance / dictamen</th>
+          <th>Score / clasificación</th>
+          <th>Hallazgos</th>
+          <th>Responsable / fechas</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              <strong>{{ r.scope }}</strong
+              ><small>{{ label(r.decision) }}</small
+              ><small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              {{ r.score }} / 100<small>{{ r.classification }}</small>
+            </td>
+            <td>
+              <span class="findings">{{ r.findings }}</span>
+            </td>
+            <td>
+              <span class="mono">{{ r.evaluatorUuid }}</span
+              ><small>{{ date(r.evaluatedAt) }}</small
+              ><small>Próxima revisión: {{ date(r.nextReviewAt) }}</small>
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

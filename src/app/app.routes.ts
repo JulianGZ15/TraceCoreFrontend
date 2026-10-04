@@ -12,6 +12,13 @@ export const routes: Routes = [
     canActivate: [accessGuard],
     loadComponent: () => import('./core/layout/shell').then((m) => m.Shell),
     children: [
+      {
+        path: 'terceros',
+        canActivate: [accessGuard],
+        data: { permission: 'PARTY_READ' },
+        loadChildren: () =>
+          import('./features/partners/partners.routes').then((m) => m.partnerRoutes),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
       {
         path: 'inicio',

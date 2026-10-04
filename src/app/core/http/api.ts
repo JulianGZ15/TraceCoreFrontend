@@ -125,6 +125,10 @@ export function errorMessage(error: unknown): string {
       return 'El registro ya no está disponible.';
     case 409:
       return 'No se pudo guardar: hay un conflicto de datos, vigencia o versión. Conservamos tus cambios; puedes recargar los datos.';
+    case 413:
+      return 'El archivo supera el tamaño permitido de 10 MiB.';
+    case 503:
+      return 'El almacenamiento no está disponible. Conservamos tu selección; comprueba la lista antes de volver a cargar.';
     default:
       return 'El servidor no pudo completar la operación. Puedes intentar de nuevo.';
   }

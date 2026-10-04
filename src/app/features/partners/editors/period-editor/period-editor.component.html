@@ -1,0 +1,146 @@
+<div class="dialog">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Expediente de tercero</p>
+      <h2>{{ data.title }}</h2>
+    </div>
+    <button class="icon-button" aria-label="Cerrar formulario" (click)="close()">×</button>
+  </div>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <p class="small-muted">
+      Las vigencias usan inicio inclusivo y fin exclusivo. Cada alta conserva el historial.
+    </p>
+    <div class="form-grid">
+      @if (data.mode === 'role') {
+        <div class="field">
+          <label for="role">Rol</label
+          ><select id="role" formControlName="role">
+            @for (role of roles; track role) {
+              <option [value]="role">{{ label(role) }}</option>
+            }
+          </select>
+        </div>
+      }
+      @if (data.mode === 'authorization') {
+        <div class="field">
+          <label for="operation">Operación</label
+          ><select id="operation" formControlName="operation">
+            <option value="OC">Compra (OC)</option>
+            <option value="OV">Venta (OV)</option>
+            <option value="OR">Renta (OR)</option>
+          </select>
+        </div>
+      }
+      @if (data.mode === 'terms') {
+        <div class="field">
+          <label for="currency">Divisa ISO *</label
+          ><input
+            id="currency"
+            type="text"
+            formControlName="currency"
+            [attr.aria-invalid]="form.controls.currency.touched && form.controls.currency.invalid"
+            aria-describedby="currency-help"
+          /><small id="currency-help"></small>
+        </div>
+        <div class="field">
+          <label for="paymentMethod">Código de método de pago *</label
+          ><input
+            id="paymentMethod"
+            type="text"
+            formControlName="paymentMethod"
+            [attr.aria-invalid]="
+              form.controls.paymentMethod.touched && form.controls.paymentMethod.invalid
+            "
+            aria-describedby="paymentMethod-help"
+          /><small id="paymentMethod-help"></small>
+        </div>
+        <div class="field">
+          <label for="paymentCondition">Código de condición de pago *</label
+          ><input
+            id="paymentCondition"
+            type="text"
+            formControlName="paymentCondition"
+            [attr.aria-invalid]="
+              form.controls.paymentCondition.touched && form.controls.paymentCondition.invalid
+            "
+            aria-describedby="paymentCondition-help"
+          /><small id="paymentCondition-help"></small>
+        </div>
+        <div class="field">
+          <label for="creditDays">Días de crédito *</label
+          ><input
+            id="creditDays"
+            type="text"
+            formControlName="creditDays"
+            [attr.aria-invalid]="
+              form.controls.creditDays.touched && form.controls.creditDays.invalid
+            "
+            aria-describedby="creditDays-help"
+          /><small id="creditDays-help">Entero entre 0 y 3650.</small>
+        </div>
+        <div class="field">
+          <label for="creditLimit">Límite de crédito *</label
+          ><input
+            id="creditLimit"
+            type="text"
+            formControlName="creditLimit"
+            [attr.aria-invalid]="
+              form.controls.creditLimit.touched && form.controls.creditLimit.invalid
+            "
+            aria-describedby="creditLimit-help"
+          /><small id="creditLimit-help"
+            >Hasta 15 enteros y 4 decimales, punto decimal, sin separadores.</small
+          >
+        </div>
+      }
+      @if (data.mode !== 'close') {
+        <div class="field">
+          <label for="validFrom">Inicio</label
+          ><input
+            id="validFrom"
+            type="datetime-local"
+            formControlName="validFrom"
+            [attr.aria-invalid]="form.controls.validFrom.touched && form.controls.validFrom.invalid"
+            aria-describedby="validFrom-help"
+          /><small id="validFrom-help">Vacío: hora del servidor.</small>
+        </div>
+      }
+      <div class="field">
+        <label for="validTo">Fin exclusivo</label
+        ><input
+          id="validTo"
+          type="datetime-local"
+          formControlName="validTo"
+          [attr.aria-invalid]="form.controls.validTo.touched && form.controls.validTo.invalid"
+          aria-describedby="validTo-help"
+        /><small id="validTo-help">Obligatorio al cerrar. No modifica el importe acordado.</small>
+      </div>
+      <div class="field">
+        <label for="offset">Desplazamiento UTC</label
+        ><input
+          id="offset"
+          type="text"
+          formControlName="offset"
+          [attr.aria-invalid]="form.controls.offset.touched && form.controls.offset.invalid"
+          aria-describedby="offset-help"
+        /><small id="offset-help">Formato +00:00 o -06:00.</small>
+      </div>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">Revisa los campos obligatorios y su formato.</p>
+    }
+    <div class="dialog-actions">
+      @if (conflict() && data.row) {
+        <button type="button" class="btn secondary" [disabled]="busy()" (click)="reload()">
+          Recargar datos
+        </button>
+      }
+      <button type="button" class="btn secondary" [disabled]="busy()" (click)="close()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

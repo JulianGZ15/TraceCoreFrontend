@@ -1,0 +1,139 @@
+<div class="dialog">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Expediente de tercero</p>
+      <h2>{{ data.title }}</h2>
+    </div>
+    <button class="icon-button" aria-label="Cerrar formulario" (click)="close()">×</button>
+  </div>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <p>El rol Distribuidor debe cubrir todo el periodo. Esta cuota no reserva inventario.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="location">Ubicación</label
+        ><select id="location" formControlName="location">
+          <option value="YARD">Patio</option>
+          <option value="REGION">Región</option>
+        </select>
+      </div>
+      @if (form.controls.location.value === 'YARD') {
+        <div class="field">
+          <label for="yardUuid">Patio activo</label
+          ><select id="yardUuid" formControlName="yardUuid">
+            <option value="">Selecciona un patio</option>
+            @if (form.controls.yardUuid.value && !yards().some(isSelectedYard)) {
+              <option [value]="form.controls.yardUuid.value">
+                UUID seleccionado: {{ form.controls.yardUuid.value }}
+              </option>
+            }
+            @for (yard of yards(); track yard.uuid) {
+              <option [value]="yard.uuid">{{ yard.code }} · {{ yard.name }}</option>
+            }</select
+          ><tc-feedback [message]="yardError()" /><button
+            class="btn secondary"
+            type="button"
+            (click)="loadYards(yardOffset())"
+            [disabled]="loadingYards()"
+          >
+            Actualizar patios</button
+          ><tc-pagination
+            [offset]="yardOffset()"
+            [limit]="yardLimit()"
+            [count]="yards().length"
+            [busy]="loadingYards()"
+            (move)="loadYards($event)"
+            (resize)="resizeYards($event)"
+          />
+        </div>
+      } @else {
+        <div class="field">
+          <label for="regionCode">Código de región *</label
+          ><input
+            id="regionCode"
+            type="text"
+            formControlName="regionCode"
+            [attr.aria-invalid]="
+              form.controls.regionCode.touched && form.controls.regionCode.invalid
+            "
+            aria-describedby="regionCode-help"
+          /><small id="regionCode-help"></small>
+        </div>
+      }
+      <div class="field">
+        <label for="productScope">Alcance contractual de producto *</label
+        ><input
+          id="productScope"
+          type="text"
+          formControlName="productScope"
+          [attr.aria-invalid]="
+            form.controls.productScope.touched && form.controls.productScope.invalid
+          "
+          aria-describedby="productScope-help"
+        /><small id="productScope-help"></small>
+      </div>
+      <div class="field">
+        <label for="quantity">Cantidad *</label
+        ><input
+          id="quantity"
+          type="text"
+          formControlName="quantity"
+          [attr.aria-invalid]="form.controls.quantity.touched && form.controls.quantity.invalid"
+          aria-describedby="quantity-help"
+        /><small id="quantity-help">Entero positivo; máximo 2147483647.</small>
+      </div>
+      <div class="field">
+        <label for="validFrom">Inicio</label
+        ><input
+          id="validFrom"
+          type="datetime-local"
+          formControlName="validFrom"
+          [attr.aria-invalid]="form.controls.validFrom.touched && form.controls.validFrom.invalid"
+          aria-describedby="validFrom-help"
+        /><small id="validFrom-help">Vacío: hora del servidor.</small>
+      </div>
+      <div class="field">
+        <label for="validTo">Fin exclusivo</label
+        ><input
+          id="validTo"
+          type="datetime-local"
+          formControlName="validTo"
+          [attr.aria-invalid]="form.controls.validTo.touched && form.controls.validTo.invalid"
+          aria-describedby="validTo-help"
+        /><small id="validTo-help">Vacío: sin fin, salvo cierre y cuotas.</small>
+      </div>
+      <div class="field">
+        <label for="offset">Desplazamiento UTC</label
+        ><input
+          id="offset"
+          type="text"
+          formControlName="offset"
+          [attr.aria-invalid]="form.controls.offset.touched && form.controls.offset.invalid"
+          aria-describedby="offset-help"
+        /><small id="offset-help"
+          >Formato +00:00 o -06:00; se aplica a las fechas capturadas.</small
+        >
+      </div>
+      <div class="field">
+        <label for="conditions">Condiciones *</label
+        ><textarea id="conditions" formControlName="conditions" rows="4"></textarea
+        ><small id="conditions-help"></small>
+      </div>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">Revisa los campos obligatorios y su formato.</p>
+    }
+    <div class="dialog-actions">
+      @if (conflict() && data.row) {
+        <button type="button" class="btn secondary" [disabled]="busy()" (click)="reload()">
+          Recargar datos
+        </button>
+      }
+      <button type="button" class="btn secondary" [disabled]="busy()" (click)="close()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

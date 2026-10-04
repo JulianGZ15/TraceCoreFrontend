@@ -11,12 +11,14 @@
   }}</span>
   <div>
     <button
+      type="button"
       class="btn secondary"
       [disabled]="busy() || offset() === 0"
       (click)="move.emit(offset() - limit())"
     >
       Anterior</button
     ><button
+      type="button"
       class="btn secondary"
       [disabled]="busy() || count() < limit()"
       (click)="move.emit(offset() + limit())"

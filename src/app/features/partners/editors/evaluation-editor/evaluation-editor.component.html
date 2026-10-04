@@ -1,0 +1,99 @@
+<div class="dialog">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Expediente de tercero</p>
+      <h2>{{ data.title }}</h2>
+    </div>
+    <button class="icon-button" aria-label="Cerrar formulario" (click)="close()">×</button>
+  </div>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <p>
+      Evaluación manual del alcance exacto. El score y la clasificación no calculan el dictamen.
+    </p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="scope">Alcance AVL *</label
+        ><input
+          id="scope"
+          type="text"
+          formControlName="scope"
+          [attr.aria-invalid]="form.controls.scope.touched && form.controls.scope.invalid"
+          aria-describedby="scope-help"
+        /><small id="scope-help"></small>
+      </div>
+      <div class="field">
+        <label for="score">Score *</label
+        ><input
+          id="score"
+          type="text"
+          formControlName="score"
+          [attr.aria-invalid]="form.controls.score.touched && form.controls.score.invalid"
+          aria-describedby="score-help"
+        /><small id="score-help">Entre 0 y 100; máximo dos decimales.</small>
+      </div>
+      <div class="field">
+        <label for="classification">Clasificación declarada *</label
+        ><input
+          id="classification"
+          type="text"
+          formControlName="classification"
+          [attr.aria-invalid]="
+            form.controls.classification.touched && form.controls.classification.invalid
+          "
+          aria-describedby="classification-help"
+        /><small id="classification-help"></small>
+      </div>
+      <div class="field">
+        <label for="decision">Dictamen</label
+        ><select id="decision" formControlName="decision">
+          <option value="APPROVED">Aprobado</option>
+          <option value="CONDITIONAL">Condicional</option>
+          <option value="REJECTED">Rechazado</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="nextReviewAt">Próxima revisión *</label
+        ><input
+          id="nextReviewAt"
+          type="datetime-local"
+          formControlName="nextReviewAt"
+          [attr.aria-invalid]="
+            form.controls.nextReviewAt.touched && form.controls.nextReviewAt.invalid
+          "
+          aria-describedby="nextReviewAt-help"
+        /><small id="nextReviewAt-help"></small>
+      </div>
+      <div class="field">
+        <label for="offset">Desplazamiento UTC *</label
+        ><input
+          id="offset"
+          type="text"
+          formControlName="offset"
+          [attr.aria-invalid]="form.controls.offset.touched && form.controls.offset.invalid"
+          aria-describedby="offset-help"
+        /><small id="offset-help"></small>
+      </div>
+      <div class="field">
+        <label for="findings">Hallazgos *</label
+        ><textarea id="findings" formControlName="findings" rows="4"></textarea
+        ><small id="findings-help"></small>
+      </div>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">Revisa los campos obligatorios y su formato.</p>
+    }
+    <div class="dialog-actions">
+      @if (conflict() && data.row) {
+        <button type="button" class="btn secondary" [disabled]="busy()" (click)="reload()">
+          Recargar datos
+        </button>
+      }
+      <button type="button" class="btn secondary" [disabled]="busy()" (click)="close()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

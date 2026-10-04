@@ -75,7 +75,8 @@ body {
 }
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 button,
@@ -304,7 +305,8 @@ small {
   color: var(--tc-danger);
 }
 input:not([type='checkbox']),
-select {
+select,
+textarea {
   width: 100%;
   min-width: 0;
   min-height: 40px;
@@ -321,6 +323,13 @@ select:disabled {
   opacity: 1;
 }
 input[aria-invalid='true'] {
+  border-color: var(--tc-danger);
+}
+textarea {
+  resize: vertical;
+}
+textarea[aria-invalid='true'],
+select[aria-invalid='true'] {
   border-color: var(--tc-danger);
 }
 .field small {

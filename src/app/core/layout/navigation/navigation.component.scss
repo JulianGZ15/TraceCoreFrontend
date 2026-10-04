@@ -43,7 +43,8 @@
 .navigation nav a:hover {
   background: var(--tc-shell-surface);
 }
-.navigation a.active {
+.navigation a.active,
+.navigation nav a.active {
   color: var(--tc-action);
   background: var(--tc-shell-surface);
   border-left-color: var(--tc-action);

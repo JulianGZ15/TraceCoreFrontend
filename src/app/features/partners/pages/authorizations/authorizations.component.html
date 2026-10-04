@@ -1,0 +1,103 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Autorizaciones y elegibilidad</h2>
+    @if (session.can('PARTY_APPROVE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo registro</button>
+    }
+  </div>
+  <p>Autorizar una operación es independiente de asignar un rol.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<section class="panel">
+  <h3>Consultar elegibilidad actual</h3>
+  <form class="form-grid" [formGroup]="eligibilityForm" (ngSubmit)="assess()">
+    <div class="field">
+      <label for="eligibility-op">Operación</label
+      ><select id="eligibility-op" formControlName="operation">
+        <option value="OC">Compra (OC)</option>
+        <option value="OV">Venta (OV)</option>
+        <option value="OR">Renta (OR)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="eligibility-scope">Alcance AVL exacto (OC)</label
+      ><input id="eligibility-scope" formControlName="scope" />
+    </div>
+    <button class="btn secondary" [disabled]="checking()">Consultar elegibilidad</button>
+  </form>
+  @if (eligibility(); as result) {
+    <p role="status">
+      {{ result.allowed ? 'Elegible actualmente' : 'No elegible' }} · {{ label(result.reason) }}
+    </p>
+    <p class="mono">{{ result.reason }}</p>
+  }
+  <p class="small-muted">
+    Resultado puntual del servidor para la operación y el alcance consultados. No emite órdenes.
+  </p>
+</section>
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de autorizaciones y elegibilidad</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Autorizaciones y elegibilidad">
+    <table>
+      <caption class="sr-only">
+        Autorizaciones y elegibilidad del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Operación</th>
+          <th>Vigencia</th>
+          <th>Estado</th>
+          <th>Aprobación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              {{ label(r.operation) }}<small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              {{ date(r.validFrom) }}<small>Fin exclusivo: {{ date(r.validTo) }}</small>
+            </td>
+            <td>{{ state(r) }}</td>
+            <td>
+              <span class="mono">{{ r.approvedBy }}</span
+              ><small>{{ date(r.approvedAt) }}</small
+              ><small class="mono">{{ r.revokedBy }}</small>
+            </td>
+            <td>
+              @if (session.can('PARTY_APPROVE') && !r.revokedAt) {
+                <button class="btn danger" [disabled]="busy()" (click)="revoke(r)">
+                  Revocar autorización
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="5">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

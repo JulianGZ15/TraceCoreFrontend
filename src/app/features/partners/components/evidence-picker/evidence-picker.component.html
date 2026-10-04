@@ -1,0 +1,23 @@
+<section class="evidence-picker" [attr.aria-busy]="busy()">
+  <h3>Evidencia vinculada</h3>
+  <p class="small-muted">
+    Carga los archivos en la sección Evidencias. Solo se muestran los de este tercero.
+  </p>
+  <tc-feedback [message]="error()" /> <label for="selected-evidence">Archivo de evidencia</label
+  ><select id="selected-evidence" [value]="value() ?? ''" (change)="choose($event)">
+    <option value="">Sin evidencia</option>
+    @if (value() && !hasSelected()) {
+      <option [value]="value()">Evidencia seleccionada: {{ value() }}</option>
+    }
+    @for (file of rows(); track file.uuid) {
+      <option [value]="file.uuid">{{ file.filename }} · {{ file.uuid }}</option>
+    }</select
+  ><tc-pagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="load($event)"
+    (resize)="resize($event)"
+  />
+</section>

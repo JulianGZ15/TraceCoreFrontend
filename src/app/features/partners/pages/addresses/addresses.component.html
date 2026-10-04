@@ -1,0 +1,69 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Domicilios</h2>
+    @if (session.can('PARTY_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo registro</button>
+    }
+  </div>
+  <p>Direcciones fiscales, comerciales y de entrega.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de domicilios</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Domicilios">
+    <table>
+      <caption class="sr-only">
+        Domicilios del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>{{ label(r.type) }}</td>
+            <td>
+              {{ r.line1 }}<small>{{ r.line2 }}</small
+              ><small
+                >{{ r.locality }} · {{ r.region }} · {{ r.postalCode }} · {{ r.country }}</small
+              ><small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>{{ r.active ? 'Activo' : 'Inactivo' }}</td>
+            <td>
+              @if (session.can('PARTY_MANAGE')) {
+                <button class="btn secondary" (click)="edit(r)">Editar domicilio</button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

@@ -11,7 +11,7 @@ function Invoke-PgControl([string[]]$ControlArguments, [string]$Operation) {
     if (-not $control.WaitForExit(35000) -or $control.ExitCode -ne 0) { throw ('PostgreSQL control failed: ' + $Operation) }
 }
 $dbPort = Get-TestPort; $apiPort = Get-TestPort; $frontPort = Get-TestPort
-$variables = @('SPRING_PROFILES_ACTIVE','TRACECORE_DB_URL','TRACECORE_DB_USERNAME','TRACECORE_DB_PASSWORD','TRACECORE_AUTH_SECRET_BASE64','TRACECORE_BOOTSTRAP_ENABLED','TRACECORE_COMPANY_LEGAL_NAME','TRACECORE_COMPANY_NAME','TRACECORE_ADMIN_NAME','TRACECORE_ADMIN_EMAIL','TRACECORE_ADMIN_PASSWORD','TRACECORE_E2E_PROXY','TRACECORE_E2E_ISOLATED','TRACECORE_E2E_FRONT_PORT','TRACECORE_E2E_FRONT_URL')
+$variables = @('SPRING_PROFILES_ACTIVE','TRACECORE_DB_URL','TRACECORE_DB_USERNAME','TRACECORE_DB_PASSWORD','TRACECORE_AUTH_SECRET_BASE64','TRACECORE_BOOTSTRAP_ENABLED','TRACECORE_COMPANY_LEGAL_NAME','TRACECORE_COMPANY_NAME','TRACECORE_ADMIN_NAME','TRACECORE_ADMIN_EMAIL','TRACECORE_ADMIN_PASSWORD','TRACECORE_E2E_PROXY','TRACECORE_E2E_ISOLATED','TRACECORE_E2E_FRONT_PORT','TRACECORE_E2E_FRONT_URL','TRACECORE_EVIDENCE_ROOT')
 $previous = @{}; foreach ($key in $variables) { $previous[$key] = [Environment]::GetEnvironmentVariable($key, 'Process') }
 $started = $false; $backend = $null
 try {
@@ -21,6 +21,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'PostgreSQL initialization failed.' }
     Invoke-PgControl @('-D', ('"' + $clusterPath + '"'), '-l', ('"' + (Join-Path $testRoot 'postgres.log') + '"'), '-o', ('"-h 127.0.0.1 -p ' + $dbPort + '"'), '-w', '-t', '30', 'start') 'start'; $started = $true
     $env:SPRING_PROFILES_ACTIVE = 'postgres'; $env:TRACECORE_DB_URL = 'jdbc:postgresql://127.0.0.1:' + $dbPort + '/postgres'; $env:TRACECORE_DB_USERNAME = 'postgres'; $env:TRACECORE_DB_PASSWORD = 'isolated-test'
+    $env:TRACECORE_EVIDENCE_ROOT = Join-Path $testRoot 'party-evidence'
     $random = New-Object byte[] 32; $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($random); $rng.Dispose(); $env:TRACECORE_AUTH_SECRET_BASE64 = [Convert]::ToBase64String($random)
     $env:TRACECORE_BOOTSTRAP_ENABLED = 'true'; $env:TRACECORE_COMPANY_LEGAL_NAME = 'TraceCore Isolated Test'; $env:TRACECORE_COMPANY_NAME = 'TraceCore Isolated'; $env:TRACECORE_ADMIN_NAME = 'Admin Prueba'; $env:TRACECORE_ADMIN_EMAIL = 'admin@example.test'; $env:TRACECORE_ADMIN_PASSWORD = 'IsolatedAdmin123!'
     $jar = Join-Path $backendRoot 'target/alpha-0.0.1-SNAPSHOT.jar'

@@ -98,6 +98,10 @@ describe('Session boundaries', () => {
 describe('Safe navigation and API targets', () => {
   it('keeps existing internal routes', () => {
     expect(safeReturn('/acceso/usuarios')).toBe('/acceso/usuarios');
+    expect(safeReturn('/terceros/00000000-0000-0000-0000-000000000010/cuotas')).toBe(
+      '/terceros/00000000-0000-0000-0000-000000000010/cuotas',
+    );
+    expect(safeReturn('/terceros/00000000-0000-0000-0000-000000000010/unknown')).toBe('/inicio');
   });
   it.each(['//evil.test', 'https://evil.test', '/login', '/unknown', '/\\evil.test', '/inicio\n'])(
     'rejects %s',

@@ -1,0 +1,10 @@
+<nav aria-label="Secciones del expediente">
+  @for (section of sections; track section[0]) {
+    <a
+      [routerLink]="['/terceros', uuid(), section[0]]"
+      routerLinkActive="selected"
+      ariaCurrentWhenActive="page"
+      >{{ section[1] }}</a
+    >
+  }
+</nav>

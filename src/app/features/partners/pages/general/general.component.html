@@ -1,0 +1,54 @@
+<section class="panel form-panel">
+  <h2>Datos generales</h2>
+  <p>La identidad y el estado activo no conceden habilitación comercial.</p>
+  <tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field">
+        <label for="legalName">Razón social *</label
+        ><input
+          id="legalName"
+          type="text"
+          formControlName="legalName"
+          [attr.aria-invalid]="form.controls.legalName.touched && form.controls.legalName.invalid"
+          aria-describedby="legalName-help"
+        /><small id="legalName-help"></small>
+      </div>
+      <div class="field">
+        <label for="tradeName">Nombre comercial</label
+        ><input
+          id="tradeName"
+          type="text"
+          formControlName="tradeName"
+          [attr.aria-invalid]="form.controls.tradeName.touched && form.controls.tradeName.invalid"
+          aria-describedby="tradeName-help"
+        /><small id="tradeName-help"></small>
+      </div>
+      <div class="field">
+        <label for="country">País ISO (dos letras) *</label
+        ><input
+          id="country"
+          type="text"
+          formControlName="country"
+          [attr.aria-invalid]="form.controls.country.touched && form.controls.country.invalid"
+          aria-describedby="country-help"
+        /><small id="country-help"></small>
+      </div>
+      <label class="checkbox"
+        ><input type="checkbox" formControlName="active" />Tercero activo</label
+      >
+    </div>
+    @if (session.can('PARTY_MANAGE')) {
+      <div class="form-footer">
+        @if (conflict()) {
+          <button class="btn secondary" type="button" (click)="reload()" [disabled]="busy()">
+            Recargar datos
+          </button>
+        }
+        <button class="btn primary" [disabled]="busy() || form.invalid">
+          {{ busy() ? 'Guardando…' : 'Guardar cambios' }}
+        </button>
+      </div>
+    }
+  </form>
+</section>

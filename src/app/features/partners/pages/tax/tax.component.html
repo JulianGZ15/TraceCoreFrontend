@@ -1,0 +1,86 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Identificaciones fiscales</h2>
+    @if (session.can('PARTY_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo registro</button>
+    }
+  </div>
+  <p>Normalización administrativa; revisión manual con evidencia.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de identificaciones fiscales</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Identificaciones fiscales">
+    <table>
+      <caption class="sr-only">
+        Identificaciones fiscales del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Identificación</th>
+          <th>Verificación</th>
+          <th>Evidencia / revisión</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              {{ r.country }} · {{ r.type }}<small class="mono">{{ r.number }}</small
+              ><small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              <span class="badge neutral">{{ label(r.verification) }}</span>
+            </td>
+            <td>
+              <span class="mono">{{ r.evidenceUuid ?? 'Sin evidencia' }}</span
+              ><small class="mono">{{ r.verifiedBy }}</small
+              ><small>{{ r.verifiedAt ? date(r.verifiedAt) : '' }}</small>
+            </td>
+            <td>
+              <div class="row-actions">
+                @if (session.can('PARTY_MANAGE') && r.verification !== 'VERIFIED') {
+                  <button class="btn secondary" (click)="edit(r)">Editar identificación</button>
+                }
+                @if (session.can('PARTY_APPROVE')) {
+                  @for (decision of decisions(r.verification); track decision) {
+                    <button
+                      class="btn secondary"
+                      [disabled]="busy() || (decision === 'VERIFIED' && !r.evidenceUuid)"
+                      (click)="review(r, decision)"
+                    >
+                      {{ label(decision) }}
+                    </button>
+                  }
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

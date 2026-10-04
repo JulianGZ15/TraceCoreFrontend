@@ -8,6 +8,12 @@ export function safeReturn(value: string | null): string {
   if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\\\x00-\x20]/.test(value))
     return '/inicio';
   const path = value.split(/[?#]/)[0];
+  if (
+    /^\/terceros(?:\/[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}(?:\/(?:general|roles|contactos|domicilios|fiscal|certificaciones|evidencias|condiciones|autorizaciones|avl|cuotas))?)?$/.test(
+      path,
+    )
+  )
+    return value;
   return /^\/(inicio|mi-cuenta|auditoria|acceso\/(usuarios|roles)|organizacion\/(empresa|patios(?:\/[a-fA-F0-9-]{36})?))$/.test(
     path,
   )
@@ -55,6 +61,10 @@ export class Session implements OnDestroy {
           'YARD_MANAGE',
           'ACCESS_MANAGE',
           'AUDIT_READ',
+          'PARTY_READ',
+          'PARTY_MANAGE',
+          'PARTY_APPROVE',
+          'AVL_MANAGE',
         ].includes(p),
       ) ||
         c.yards.length > 0)

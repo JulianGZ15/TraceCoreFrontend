@@ -1,0 +1,76 @@
+<div class="dialog">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Expediente de tercero</p>
+      <h2>{{ data.title }}</h2>
+    </div>
+    <button class="icon-button" aria-label="Cerrar formulario" (click)="close()">×</button>
+  </div>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      @for (field of data.fields; track field.key) {
+        <div class="field">
+          @if (field.type === 'checkbox') {
+            <label class="checkbox"
+              ><input type="checkbox" [formControlName]="field.key" />{{ field.label }}</label
+            >
+          } @else {
+            <label [for]="'record-' + field.key"
+              >{{ field.label }}
+              @if (field.required) {
+                <span aria-hidden="true">*</span>
+              }
+            </label>
+            @if (field.type === 'select') {
+              <select [id]="'record-' + field.key" [formControlName]="field.key">
+                <option value="">Selecciona una opción</option>
+                @for (option of field.options; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            } @else {
+              <input
+                [id]="'record-' + field.key"
+                [type]="field.type ?? 'text'"
+                [formControlName]="field.key"
+                [attr.aria-invalid]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                "
+                [attr.aria-describedby]="'help-' + field.key"
+              />
+            }
+          }
+          <small [id]="'help-' + field.key"
+            >{{ field.help }}
+            @if (form.controls[field.key].invalid && form.controls[field.key].touched) {
+              <span class="field-error">Revisa este campo.</span>
+            }
+          </small>
+        </div>
+      }
+    </div>
+    @if (data.evidence) {
+      <tc-evidence-picker
+        [party]="data.party"
+        [value]="form.controls['evidenceUuid'].value"
+        (valueChange)="form.controls['evidenceUuid'].setValue($event); form.markAsDirty()"
+      />
+    }
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">Revisa los campos obligatorios y su formato.</p>
+    }
+    <div class="dialog-actions">
+      @if (conflict() && data.row) {
+        <button type="button" class="btn secondary" [disabled]="busy()" (click)="reload()">
+          Recargar datos
+        </button>
+      }
+      <button type="button" class="btn secondary" [disabled]="busy()" (click)="close()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

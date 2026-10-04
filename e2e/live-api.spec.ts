@@ -115,3 +115,228 @@ test('isolated PostgreSQL + real backend + Angular: administration and yard scop
     await operatorContext.close();
   }
 });
+
+test('stage two real API: dossiers, evidence, exact credit, AVL eligibility and quotas', async ({
+  page,
+  browser,
+}) => {
+  test.skip(
+    !process.env['TRACECORE_E2E_ISOLATED'],
+    'Requires disposable PostgreSQL/evidence storage.',
+  );
+  test.setTimeout(150000);
+  const email = process.env['TRACECORE_ADMIN_EMAIL']!;
+  let password = process.env['TRACECORE_ADMIN_PASSWORD']!;
+  let login = await page.request.post('/api/v1/auth/login', { data: { email, password } });
+  if (login.status() === 401) {
+    password = 'IsolatedChanged123!';
+    login = await page.request.post('/api/v1/auth/login', { data: { email, password } });
+  }
+  expect(login.ok()).toBe(true);
+  const auth = (await login.json()).accessToken,
+    headers = { Authorization: 'Bearer ' + auth };
+  async function get(path: string) {
+    const result = await page.request.get('/api/v1' + path, { headers });
+    expect(result.ok(), await result.text()).toBe(true);
+    return result.json();
+  }
+  async function post(path: string, data: unknown) {
+    const result = await page.request.post('/api/v1' + path, { headers, data });
+    expect(result.ok(), await result.text()).toBe(true);
+    return result.json();
+  }
+  await page.goto('/login');
+  await page.getByLabel('Correo electrónico', { exact: true }).fill(email);
+  await page.getByLabel('Contraseña', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Iniciar sesión', exact: true }).click();
+  await page.getByRole('link', { name: 'Terceros y AVL', exact: true }).click();
+  await page.getByRole('button', { name: '+ Nuevo tercero' }).click();
+  let dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Razón social').fill('Tercero prueba API real');
+  await dialog.getByLabel('Nombre comercial').fill('Expediente integral');
+  await dialog.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page).toHaveURL(/terceros\/.*\/general/);
+  const uuid = page.url().split('/').at(-2)!,
+    base = '/parties/' + uuid;
+  async function section(name: string, heading: string) {
+    await page.getByRole('link', { name, exact: true }).click();
+    await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+  }
+  await section('Roles', 'Roles del tercero');
+  for (const role of ['CUSTOMER', 'SUPPLIER', 'DISTRIBUTOR']) {
+    await page.getByRole('button', { name: '+ Asignar rol' }).click();
+    await page.getByLabel('Rol', { exact: true }).selectOption(role);
+    await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  }
+  expect((await get(base + '/roles')).length).toBe(3);
+  await section('Contactos', 'Contactos');
+  for (const name of ['Contacto A', 'Contacto B']) {
+    await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+    dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Nombre completo').fill(name);
+    await dialog
+      .getByLabel('Correo electrónico')
+      .fill(name === 'Contacto A' ? 'a@example.test' : 'b@example.test');
+    await dialog.getByLabel('Contacto principal').check();
+    await dialog.getByRole('button', { name: 'Guardar', exact: true }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  }
+  const contacts = await get(base + '/contacts');
+  expect(contacts.filter((r: { primary: boolean }) => r.primary)).toHaveLength(1);
+  expect(contacts.find((r: { name: string }) => r.name === 'Contacto B').primary).toBe(true);
+  await section('Domicilios', 'Domicilios');
+  await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+  await page.getByLabel('Tipo', { exact: false }).selectOption('FISCAL');
+  await page.getByLabel('Dirección', { exact: false }).fill('Av. Prueba 123');
+  await page.getByLabel('Localidad').fill('Monterrey');
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page.getByRole('cell').filter({ hasText: 'Av. Prueba 123' })).toBeVisible();
+  await section('Evidencias', 'Evidencias');
+  const pdf = Buffer.from('%PDF-1.7\nEvidence for isolated browser test\n%%EOF');
+  await page
+    .getByLabel('Archivo PDF')
+    .setInputFiles({ name: 'prueba-real.pdf', mimeType: 'application/pdf', buffer: pdf });
+  await page.getByRole('button', { name: 'Cargar archivo' }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'prueba-real.pdf' })).toBeVisible();
+  const evidence = (await get(base + '/evidence'))[0];
+  expect(evidence.sha256).toMatch(/^[a-f0-9]{64}$/);
+  const content = await page.request.get(
+    '/api/v1' + base + '/evidence/' + evidence.uuid + '/content',
+    { headers },
+  );
+  expect(await content.body()).toEqual(pdf);
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Descargar evidencia' }).click();
+  expect((await download).suggestedFilename()).toBe('prueba-real.pdf');
+  await section('Identificaciones fiscales', 'Identificaciones fiscales');
+  await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+  await page.getByLabel('Tipo de identificación').fill('RFC');
+  await page.getByLabel('Número fiscal').fill('test-123.456');
+  await page.getByLabel('Archivo de evidencia').selectOption(evidence.uuid);
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await page.getByRole('button', { name: 'Verificado', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByText('TEST123456', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Editar identificación', exact: true }),
+  ).toHaveCount(0);
+  expect((await get(base + '/tax-identities'))[0].verification).toBe('VERIFIED');
+  await section('Certificaciones', 'Certificaciones');
+  await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+  await page.getByLabel('Norma').fill('API 6A');
+  await page.getByLabel('Número / licencia').fill('CERT_TEST');
+  await page.getByLabel('Emisor').fill('Emisor prueba');
+  await page.getByLabel('Fecha de emisión').fill('2020-01-01');
+  await page.getByLabel('Fecha de vencimiento').fill('2030-12-31');
+  await page.getByLabel('Archivo de evidencia').selectOption(evidence.uuid);
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await page.getByRole('button', { name: 'Verificado', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Editar certificación', exact: true })).toHaveCount(
+    0,
+  );
+  expect((await get(base + '/certifications'))[0].verification).toBe('VERIFIED');
+  await section('Condiciones', 'Condiciones comerciales');
+  await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+  await page.getByLabel('Divisa ISO').fill('USD');
+  await page.getByLabel('Código de método de pago').fill('WIRE');
+  await page.getByLabel('Código de condición de pago').fill('NET_30');
+  await page.getByLabel('Límite de crédito').fill('999999999999999.9999');
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(
+    page.getByRole('cell').filter({ hasText: '999,999,999,999,999.9999 USD' }),
+  ).toBeVisible();
+  let terms = (await get(base + '/commercial-terms'))[0];
+  expect(terms.creditLimitExact).toBe('999999999999999.9999');
+  await page.getByRole('button', { name: 'Cerrar vigencia' }).click();
+  await page.getByLabel('Fin exclusivo').fill('2030-01-01T00:00');
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  terms = (await get(base + '/commercial-terms'))[0];
+  expect(terms.creditLimitExact).toBe('999999999999999.9999');
+  expect(terms.validTo).toBe('2030-01-01T00:00:00Z');
+  await section('Autorizaciones', 'Autorizaciones y elegibilidad');
+  for (const operation of ['OC', 'OV', 'OR']) {
+    await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+    await page.getByRole('dialog').getByLabel('Operación', { exact: true }).selectOption(operation);
+    await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  }
+  await page.getByLabel('Alcance AVL exacto').fill('API_6A');
+  await page.getByRole('button', { name: 'Consultar elegibilidad' }).click();
+  await expect(page.getByText('No elegible', { exact: false })).toBeVisible();
+  await section('AVL', 'Evaluaciones AVL');
+  await page.getByRole('button', { name: '+ Nueva evaluación' }).click();
+  await page.getByLabel('Alcance AVL').fill('API_6A');
+  await page.getByLabel('Score').fill('99.50');
+  await page.getByLabel('Clasificación declarada').fill('TIER_1');
+  await page.getByLabel('Dictamen').selectOption('APPROVED');
+  await page.getByLabel('Hallazgos').fill('Evaluación manual API real');
+  await page.getByLabel('Próxima revisión').fill('2030-01-01T00:00');
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page.getByText('Aprobado', { exact: true })).toBeVisible();
+  await section('Autorizaciones', 'Autorizaciones y elegibilidad');
+  await page.getByLabel('Alcance AVL exacto').fill('API_6A');
+  await page.getByRole('button', { name: 'Consultar elegibilidad' }).click();
+  await expect(page.getByText('Elegible actualmente', { exact: false })).toBeVisible();
+  const eligibility = await get(base + '/eligibility?operation=OC&avlScope=API_OTHER');
+  expect(eligibility.allowed).toBe(false);
+  await section('Cuotas', 'Cuotas de distribución');
+  await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+  await page.getByLabel('Ubicación', { exact: true }).selectOption('REGION');
+  await page.getByLabel('Código de región').fill('NORTH');
+  await page.getByLabel('Alcance contractual').fill('TUBULAR_API5CT');
+  await page.getByLabel('Cantidad').fill('10');
+  await page.getByLabel('Inicio', { exact: true }).fill('2030-01-01T00:00');
+  await page.getByLabel('Fin exclusivo').fill('2030-02-01T00:00');
+  await page.getByLabel('Condiciones', { exact: false }).fill('Compromiso de prueba real');
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page.getByText('NORTH', { exact: true })).toBeVisible();
+  expect((await get(base + '/distribution-quotas'))[0].quantity).toBe(10);
+  await page.getByRole('button', { name: 'Revocar cuota' }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Revocar cuota', exact: true })).toHaveCount(0);
+  expect((await get(base + '/distribution-quotas'))[0].revokedAt).not.toBeNull();
+  // An approver can discover active quota yards without gaining YARD_READ/YARD_MANAGE.
+  const permissions = await get('/permissions?limit=100'),
+    company = (await get('/auth/context')).company;
+  const role = await post('/roles', {
+    code: 'PARTY_APPROVER_TEST',
+    name: 'Aprobador terceros prueba',
+  });
+  for (const code of ['PARTY_READ', 'PARTY_APPROVE'])
+    await post('/roles/' + role.uuid + '/permissions', {
+      permissionUuid: permissions.find((p: { code: string }) => p.code === code).uuid,
+    });
+  const approver = await post('/users', {
+    name: 'Aprobador Prueba',
+    email: 'approver@example.test',
+    password: 'IsolatedApprover123!',
+  });
+  await post('/users/' + approver.uuid + '/assignments', {
+    roleUuid: role.uuid,
+    scopeType: 'COMPANY',
+    companyUuid: company.uuid,
+    yardUuid: null,
+    validFrom: null,
+    validTo: null,
+  });
+  const otherContext = await browser.newContext({
+    baseURL: process.env['TRACECORE_E2E_FRONT_URL'],
+  });
+  try {
+    const other = await otherContext.newPage();
+    await other.goto('/login');
+    await other.getByLabel('Correo electrónico', { exact: true }).fill(approver.email);
+    await other.getByLabel('Contraseña', { exact: true }).fill('IsolatedApprover123!');
+    await other.getByRole('button', { name: 'Iniciar sesión', exact: true }).click();
+    await expect(other).toHaveURL(/\/inicio$/);
+    await other.goto('/terceros/' + uuid + '/cuotas');
+    await other.getByRole('button', { name: '+ Nuevo registro' }).click();
+    await expect(other.getByLabel('Patio activo')).toContainText('Patio de prueba real');
+    await expect(other.getByRole('link', { name: 'Patios', exact: true })).toHaveCount(0);
+  } finally {
+    await otherContext.close();
+  }
+});

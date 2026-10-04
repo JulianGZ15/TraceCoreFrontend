@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.findings {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.file-selection {
+  margin-top: 12px;
+}
+.file-selection span {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}

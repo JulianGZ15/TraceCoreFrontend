@@ -1,0 +1,90 @@
+<section class="panel">
+  <div class="panel-heading"><h2>Evidencias</h2></div>
+  <p>Archivos del tercero. El SHA-256 identifica los bytes; no representa una firma.</p>
+</section>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (session.can('PARTY_MANAGE')) {
+  <section class="panel">
+    <h3>Cargar evidencia</h3>
+    <label for="evidence-file">Archivo PDF, PNG o JPEG · máximo 10 MiB</label>
+    <div class="page-actions file-selection">
+      <button type="button" class="btn secondary" [disabled]="busy()" (click)="fileInput.click()">
+        Seleccionar archivo</button
+      ><span>{{ file()?.name ?? 'Ningún archivo seleccionado' }}</span>
+    </div>
+    <input
+      #fileInput
+      hidden
+      id="evidence-file"
+      type="file"
+      accept=".pdf,.png,.jpg,.jpeg"
+      (change)="selected($event)"
+    />
+    <div class="form-footer">
+      <button class="btn primary" [disabled]="busy() || !file()" (click)="upload()">
+        Cargar archivo
+      </button>
+    </div>
+  </section>
+}
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Registros de evidencias</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Evidencias">
+    <table>
+      <caption class="sr-only">
+        Evidencias del tercero
+      </caption>
+      <thead>
+        <tr>
+          <th>Archivo</th>
+          <th>Tipo / tamaño</th>
+          <th>SHA-256</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              <strong>{{ r.filename }}</strong
+              ><small class="mono">{{ r.uuid }}</small>
+            </td>
+            <td>
+              {{ r.mediaType }}<small>{{ r.size }} bytes</small>
+            </td>
+            <td>
+              <span class="mono">{{ r.sha256 }}</span>
+            </td>
+            <td>
+              <button class="btn secondary" [disabled]="busy()" (click)="download(r)">
+                Descargar evidencia
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (paged) {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="load($event)"
+      (resize)="resize($event)"
+    />
+  }
+</section>

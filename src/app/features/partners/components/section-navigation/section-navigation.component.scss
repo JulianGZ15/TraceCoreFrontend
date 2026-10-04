@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  min-width: 0;
+  margin-bottom: 24px;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--tc-border);
+  padding-bottom: 16px;
+}
+a {
+  padding: 10px 14px;
+  min-height: 44px;
+  border-radius: var(--tc-radius-control);
+  border: 1px solid var(--tc-border);
+  background: var(--tc-panel);
+}
+a:hover,
+a.selected {
+  background: var(--tc-selection);
+  color: var(--tc-action-text);
+  border-color: var(--tc-action-text);
+}
+a.selected {
+  font-weight: 600;
+}

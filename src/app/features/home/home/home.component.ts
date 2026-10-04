@@ -16,6 +16,13 @@ export class HomePage {
   }
   readonly cards = [
     {
+      path: '/terceros',
+      permission: 'PARTY_READ',
+      icon: 'group',
+      title: 'Terceros y AVL',
+      description: 'Expedientes, documentación y habilitación comercial por alcance.',
+    },
+    {
       path: '/organizacion/empresa',
       permission: 'ORGANIZATION_READ',
       icon: 'domain',

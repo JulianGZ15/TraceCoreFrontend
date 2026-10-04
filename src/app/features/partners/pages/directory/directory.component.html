@@ -1,0 +1,92 @@
+<tc-page-heading
+  section="Terceros y AVL"
+  title="Directorio de terceros"
+  description="Identidad comercial y expedientes de clientes, proveedores y aliados."
+>
+  @if (session.can('PARTY_MANAGE')) {
+    <button class="btn primary" (click)="create()">+ Nuevo tercero</button>
+  }
+</tc-page-heading>
+<form class="panel form-grid" [formGroup]="form" (ngSubmit)="apply()">
+  <div class="field">
+    <label for="party-search">Razón social o nombre comercial</label
+    ><input id="party-search" formControlName="search" maxlength="150" />
+  </div>
+  <div class="field">
+    <label for="party-role">Rol vigente</label
+    ><select id="party-role" formControlName="role">
+      <option value="">Todos los roles</option>
+      @for (role of roles; track role) {
+        <option [value]="role">{{ label(role) }}</option>
+      }
+    </select>
+  </div>
+  <div class="field">
+    <label for="party-active">Estado</label
+    ><select id="party-active" formControlName="active">
+      <option value="">Todos</option>
+      <option value="true">Activos</option>
+      <option value="false">Inactivos</option>
+    </select>
+  </div>
+  <div class="page-actions">
+    <button class="btn secondary" [disabled]="busy()">Aplicar filtros</button>
+  </div>
+</form>
+<tc-feedback [message]="error()" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h2>Terceros registrados</h2>
+    <button class="btn secondary" (click)="load()" [disabled]="busy()">Actualizar</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Directorio de terceros">
+    <table>
+      <caption class="sr-only">
+        Directorio de terceros
+      </caption>
+      <thead>
+        <tr>
+          <th>Identidad</th>
+          <th>País</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (party of rows(); track party.uuid) {
+          <tr>
+            <td>
+              <strong>{{ party.legalName }}</strong
+              ><small>{{ party.tradeName }}</small
+              ><small class="mono">{{ party.uuid }}</small>
+            </td>
+            <td>{{ party.country }}</td>
+            <td><tc-status [active]="party.active" /></td>
+            <td>
+              <a class="btn secondary" [routerLink]="['/terceros', party.uuid, 'general']"
+                >Abrir expediente</a
+              >
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td colspan="4" class="empty-state">No hay terceros con estos filtros.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <tc-pagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="apply($event)"
+    (resize)="apply(0, $event)"
+  />
+</section>

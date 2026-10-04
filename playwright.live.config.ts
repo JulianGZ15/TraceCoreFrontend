@@ -8,7 +8,7 @@ export default defineConfig({
   timeout: 60000,
   expect: { timeout: 10000 },
   reporter: 'list',
-  outputDir: 'test-results/live',
+  outputDir: 'test-results-live',
   use: {
     baseURL,
     browserName: 'chromium',

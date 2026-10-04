@@ -1,6 +1,8 @@
 # TraceCore frontend
 
-Angular 21 + Tailwind 4, componentes standalone por funcionalidad, SCSS externo y API real. Etapa 1: sesión, inicio, cuenta, empresa, patios, usuarios, roles, permisos, asignaciones y auditoría.
+Angular 21 + Tailwind 4, componentes standalone por funcionalidad, SCSS externo y API real. Etapa 1: sesión, inicio, cuenta, empresa, patios, usuarios, roles, permisos, asignaciones y auditoría. Etapa 2: directorio y expediente de terceros, contactos, documentos, evidencias, condiciones comerciales, autorizaciones, AVL y cuotas.
+
+La etapa 2 requiere el backend con `GET /api/v1/parties/quota-yards` y `creditLimitExact` en condiciones comerciales. El frontend conserva los importes como texto decimal y muestra incompatibilidad si falta el campo exacto; no usa el importe numérico como respaldo.
 
 ## Ejecutar
 
@@ -50,6 +52,6 @@ Para comprobar el navegador contra Spring Boot y PostgreSQL reales:
 .\tools\test-live-api.ps1
 ```
 
-Requiere Java 21 y PostgreSQL local; `-PostgresBin` admite otra carpeta. El script empaqueta el backend, crea una base aislada y un administrador de prueba, elige puertos libres y ejecuta altas, permisos, alcance de patio, revocación y cambio de contraseña. Detiene backend y clúster en `finally`, restaura las variables de entorno y conserva logs en `Backend/tracecore/target/frontend-smoke`. No utiliza la base de trabajo.
+Requiere Java 21 y PostgreSQL local; `-PostgresBin` admite otra carpeta. El script empaqueta el backend, crea una base aislada y un administrador de prueba, elige puertos libres y ejecuta los flujos de ambas etapas. Incluye expedientes, contactos principales, carga/descarga de evidencia, revisión documental, crédito exacto, elegibilidad AVL y cuotas. Cada ejecución usa un directorio exclusivo de evidencias. Detiene backend y clúster en `finally`, restaura las variables de entorno y conserva logs en `Backend/tracecore/target/frontend-smoke`; los artefactos de navegador quedan en `test-results-live`. No utiliza la base de trabajo.
 
-El resultado y las limitaciones de esta entrega se registran en [la especificación de etapa 1](../../docs/front/02-etapa1-organizacion-acceso.md).
+El resultado de cada entrega se registra en [etapa 1](../../docs/front/02-etapa1-organizacion-acceso.md) y [etapa 2](../../docs/front/03-etapa2-terceros-contactos-avl.md).

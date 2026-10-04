@@ -2,7 +2,7 @@ import { Validators, ValidatorFn } from '@angular/forms';
 export interface Field {
   key: string;
   label: string;
-  type?: 'text' | 'email' | 'password' | 'checkbox' | 'select' | 'datetime';
+  type?: 'text' | 'email' | 'password' | 'checkbox' | 'select' | 'datetime' | 'date';
   required?: boolean;
   options?: { value: string; label: string }[];
   help?: string;
