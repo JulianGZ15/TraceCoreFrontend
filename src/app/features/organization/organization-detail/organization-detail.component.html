@@ -1,0 +1,66 @@
+<tc-page-heading
+  section="Organización"
+  [title]="isYard ? 'Información del patio' : 'Tu empresa'"
+  description="Información, ubicación y estado de la organización."
+>
+  @if (isYard && session.can('YARD_MANAGE')) {
+    <a routerLink="/organizacion/patios" class="btn secondary">Volver a patios</a>
+  }
+</tc-page-heading>
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (busy() && !loaded()) {
+  <div class="panel" role="status">Cargando información…</div>
+}
+@if (!busy() && !loaded()) {
+  <button class="btn secondary" (click)="load()">Volver a consultar</button>
+}
+@if (loaded()) {
+  <section class="panel form-panel">
+    <div class="panel-heading">
+      <h2>{{ loaded()?.name }}</h2>
+      <tc-status [active]="loaded()?.active ?? false" />
+    </div>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        @for (field of fields; track field.key) {
+          <div class="field">
+            <label [for]="field.key">{{ field.label }}</label
+            ><input
+              [id]="field.key"
+              [formControlName]="field.key"
+              [attr.aria-invalid]="
+                form.controls[field.key].touched && form.controls[field.key].invalid
+              "
+              [attr.aria-describedby]="field.key + '-help'"
+            /><small [id]="field.key + '-help'"
+              >{{ field.help ?? '' }}
+              @if (form.controls[field.key].touched && form.controls[field.key].invalid) {
+                <span class="field-error">Revisa este campo.</span>
+              }
+            </small>
+          </div>
+        }
+        <label class="checkbox full"
+          ><input type="checkbox" formControlName="active" />{{
+            isYard ? 'Patio activo' : 'Empresa activa'
+          }}</label
+        >
+      </div>
+      <div class="form-footer">
+        <span class="small-muted">{{
+          canEdit() ? 'Los cambios quedan registrados en auditoría.' : 'Consulta de solo lectura.'
+        }}</span>
+        <div class="page-actions">
+          @if (conflict()) {
+            <button type="button" class="btn secondary" (click)="reload()">Recargar datos</button>
+          }
+          @if (canEdit()) {
+            <button class="btn primary" [disabled]="busy() || saving()">
+              {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+            </button>
+          }
+        </div>
+      </div>
+    </form>
+  </section>
+}

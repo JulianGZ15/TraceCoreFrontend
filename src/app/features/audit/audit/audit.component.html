@@ -1,0 +1,61 @@
+<tc-page-heading
+  section="Auditoría"
+  title="Historial de acciones"
+  description="Consulta de solo lectura de los eventos registrados por la organización."
+  ><button class="btn secondary" [disabled]="list.busy()" (click)="list.load()">
+    Actualizar
+  </button></tc-page-heading
+><tc-feedback [message]="list.error()" /><tc-feedback [message]="list.success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="list.busy()">
+  <div class="panel-heading">
+    <h2>Eventos recientes</h2>
+    @if (list.busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Tabla de auditoría">
+    <table>
+      <caption class="sr-only">
+        Eventos de auditoría, más recientes primero
+      </caption>
+      <thead>
+        <tr>
+          <th>Fecha / zona</th>
+          <th>Acción</th>
+          <th>Recurso</th>
+          <th>Actor</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (event of list.items(); track event.uuid) {
+          <tr>
+            <td class="mono">
+              {{ date(event.occurredAt) }}<small>{{ session.context()?.company?.timezone }}</small>
+            </td>
+            <td class="mono">{{ event.action }}</td>
+            <td>
+              {{ event.resourceType }}<small class="mono">{{ event.resourceUuid }}</small>
+            </td>
+            <td class="mono">{{ event.actorUuid ?? 'Sin actor identificado' }}</td>
+            <td><button class="btn secondary" (click)="detail(event)">Ver evento</button></td>
+          </tr>
+        } @empty {
+          @if (!list.busy() && !list.error()) {
+            <tr>
+              <td colspan="5" class="empty-state">No hay eventos en esta página.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <tc-pagination
+    [offset]="list.offset()"
+    [limit]="list.limit()"
+    [count]="list.items().length"
+    [busy]="list.busy()"
+    (move)="list.load($event)"
+    (resize)="list.resize($event)"
+  />
+</section>

@@ -1,0 +1,156 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+.login-brand {
+  background: var(--tc-shell);
+  color: var(--tc-on-shell);
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.brand-copy {
+  margin: auto 0;
+  padding: 64px 0;
+}
+.brand-copy h2 {
+  font-size: 36px;
+  line-height: 44px;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+.brand-copy p {
+  font-size: 16px;
+  line-height: 24px;
+  max-width: 380px;
+  color: var(--tc-on-shell-muted);
+}
+.brand-copy .eyebrow {
+  color: var(--tc-action);
+  font-size: 12px;
+}
+.brand-foot {
+  font: 12px var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--tc-on-shell-muted);
+}
+.login-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  background: var(--tc-panel);
+}
+.login-form {
+  width: 100%;
+  max-width: 440px;
+  margin: auto 0;
+  padding: 40px 0;
+}
+.login-form h1 {
+  margin-bottom: 12px;
+}
+.login-form .page-description {
+  margin-bottom: 32px;
+}
+.login-form .field {
+  margin-bottom: 24px;
+}
+.login-form .eyebrow {
+  color: var(--tc-action-text);
+}
+.section-marker {
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: var(--tc-action);
+  margin-bottom: 24px;
+}
+.password-input {
+  display: flex;
+  border: 1px solid var(--tc-control-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.password-input input {
+  border: none;
+  flex: 1;
+  min-width: 0;
+}
+.password-input button {
+  border: none;
+  background: var(--tc-panel);
+  padding: 8px 12px;
+  font-weight: 500;
+  color: var(--tc-action-text);
+}
+.login-help {
+  margin: 24px 0;
+  color: var(--tc-text-muted);
+  font-size: 14px;
+  line-height: 22px;
+}
+.login-divider {
+  border-top: 1px solid var(--tc-border);
+  margin-bottom: 24px;
+}
+.login-main footer {
+  font-size: 12px;
+  color: var(--tc-text-muted);
+}
+@media (max-width: 1199px) {
+  .login-brand {
+    padding: 40px;
+  }
+}
+@media (max-width: 1023px) {
+  .login-page {
+    display: block;
+  }
+}
+@media (max-width: 1023px) {
+  .login-brand {
+    padding: 24px 32px;
+    align-items: center;
+  }
+}
+@media (max-width: 1023px) {
+  .login-brand tc-brand-logo {
+    max-width: 180px;
+  }
+}
+@media (max-width: 1023px) {
+  .brand-copy,
+  .brand-foot {
+    display: none;
+  }
+}
+@media (max-width: 1023px) {
+  .login-main {
+    padding: 24px 24px 32px;
+    min-height: calc(100dvh - 147px);
+  }
+}
+@media (max-width: 1023px) {
+  .login-form {
+    padding: 24px 0;
+  }
+}
+@media (max-width: 767px) {
+  .login-main {
+    padding: 24px 20px;
+  }
+}
+@media (max-width: 767px) {
+  .login-brand {
+    padding: 20px;
+  }
+}

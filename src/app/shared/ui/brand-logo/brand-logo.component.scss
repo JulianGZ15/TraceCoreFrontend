@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+.brand-logo {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  aspect-ratio: 1300/710;
+}
+.login {
+  width: 320px;
+}
+.sidebar {
+  width: 220px;
+}
+.compact {
+  width: 82px;
+}

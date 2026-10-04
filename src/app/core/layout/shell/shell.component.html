@@ -1,0 +1,49 @@
+<a class="skip-link" href="#main-content">Saltar al contenido</a>
+<aside class="desktop-sidebar"><tc-navigation /></aside>
+<div class="workspace">
+  <header class="topbar">
+    <button class="icon-button mobile-menu" (click)="menu()" aria-label="Abrir navegación">
+      <tc-icon name="menu" />
+    </button>
+    <div class="company-context">
+      <span class="context-dot" aria-hidden="true"></span
+      ><strong>{{ session.context()?.company?.name ?? 'TraceCore' }}</strong
+      ><span class="context-subtitle">Organización y acceso</span>
+    </div>
+    <div class="topbar-actions">
+      @if (session.context()?.yards?.length) {
+        <label class="yard-switch"
+          ><span class="sr-only">Patio de contexto</span
+          ><select
+            [value]="session.selectedYard()"
+            [disabled]="changing()"
+            (change)="select($any($event.target).value)"
+          >
+            <option value="">Contexto de empresa</option>
+            @for (yard of session.context()?.yards; track yard.uuid) {
+              <option [value]="yard.uuid">
+                {{ yard.name }}{{ yard.active ? '' : ' · Inactivo' }}
+              </option>
+            }
+          </select></label
+        >
+      }
+      <a class="user-menu" routerLink="/mi-cuenta" aria-label="Mi cuenta"
+        ><span class="avatar">{{ initials() }}</span
+        ><span class="user-name">{{ session.user()?.name }}<small>Mi cuenta</small></span></a
+      >
+    </div>
+  </header>
+  <main id="main-content" class="main-content" tabindex="-1">
+    <tc-feedback [message]="error()" />
+    @if (session.context() && !session.context()?.company?.active) {
+      <div class="feedback info" role="status">
+        La empresa está inactiva. Los accesos operativos están suspendidos.
+      </div>
+    }
+    <router-outlet />
+  </main>
+  <footer class="workspace-footer">
+    <span>TraceCore</span><span>Asset intelligence &amp; traceability</span>
+  </footer>
+</div>

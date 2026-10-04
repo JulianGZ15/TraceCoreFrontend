@@ -1,0 +1,5 @@
+@if (message()) {
+  <div [class]="'feedback ' + kind()" [attr.role]="kind() === 'danger' ? 'alert' : 'status'">
+    {{ message() }}
+  </div>
+}

@@ -1,0 +1,8 @@
+<div class="dialog">
+  <h2>{{ data.title }}</h2>
+  <p>{{ data.message }}</p>
+  <div class="dialog-actions">
+    <button class="btn secondary" cdkFocusInitial (click)="ref.close(false)">Cancelar</button
+    ><button class="btn danger" (click)="ref.close(true)">Confirmar</button>
+  </div>
+</div>

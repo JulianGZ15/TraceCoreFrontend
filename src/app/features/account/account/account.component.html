@@ -1,0 +1,54 @@
+<tc-page-heading
+  section="Mi cuenta"
+  title="Tu perfil"
+  description="Tu información de cuenta y tu contraseña de acceso."
+/>
+<div class="two-panels">
+  <section class="panel">
+    <div class="panel-heading">
+      <h2>Información personal</h2>
+      <tc-status [active]="session.user()?.active ?? false" />
+    </div>
+    <dl class="details">
+      <dt>Nombre</dt>
+      <dd>{{ session.user()?.name }}</dd>
+      <dt>Correo</dt>
+      <dd>{{ session.user()?.email }}</dd>
+      <dt>Identificador</dt>
+      <dd class="mono">{{ session.user()?.uuid }}</dd>
+    </dl>
+    <p class="small-muted">El administrador gestiona tu nombre, correo y estado de cuenta.</p>
+  </section>
+  <section class="panel">
+    <h2>Cambiar contraseña</h2>
+    <p class="small-muted">Al actualizarla, deberás iniciar sesión de nuevo.</p>
+    <tc-feedback [message]="error()" />
+    <form [formGroup]="form" (ngSubmit)="save()">
+      @for (field of fields; track field.key) {
+        <div class="field">
+          <label [for]="field.key">{{ field.label }}</label
+          ><input
+            [id]="field.key"
+            type="password"
+            [formControlName]="field.key"
+            [attr.autocomplete]="
+              field.key === 'currentPassword' ? 'current-password' : 'new-password'
+            "
+            [attr.aria-invalid]="
+              form.controls[field.key].touched && form.controls[field.key].invalid
+            "
+            [attr.aria-describedby]="field.key + '-help'"
+          /><small [id]="field.key + '-help'"
+            >{{ field.help }}
+            @if (form.controls[field.key].touched && form.controls[field.key].invalid) {
+              <span class="field-error">Revisa este campo.</span>
+            }
+          </small>
+        </div>
+      }
+      <button class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Actualizando…' : 'Actualizar contraseña' }}
+      </button>
+    </form>
+  </section>
+</div>

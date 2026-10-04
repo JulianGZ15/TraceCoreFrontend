@@ -1,0 +1,53 @@
+<tc-page-heading
+  section="Acceso"
+  title="Roles y permisos"
+  description="Cada rol agrupa capacidades. El alcance se define al asignarlo a un usuario."
+  ><button class="btn primary" (click)="create()">+ Nuevo rol</button></tc-page-heading
+><tc-feedback [message]="list.error()" /><tc-feedback [message]="list.success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="list.busy()">
+  <div class="panel-heading">
+    <h2>Roles de acceso</h2>
+    @if (list.busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Tabla de roles">
+    <table>
+      <caption class="sr-only">
+        Roles de acceso
+      </caption>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (role of list.items(); track role.uuid) {
+          <tr>
+            <td class="mono">{{ role.code }}</td>
+            <td>{{ role.name }}</td>
+            <td>
+              <button class="btn secondary" (click)="permissions(role)">Gestionar permisos</button>
+            </td>
+          </tr>
+        } @empty {
+          @if (!list.busy() && !list.error()) {
+            <tr>
+              <td colspan="3" class="empty-state">Todavía no hay roles.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <tc-pagination
+    [offset]="list.offset()"
+    [limit]="list.limit()"
+    [count]="list.items().length"
+    [busy]="list.busy()"
+    (move)="list.load($event)"
+    (resize)="list.resize($event)"
+  />
+</section>

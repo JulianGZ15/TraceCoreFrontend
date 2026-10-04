@@ -1,0 +1,24 @@
+<div class="drawer">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Evento de auditoría</p>
+      <h2>{{ data.event.action }}</h2>
+    </div>
+    <button class="icon-button" aria-label="Cerrar evento" (click)="ref.close()">×</button>
+  </div>
+  <dl class="details">
+    @for (entry of entries(); track entry.label) {
+      <dt>{{ entry.label }}</dt>
+      <dd class="mono">{{ entry.value }}</dd>
+    }
+  </dl>
+  <h3>Campos intervenidos</h3>
+  @for (field of data.event.changedFields; track field) {
+    <p class="mono">{{ field }}</p>
+  } @empty {
+    <p>No se registraron nombres de campos para este evento.</p>
+  }
+  <p class="small-muted">
+    Este registro conserva los nombres de los campos, no sus valores anteriores o nuevos.
+  </p>
+</div>

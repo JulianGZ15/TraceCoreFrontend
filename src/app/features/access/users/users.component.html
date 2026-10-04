@@ -1,0 +1,63 @@
+<tc-page-heading
+  section="Acceso"
+  title="Usuarios"
+  description="Cuentas de tu organización y sus asignaciones de acceso."
+  ><button class="btn primary" (click)="create()">+ Nuevo usuario</button></tc-page-heading
+><tc-feedback [message]="list.error()" /><tc-feedback [message]="list.success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="list.busy()">
+  <div class="panel-heading">
+    <h2>Cuentas de la organización</h2>
+    @if (list.busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Tabla de usuarios">
+    <table>
+      <caption class="sr-only">
+        Usuarios de la empresa
+      </caption>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of list.items(); track user.uuid) {
+          <tr>
+            <td>
+              <strong>{{ user.name }}</strong>
+              @if (user.uuid === session.user()?.uuid) {
+                <small>Tu cuenta</small>
+              }
+            </td>
+            <td>{{ user.email }}</td>
+            <td><tc-status [active]="user.active" /></td>
+            <td>
+              <div class="row-actions">
+                <button class="btn secondary" (click)="update(user)">Editar</button
+                ><button class="btn secondary" (click)="assignments(user)">Asignaciones</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          @if (!list.busy() && !list.error()) {
+            <tr>
+              <td colspan="4" class="empty-state">No hay cuentas en esta página.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <tc-pagination
+    [offset]="list.offset()"
+    [limit]="list.limit()"
+    [count]="list.items().length"
+    [busy]="list.busy()"
+    (move)="list.load($event)"
+    (resize)="list.resize($event)"
+  />
+</section>

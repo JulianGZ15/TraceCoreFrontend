@@ -1,0 +1,141 @@
+:host {
+  display: block;
+}
+
+.welcome-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--tc-border);
+  border-left: 3px solid var(--tc-action);
+  padding: 24px;
+  background: var(--tc-panel);
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+.welcome-panel p {
+  margin-bottom: 0;
+  color: var(--tc-text-muted);
+}
+.welcome-panel .eyebrow {
+  margin-bottom: 12px;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.section-heading h2 {
+  margin: 0;
+}
+.access-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.access-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--tc-border);
+  border-radius: 8px;
+  background: var(--tc-panel);
+  min-height: 240px;
+  box-shadow: var(--tc-shadow);
+}
+.access-card:hover {
+  border-color: var(--tc-control-border);
+}
+.card-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--tc-selection);
+  border-radius: 4px;
+  margin-bottom: 24px;
+}
+.access-card p {
+  color: var(--tc-text-muted);
+}
+.card-link {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  color: var(--tc-action-text);
+  font-weight: 600;
+}
+.yard-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.yard-card {
+  border: 1px solid var(--tc-border);
+  border-radius: 4px;
+  padding: 16px;
+}
+.yard-card .eyebrow {
+  display: block;
+}
+.yard-card p {
+  margin: 12px 0 0;
+}
+.help-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--tc-border);
+  border-radius: 8px;
+}
+.help-strip p {
+  color: var(--tc-text-muted);
+  margin: 4px 0 0;
+}
+.help-strip .btn {
+  margin-left: auto;
+}
+@media (min-width: 1440px) {
+  .access-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1199px) {
+  .access-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1023px) {
+  .yard-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .access-cards,
+  .yard-cards {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 767px) {
+  .welcome-panel {
+    padding: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .help-strip {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+}
+@media (max-width: 767px) {
+  .help-strip .btn {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,11 @@
+<div class="breadcrumb">
+  <a routerLink="/inicio">Inicio</a><span aria-hidden="true">/</span><span>{{ section() }}</span>
+</div>
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">{{ section() }}</p>
+    <h1 tabindex="-1">{{ title() }}</h1>
+    <p class="page-description">{{ description() }}</p>
+  </div>
+  <div class="page-actions"><ng-content /></div>
+</div>

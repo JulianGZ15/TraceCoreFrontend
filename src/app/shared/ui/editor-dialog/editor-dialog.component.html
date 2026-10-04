@@ -1,0 +1,77 @@
+<div class="dialog">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h2>{{ data.title }}</h2>
+    </div>
+    <button class="icon-button" aria-label="Cerrar formulario" (click)="close()">×</button>
+  </div>
+  @if (data.description) {
+    <p>{{ data.description }}</p>
+  }
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      @for (field of data.fields; track field.key) {
+        <div class="field" [class.full]="field.type === 'checkbox'">
+          @if (field.type === 'checkbox') {
+            <label class="checkbox"
+              ><input type="checkbox" [formControlName]="field.key" />{{ field.label }}</label
+            >
+          } @else {
+            <label [for]="'editor-' + field.key"
+              >{{ field.label }}
+              @if (field.required) {
+                <span aria-hidden="true">*</span>
+              }
+            </label>
+            @if (field.type === 'select') {
+              <select [id]="'editor-' + field.key" [formControlName]="field.key">
+                <option value="">Selecciona una opción</option>
+                @for (option of field.options; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            } @else {
+              <input
+                [id]="'editor-' + field.key"
+                [type]="field.type === 'datetime' ? 'datetime-local' : (field.type ?? 'text')"
+                [formControlName]="field.key"
+                [attr.autocomplete]="
+                  field.type === 'password'
+                    ? 'new-password'
+                    : field.type === 'email'
+                      ? 'email'
+                      : 'off'
+                "
+                [attr.aria-invalid]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                "
+                [attr.aria-describedby]="'help-' + field.key"
+              />
+            }
+          }
+          <small [id]="'help-' + field.key"
+            >{{ field.help ?? '' }}
+            @if (form.controls[field.key].invalid && form.controls[field.key].touched) {
+              <span class="field-error">Revisa este campo.</span>
+            }
+          </small>
+        </div>
+      }
+    </div>
+    <div class="dialog-actions">
+      @if (conflict() && data.reload) {
+        <button class="btn secondary" type="button" [disabled]="busy()" (click)="reload()">
+          Recargar datos
+        </button>
+      }
+      <button class="btn secondary" type="button" [disabled]="busy()" (click)="close()">
+        Cancelar
+      </button>
+      <button class="btn primary" [disabled]="busy()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

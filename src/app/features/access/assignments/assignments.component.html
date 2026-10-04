@@ -1,0 +1,133 @@
+<div class="drawer">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Asignaciones de acceso</p>
+      <h2>{{ user.name }}</h2>
+      <span>{{ user.email }}</span>
+    </div>
+    <button
+      class="icon-button"
+      aria-label="Cerrar asignaciones"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      ×
+    </button>
+  </div>
+  <tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+  @if (busy()) {
+    <p role="status">Actualizando asignaciones…</p>
+  }
+  <section class="drawer-section">
+    <h3>Asignar un rol</h3>
+    <form [formGroup]="form" (ngSubmit)="assign()">
+      <div class="form-grid">
+        <div class="field">
+          <label for="role">Rol</label
+          ><select id="role" formControlName="roleUuid">
+            <option value="">Selecciona un rol</option>
+            @for (role of roles(); track role.uuid) {
+              <option [value]="role.uuid">{{ role.name }} · {{ role.code }}</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label for="scope">Alcance</label
+          ><select id="scope" formControlName="scopeType">
+            <option value="COMPANY">Empresa</option>
+            <option value="YARD">Patio específico</option>
+          </select>
+        </div>
+        @if (form.controls.scopeType.value === 'YARD') {
+          <div class="field full">
+            <label for="yard-assignment">UUID del patio</label
+            ><input
+              id="yard-assignment"
+              formControlName="yardUuid"
+              list="assignment-yards"
+              placeholder="Selecciona o escribe el UUID del patio"
+            /><datalist id="assignment-yards">
+              @for (yard of session.context()?.yards; track yard.uuid) {
+                <option [value]="yard.uuid">{{ yard.code }} · {{ yard.name }}</option>
+              }</datalist
+            ><small
+              >Patio de la empresa actual. Los nombres disponibles corresponden a tu contexto
+              autorizado.</small
+            >
+          </div>
+        }
+        <div class="field">
+          <label for="valid-from">Inicio (opcional)</label
+          ><input id="valid-from" type="datetime-local" formControlName="validFrom" /><small
+            >Vacío: desde ahora, según el servidor.</small
+          >
+        </div>
+        <div class="field">
+          <label for="valid-to">Fin (opcional)</label
+          ><input id="valid-to" type="datetime-local" formControlName="validTo" /><small
+            >Vacío: sin vencimiento. El instante final es exclusivo.</small
+          >
+        </div>
+        <div class="field full">
+          <label for="utc-offset">Desplazamiento UTC de estas fechas</label
+          ><input id="utc-offset" formControlName="offset" placeholder="+00:00" /><small
+            >Formato ±HH:MM. Zona de referencia de la empresa:
+            {{ session.context()?.company?.timezone }}. No se usa silenciosamente la zona del
+            navegador.</small
+          >
+        </div>
+      </div>
+      <button class="btn primary" [disabled]="busy()">Asignar rol</button>
+    </form>
+  </section>
+  <section class="drawer-section">
+    <div class="panel-heading">
+      <h3>Historial de asignaciones</h3>
+      <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar</button>
+    </div>
+    @for (a of assignments(); track a.uuid) {
+      <article class="assignment-card">
+        <div class="panel-heading">
+          <strong>{{ roleName(a.roleUuid) }}</strong
+          ><span
+            [class]="
+              'badge ' +
+              (state(a) === 'Vigente' ? 'success' : state(a) === 'Futura' ? 'warning' : 'neutral')
+            "
+            >{{ state(a) }}</span
+          >
+        </div>
+        <p>{{ a.scopeType === 'COMPANY' ? 'Empresa' : yardName(a.yardUuid) }}</p>
+        <dl class="details compact">
+          <dt>Desde</dt>
+          <dd>{{ date(a.validFrom) }}</dd>
+          <dt>Hasta (exclusivo)</dt>
+          <dd>{{ a.validTo ? date(a.validTo) : 'Sin vencimiento' }}</dd>
+          @if (a.revokedAt) {
+            <dt>Revocada</dt>
+            <dd>{{ date(a.revokedAt) }}</dd>
+          }
+        </dl>
+        <p class="small-muted">
+          La vigencia no garantiza acceso si la empresa o el patio están inactivos.
+        </p>
+        @if (!a.revokedAt) {
+          <button
+            class="btn secondary"
+            [disabled]="busy() || a.userUuid === session.user()?.uuid"
+            (click)="revoke(a)"
+          >
+            Revocar asignación
+          </button>
+          @if (a.userUuid === session.user()?.uuid) {
+            <small>No puedes revocar tu propia asignación.</small>
+          }
+        }
+      </article>
+    } @empty {
+      @if (!busy() && !error()) {
+        <p class="empty-state">Este usuario todavía no tiene asignaciones.</p>
+      }
+    }
+  </section>
+</div>

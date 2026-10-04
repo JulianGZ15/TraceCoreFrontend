@@ -1,0 +1,52 @@
+<div class="drawer">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Permisos del rol</p>
+      <h2>{{ role.name }}</h2>
+      <span class="mono">{{ role.code }}</span>
+    </div>
+    <button
+      class="icon-button"
+      aria-label="Cerrar permisos"
+      [disabled]="busy()"
+      (click)="ref.close()"
+    >
+      ×
+    </button>
+  </div>
+  <p>Los cambios afectan a las solicitudes posteriores de los usuarios con este rol.</p>
+  <tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+  @if (busy()) {
+    <p role="status">Actualizando permisos…</p>
+  }
+  <div class="field">
+    <label for="permission">Agregar capacidad</label
+    ><select
+      id="permission"
+      [value]="selected()"
+      (change)="selected.set($any($event.target).value)"
+    >
+      <option value="">Selecciona un permiso</option>
+      @for (permission of available(); track permission.uuid) {
+        <option [value]="permission.uuid">{{ permission.code }}</option>
+      }
+    </select>
+  </div>
+  <button class="btn primary" [disabled]="busy() || !selected()" (click)="grant()">
+    Agregar permiso
+  </button>
+  <h3 class="spaced-heading">Permisos actuales</h3>
+  <ul class="permission-list">
+    @for (link of links(); track link.uuid) {
+      <li>
+        <span class="mono">{{ label(link.permissionUuid) }}</span
+        ><button class="btn secondary" [disabled]="busy()" (click)="remove(link)">Retirar</button>
+      </li>
+    } @empty {
+      @if (!busy() && !error()) {
+        <li>Este rol no tiene permisos asignados.</li>
+      }
+    }
+  </ul>
+  <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar lista</button>
+</div>

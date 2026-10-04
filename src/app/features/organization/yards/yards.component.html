@@ -1,0 +1,64 @@
+<tc-page-heading
+  section="Organización"
+  title="Patios"
+  description="Administra las sedes de tu empresa y sus zonas horarias."
+  ><button class="btn primary" (click)="create()">+ Nuevo patio</button></tc-page-heading
+><tc-feedback [message]="list.error()" /><tc-feedback [message]="list.success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="list.busy()">
+  <div class="panel-heading">
+    <h2>Directorio de patios</h2>
+    @if (list.busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Tabla de patios">
+    <table>
+      <caption class="sr-only">
+        Patios de la empresa
+      </caption>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre / dirección</th>
+          <th>Zona horaria</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (yard of list.items(); track yard.uuid) {
+          <tr>
+            <td class="mono">{{ yard.code }}</td>
+            <td>
+              <strong>{{ yard.name }}</strong
+              ><small>{{ yard.address }}</small>
+            </td>
+            <td>{{ yard.timezone }}</td>
+            <td><tc-status [active]="yard.active" /></td>
+            <td>
+              <a class="btn secondary" [routerLink]="['/organizacion/patios', yard.uuid]"
+                >Ver patio</a
+              >
+            </td>
+          </tr>
+        } @empty {
+          @if (!list.busy() && !list.error()) {
+            <tr>
+              <td colspan="5" class="empty-state">
+                Todavía no hay patios. Crea la primera sede de tu empresa.
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <tc-pagination
+    [offset]="list.offset()"
+    [limit]="list.limit()"
+    [count]="list.items().length"
+    [busy]="list.busy()"
+    (move)="list.load($event)"
+    (resize)="list.resize($event)"
+  />
+</section>

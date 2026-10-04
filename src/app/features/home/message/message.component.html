@@ -1,0 +1,22 @@
+<section class="message-page">
+  <p class="eyebrow">TraceCore</p>
+  <h1 tabindex="-1">
+    {{ missing ? 'No encontramos esta página' : 'No tienes acceso a esta sección' }}
+  </h1>
+  <p>
+    {{
+      missing
+        ? 'La dirección no corresponde a una página disponible.'
+        : 'Tu sesión es válida. Solicita al administrador los permisos necesarios para continuar.'
+    }}
+  </p>
+  <div class="page-actions">
+    <a class="btn primary" [routerLink]="session.valid() ? '/inicio' : '/login'">{{
+      session.valid() ? 'Ir al inicio' : 'Iniciar sesión'
+    }}</a>
+    @if (session.valid()) {
+      <a class="btn secondary" routerLink="/mi-cuenta">Mi cuenta</a
+      ><button class="btn secondary" (click)="session.logout()">Cerrar sesión</button>
+    }
+  </div>
+</section>
