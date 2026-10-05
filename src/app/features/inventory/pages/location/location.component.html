@@ -1,0 +1,55 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Ubicación de almacenamiento"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (row(); as l) {
+  <section class="panel">
+    <h2>{{ l.code }} · {{ l.name }}</h2>
+    <p>{{ label(l.type) }} · {{ l.active ? 'Activa' : 'Inactiva' }}</p>
+    <p class="mono">{{ l.uuid }}</p>
+    @if (occupancy(); as o) {
+      <div class="metrics">
+        <div class="metric">
+          <strong>{{ o.positions }}</strong
+          >Posiciones
+        </div>
+        <div class="metric">
+          <strong>{{ o.identifiedPieces }}</strong
+          >Piezas
+        </div>
+        <div class="metric">
+          <strong>{{ numberText(o.knownWeightKgExact) }}</strong
+          >kg conocidos
+        </div>
+        <div class="metric">
+          <strong>{{ o.unknownWeightGroups }}</strong
+          >Grupos sin peso
+        </div>
+      </div>
+      <p>
+        Límites: {{ o.maxPositions ?? 'Sin límite' }} posiciones /
+        {{ o.maxWeightKgExact === null ? 'Sin límite' : numberText(o.maxWeightKgExact) }} kg
+      </p>
+    }
+    <div class="actions">
+      @if (access.can('INVENTORY_MANAGE', l.yardUuid)) {
+        <button class="btn primary" (click)="edit()">Editar</button>
+      }
+      <a
+        routerLink="/inventario/patios"
+        [queryParams]="{ yardUuid: l.yardUuid, parentUuid: l.uuid }"
+        >Explorar hijos</a
+      ><a
+        routerLink="/inventario/equipos"
+        [queryParams]="{ yardUuid: l.yardUuid, locationUuid: l.uuid }"
+        >Equipos del subárbol</a
+      >
+    </div>
+  </section>
+}

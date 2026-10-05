@@ -1,0 +1,114 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Detalle de movimiento"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (detail(); as d) {
+  <section class="panel">
+    <h2>{{ d.movement.folio }}</h2>
+    <p>{{ label(d.movement.type) }} · {{ label(d.movement.state) }}</p>
+    <p>{{ d.movement.reason }}</p>
+    <p>Referencia: {{ d.movement.sourceReference }}</p>
+    <p>
+      Salida: {{ date(d.movement.dispatchedAt) }} · Recepción: {{ date(d.movement.receivedAt) }}
+    </p>
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla con desplazamiento horizontal"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Pieza / raíz</th>
+            <th>Destino previsto</th>
+            <th>Destino real</th>
+            <th>Peso kg</th>
+            <th>Condición declarada</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of d.items; track r.uuid) {
+            <tr>
+              <td class="long">
+                {{ r.assetUuid }}<br /><small>{{ r.rootAssetUuid }}</small>
+              </td>
+              <td class="long">
+                {{ r.destinationLocationUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
+              </td>
+              <td class="long">{{ r.actualDestinationLocationUuid ?? 'Sin recepción' }}</td>
+              <td>{{ optionalExact(r.grossWeightKg, r.grossWeightKgExact, 'Desconocido') }}</td>
+              <td>{{ r.receivedCondition ? label(r.receivedCondition) : 'Sin declaración' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (d.logisticsManaged !== false) {
+      <p role="status">
+        Este movimiento se gestiona desde logística, o el backend no informa su vinculación.
+        Consulta habilitada; ejecución deshabilitada aquí.
+      </p>
+    }
+    <p>{{ d.items.length }} piezas del snapshot. Los componentes no ocupan otra posición.</p>
+    @if (d.logisticsManaged === false && d.movement.state === 'DRAFT' && canMaintain(d.movement)) {
+      <form [formGroup]="form" (ngSubmit)="dispatch()">
+        @if (d.movement.destinationSiteUuid) {
+          <div class="form-grid">
+            <div class="field">
+              <label for="authorizationReference">Autorización de salida</label
+              ><input
+                id="authorizationReference"
+                type="text"
+                formControlName="authorizationReference"
+              />
+            </div>
+            @if (d.movement.destinationCustodyMode === 'REPAIR') {
+              <div class="field">
+                <label for="repairAuthorizationReference">Excepción documentada de reparación</label
+                ><input
+                  id="repairAuthorizationReference"
+                  type="text"
+                  formControlName="repairAuthorizationReference"
+                />
+              </div>
+            }
+          </div>
+          <p>La referencia no sustituye la liberación de calidad ni constituye firma digital.</p>
+        }
+        @if (canWrite(d.movement)) {
+          <button class="btn primary" [disabled]="busy()">Confirmar salida</button>
+        }
+        <div class="field">
+          <label for="reason">Motivo de cancelación</label
+          ><input id="reason" type="text" formControlName="reason" />
+        </div>
+        <button type="button" class="btn danger" [disabled]="busy()" (click)="cancel()">
+          Cancelar borrador
+        </button>
+      </form>
+    }
+    @if (
+      d.logisticsManaged === false &&
+      d.movement.state === 'IN_TRANSIT' &&
+      access.can('MOVEMENT_MANAGE', d.movement.destinationYardUuid)
+    ) {
+      <a class="btn primary" [routerLink]="'/inventario/movimientos/' + id() + '/recepcion'"
+        >Recibir movimiento completo</a
+      >
+    }
+    @if (conflict()) {
+      <button class="btn secondary" (click)="reload()">Recargar datos</button>
+    }
+    <p>
+      Los movimientos vinculados a manifiestos se ejecutan desde logística. Un 409 también puede
+      indicar capacidad, reservas, calidad o un plan desactualizado.
+    </p>
+  </section>
+}

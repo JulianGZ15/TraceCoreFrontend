@@ -1,0 +1,164 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.inventory-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 24px;
+}
+.inventory-tabs a {
+  padding: 8px 12px;
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-control);
+}
+.inventory-tabs a.active {
+  background: var(--tc-selection);
+  color: var(--tc-action-text);
+  border-color: var(--tc-action);
+}
+.toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.toolbar .field {
+  min-width: 160px;
+  flex: 1;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 24px;
+}
+.location-card {
+  padding: 24px;
+  border: 1px solid var(--tc-border);
+  border-top: 3px solid var(--tc-action);
+  background: var(--tc-panel);
+  border-radius: var(--tc-radius-panel);
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.metric {
+  padding: 16px;
+  background: var(--tc-surface-muted);
+  border-radius: var(--tc-radius-control);
+}
+.metric strong {
+  display: block;
+  font-size: 24px;
+}
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.steps button[aria-current='step'] {
+  background: var(--tc-selection);
+  border-color: var(--tc-action);
+}
+.panel {
+  margin: 16px 0;
+  padding: 24px;
+}
+.table-scroll {
+  overflow: auto;
+  max-width: 100%;
+}
+td .mono {
+  overflow-wrap: anywhere;
+}
+.small-muted {
+  color: var(--tc-text-muted);
+}
+.selected {
+  border-left: 3px solid var(--tc-action);
+  padding: 8px;
+  background: var(--tc-selection);
+  overflow-wrap: anywhere;
+}
+.dialog {
+  padding: 24px;
+  max-height: 85vh;
+  overflow: auto;
+  background: var(--tc-panel);
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.lookup {
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-control);
+  padding: 12px;
+  margin: 8px 0;
+}
+.lookup-options {
+  max-height: 240px;
+  overflow: auto;
+  display: grid;
+  gap: 4px;
+}
+.lookup-options button {
+  text-align: left;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+input[type='checkbox'] {
+  min-width: 20px;
+  min-height: 20px;
+}
+.long {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .panel,
+  .dialog {
+    padding: 16px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .toolbar .field {
+    min-width: 100%;
+  }
+  .steps button,
+  .btn {
+    min-height: 44px;
+  }
+}
+
+.table-scroll table {
+  min-width: 720px;
+}
+
+label:has(input[type='checkbox']) {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

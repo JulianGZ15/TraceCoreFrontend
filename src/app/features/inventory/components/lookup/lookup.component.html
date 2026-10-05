@@ -1,0 +1,58 @@
+<div class="lookup">
+  <strong>{{ title() }}</strong>
+  @if (value()) {
+    <p class="selected">{{ selectedId() === value() ? selected() : value() }}</p>
+    <button type="button" class="btn secondary" (click)="picked.emit('')" [disabled]="busy()">
+      Limpiar selección
+    </button>
+  }
+  @if (kind() === 'assets' || kind() === 'parties') {
+    <div class="field">
+      <label [for]="'lookup-' + title()"
+        >Buscar {{ kind() === 'assets' ? 'por código o serial' : 'por nombre' }}</label
+      ><input
+        [id]="'lookup-' + title()"
+        [(ngModel)]="term"
+        [ngModelOptions]="{ standalone: true }"
+        maxlength="100"
+      /><button type="button" class="btn secondary" (click)="search()" [disabled]="busy()">
+        Buscar
+      </button>
+    </div>
+  }
+  <tc-feedback [message]="error()" />
+  @if (busy()) {
+    <p role="status">Cargando opciones…</p>
+  }
+  <div class="lookup-options">
+    @for (c of choices(); track c.uuid) {
+      <button
+        type="button"
+        class="btn secondary"
+        [disabled]="c.disabled || busy()"
+        (click)="choose(c)"
+      >
+        {{ c.label }}
+      </button>
+    } @empty {
+      <p>Sin opciones en esta página.</p>
+    }
+  </div>
+  <div class="actions">
+    <button
+      type="button"
+      class="btn secondary"
+      (click)="move(-25)"
+      [disabled]="cursor() === 0 || busy()"
+    >
+      Anterior</button
+    ><button
+      type="button"
+      class="btn secondary"
+      (click)="move(25)"
+      [disabled]="choices().length < 25 || busy()"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

@@ -32,7 +32,7 @@ import {AssetEditorComponent} from '../../editors/asset-editor/asset-editor.comp
 
 
 
-@Component({selector:"tc-equipment-asset-general",imports:[Feedback],templateUrl:"./asset-general.component.html",styleUrl:"./asset-general.component.scss"})
+@Component({selector:"tc-equipment-asset-general",imports:[Feedback,RouterLink],templateUrl:"./asset-general.component.html",styleUrl:"./asset-general.component.scss"})
 
 export class AssetGeneralComponent extends EquipmentPage {
 

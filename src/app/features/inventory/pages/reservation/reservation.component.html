@@ -1,0 +1,89 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Grupo reservado"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (detail(); as d) {
+  <section class="panel">
+    <h2>{{ label(d.reservation.state) }}</h2>
+    <p class="mono long">Raíz: {{ d.reservation.rootAssetUuid }}</p>
+    <p>
+      {{ d.memberCount }} miembros · {{ date(d.reservation.validFrom) }} —
+      {{ date(d.reservation.validTo) }} (fin exclusivo)
+    </p>
+    <p>
+      Expiración del apartado: {{ date(d.reservation.expiresAt) }}. El estado vigente se obtiene del
+      servidor.
+    </p>
+    <p>Referencia: {{ d.reservation.requestReference }}</p>
+    <p class="mono long">
+      Beneficiario: {{ d.reservation.beneficiaryUuid ?? 'Sin tercero beneficiario' }}
+    </p>
+    @if (d.reservation.consumedMovementUuid) {
+      <a [routerLink]="'/inventario/movimientos/' + d.reservation.consumedMovementUuid"
+        >Consultar movimiento asociado</a
+      >
+    }
+    @if (access.can('RESERVATION_MANAGE', d.reservation.yardUuid)) {
+      <div class="actions">
+        @if (d.reservation.state === 'HELD') {
+          <button class="btn primary" [disabled]="busy()" (click)="run('confirm')">
+            Confirmar grupo
+          </button>
+        }
+        @if (d.reservation.state === 'HELD' || d.reservation.state === 'CONFIRMED') {
+          <div [formGroup]="form">
+            <div class="field">
+              <label for="reason">Motivo de cancelación</label
+              ><input id="reason" type="text" formControlName="reason" />
+            </div>
+          </div>
+          <button class="btn danger" [disabled]="busy()" (click)="run('cancel')">
+            Cancelar grupo
+          </button>
+        }
+      </div>
+    }
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla con desplazamiento horizontal"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Pieza</th>
+            <th>Estado</th>
+            <th>Versión</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r.uuid) {
+            <tr>
+              <td class="mono long">{{ r.assetUuid }}</td>
+              <td>{{ label(r.state) }}</td>
+              <td>{{ r.version }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="page($event)"
+      (resize)="query({ limit: $event, offset: 0 })"
+    />
+    @if (conflict()) {
+      <button class="btn secondary" (click)="reload()">Recargar datos</button>
+    }
+  </section>
+}

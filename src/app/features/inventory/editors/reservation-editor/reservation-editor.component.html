@@ -1,0 +1,59 @@
+<div class="dialog">
+  <h2>Reservar conjunto</h2>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <tc-inventory-lookup
+        kind="assets"
+        title="Raíz del conjunto"
+        [filters]="{ yardUuid: data.yardUuid, placementState: 'YARD', rootsOnly: true }"
+        [value]="form.controls.rootAssetUuid.value"
+        (picked)="pick('rootAssetUuid', $event)"
+      /><tc-inventory-lookup
+        kind="parties"
+        title="Beneficiario opcional"
+        [filters]="{ yardUuid: data.yardUuid, purpose: 'BENEFICIARY' }"
+        [value]="form.controls.beneficiaryUuid.value"
+        (picked)="pick('beneficiaryUuid', $event)"
+      />
+      <div class="field">
+        <label for="validFrom">Inicio</label
+        ><input id="validFrom" type="datetime-local" formControlName="validFrom" />
+      </div>
+      <div class="field">
+        <label for="validTo">Fin exclusivo</label
+        ><input id="validTo" type="datetime-local" formControlName="validTo" />
+      </div>
+      <div class="field">
+        <label for="expiresAt">Expiración del apartado</label
+        ><input id="expiresAt" type="datetime-local" formControlName="expiresAt" />
+      </div>
+      <div class="field">
+        <label for="offset">Desplazamiento UTC, p. ej. -06:00</label
+        ><input id="offset" type="text" formControlName="offset" />
+      </div>
+      <div class="field">
+        <label for="requestReference">Referencia</label
+        ><input id="requestReference" type="text" formControlName="requestReference" />
+      </div>
+      <p>
+        Incluye todos los componentes de la raíz. Confirmar el apartado será una acción posterior.
+      </p>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">
+        Revisa los campos obligatorios, fechas y valores indicados.
+      </p>
+    }
+    <div class="dialog-actions">
+      @if (conflict()) {
+        <button class="btn secondary" type="button" (click)="reload()" [disabled]="busy()">
+          Recargar datos
+        </button>
+      }
+      <button class="btn secondary" type="button" (click)="close()" [disabled]="busy()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">Guardar</button>
+    </div>
+  </form>
+</div>

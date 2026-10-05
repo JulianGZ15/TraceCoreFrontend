@@ -1,0 +1,33 @@
+<section class="panel">
+  <h3>Observaciones manuales</h3>
+  <tc-feedback [message]="error()" />
+  <div [formGroup]="form">
+    <tc-inventory-lookup
+      kind="assets"
+      title="Pieza observada (opcional)"
+      [filters]="{ yardUuid: yard() }"
+      [value]="form.controls.assetUuid.value"
+      (picked)="form.controls.assetUuid.setValue($event)"
+    />
+    <div class="field">
+      <label for="identifier">Identificador observado (obligatorio si desconocido)</label
+      ><input id="identifier" type="text" formControlName="identifier" />
+    </div>
+    <button type="button" class="btn secondary" (click)="add()">Agregar observación</button>
+  </div>
+  <ul>
+    @for (o of observations(); track $index) {
+      <li class="long">
+        {{ o.assetUuid ?? 'Desconocido' }} · {{ o.identifier ?? 'Sin identificador adicional' }}
+        <button
+          type="button"
+          class="btn secondary"
+          (click)="remove($index)"
+          aria-label="Retirar observación"
+        >
+          Retirar
+        </button>
+      </li>
+    }
+  </ul>
+</section>

@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { OwnershipComponent } from './ownership.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('OwnershipComponent', () => {
-
-  let component: OwnershipComponent;
-
-  let fixture: ComponentFixture<OwnershipComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [OwnershipComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(OwnershipComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(OwnershipComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

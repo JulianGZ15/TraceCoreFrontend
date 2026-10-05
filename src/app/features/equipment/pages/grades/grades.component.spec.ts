@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { GradesComponent } from './grades.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('GradesComponent', () => {
-
-  let component: GradesComponent;
-
-  let fixture: ComponentFixture<GradesComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [GradesComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(GradesComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(GradesComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+
 test('isolated PostgreSQL + real backend + Angular: administration and yard scope', async ({
   page,
   browser,
@@ -339,4 +340,304 @@ test('stage two real API: dossiers, evidence, exact credit, AVL eligibility and 
   } finally {
     await otherContext.close();
   }
+});
+
+test('stage three and four real API: exact catalog, inbound, custody, reservations, reconciliation and count', async ({
+  page,
+  browser,
+}) => {
+  test.skip(!process.env['TRACECORE_E2E_ISOLATED'], 'Requires the isolated PostgreSQL runner.');
+  test.setTimeout(150000);
+  const email = process.env['TRACECORE_ADMIN_EMAIL']!;
+  let password = process.env['TRACECORE_ADMIN_PASSWORD']!;
+  let login = await page.request.post('/api/v1/auth/login', { data: { email, password } });
+  if (login.status() === 401) {
+    password = 'IsolatedChanged123!';
+    login = await page.request.post('/api/v1/auth/login', { data: { email, password } });
+  }
+  expect(login.ok()).toBe(true);
+  const headers = { Authorization: 'Bearer ' + (await login.json()).accessToken };
+  async function get(path: string) {
+    const r = await page.request.get('/api/v1' + path, { headers });
+    expect(r.ok(), await r.text()).toBe(true);
+    return r.json();
+  }
+  async function post(path: string, data: unknown) {
+    const r = await page.request.post('/api/v1' + path, { headers, data });
+    expect(r.ok(), await r.text()).toBe(true);
+    return r.json();
+  }
+  const company = (await get('/auth/context')).company;
+  const oem = await post('/parties', {
+    legalName: 'Fabricante prueba inventario',
+    tradeName: null,
+    country: 'MX',
+    active: true,
+  });
+  await post('/parties/' + oem.uuid + '/roles', { role: 'OEM', validFrom: null, validTo: null });
+  const category = await post('/equipment/categories', {
+    code: 'INV_GENERAL',
+    name: 'Equipo general prueba',
+    technicalKind: 'GENERAL',
+    parentUuid: null,
+    active: true,
+  });
+  const model = await post('/equipment/models', {
+    categoryUuid: category.uuid,
+    manufacturerUuid: oem.uuid,
+    code: 'INV_MODEL',
+    description: 'Modelo prueba',
+    active: true,
+  });
+  let sheet = await post('/equipment/models/' + model.uuid + '/sheets', {
+    revision: 'A',
+    validFrom: '2020-01-01T00:00:00Z',
+    validTo: null,
+    specs: { weight: { value: '10.123456', unit: 'KG' } },
+    documentReference: 'Ficha manual',
+  });
+  sheet = await post('/equipment/sheets/' + sheet.uuid + '/approval', { version: sheet.version });
+  const asset = await post('/equipment/assets', {
+    sheetUuid: sheet.uuid,
+    internalCode: 'REAL-INV-01',
+    serialNumber: null,
+    origin: 'Compra de prueba',
+    registeredAt: null,
+    referenceValue: '999999999999999.9999',
+    currency: 'MXN',
+    valuationReference: 'VAL-01',
+    owner: {
+      companyUuid: company.uuid,
+      partyUuid: null,
+      titleReference: 'TITLE-01',
+      reason: 'Alta inicial',
+    },
+    condition: 'UNKNOWN',
+    conditionReason: 'Condición inicial declarada',
+  });
+  expect(asset.referenceValueExact).toBe('999999999999999.9999');
+  const yard = await post('/yards', {
+    code: 'INV_REAL',
+    name: 'Patio operativo prueba',
+    address: 'Dirección prueba',
+    timezone: 'America/Mexico_City',
+  });
+  const location = await post('/inventory/locations', {
+    yardUuid: yard.uuid,
+    parentUuid: null,
+    code: 'BAY_REAL',
+    name: 'Bahía operación real',
+    type: 'BAY',
+    active: true,
+    maxPositions: 10,
+    maxWeightKg: '999999999999.999999',
+    exclusive: false,
+  });
+  expect(location.maxWeightKgExact).toBe('999999999999.999999');
+  const prepared = await post('/inventory/movements', {
+    requestKey: crypto.randomUUID(),
+    type: 'INBOUND',
+    roots: [
+      {
+        assetUuid: asset.uuid,
+        destinationLocationUuid: location.uuid,
+        destinationSiteUuid: null,
+        grossWeightKg: null,
+        weightReference: null,
+        reservationUuid: null,
+      },
+    ],
+    reason: 'Ingreso real documentado',
+    sourceReference: 'IN-REAL',
+    destinationCustodyMode: 'STORAGE',
+  });
+  await page.goto('/login');
+  await page.getByLabel('Correo electrónico', { exact: true }).fill(email);
+  await page.getByLabel('Contraseña', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Iniciar sesión', exact: true }).click();
+  await expect(page).toHaveURL(/inicio/);
+  await page.goto('/equipos/' + asset.uuid + '/general');
+  await expect(page.getByRole('heading', { name: 'REAL-INV-01' })).toBeVisible();
+  await page.goto('/inventario/movimientos/' + prepared.movement.uuid);
+  await page.getByRole('button', { name: 'Confirmar salida', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByText('Salida confirmada.', { exact: true })).toBeVisible();
+  expect((await get('/inventory/movements/' + prepared.movement.uuid)).movement.state).toBe(
+    'COMPLETED',
+  );
+  const overview = await get('/inventory/locations/overview?yardUuid=' + yard.uuid);
+  expect(overview.items[0].occupancy.knownWeightKgExact).toBe('10.123456');
+  await page.goto('/inventario/equipos/' + asset.uuid + '/custodia');
+  await page.getByRole('button', { name: 'Transferir custodia del conjunto' }).click();
+  await page.getByRole('dialog').getByLabel('Acuerdo', { exact: true }).fill('CUSTODY-REAL');
+  await page
+    .getByRole('dialog')
+    .getByLabel('Motivo', { exact: true })
+    .fill('Actualización del acuerdo');
+  await page.getByRole('dialog').getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  expect((await get('/inventory/assets/' + asset.uuid)).asset.referenceValueExact).toBe(
+    '999999999999999.9999',
+  );
+  const now = Date.now(),
+    start = new Date(now + 3600000).toISOString(),
+    end = new Date(now + 7200000).toISOString();
+  const group = await post('/inventory/reservations', {
+    requestKey: crypto.randomUUID(),
+    rootAssetUuid: asset.uuid,
+    beneficiaryUuid: null,
+    validFrom: start,
+    validTo: end,
+    expiresAt: new Date(now + 1800000).toISOString(),
+    requestReference: 'RES-REAL',
+  });
+  await page.goto('/inventario/reservas/' + group[0].uuid);
+  await page.getByRole('button', { name: 'Confirmar grupo', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Confirmado', exact: true })).toBeVisible();
+  await page.getByLabel('Motivo de cancelación').fill('Fin de prueba');
+  await page.getByRole('button', { name: 'Cancelar grupo', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Cancelado', exact: true })).toBeVisible();
+  const proposal = await post('/inventory/proposals', {
+    movement: {
+      requestKey: crypto.randomUUID(),
+      type: 'TRANSFER',
+      roots: [{ assetUuid: asset.uuid, destinationLocationUuid: location.uuid }],
+      reason: 'Verificación manual',
+      sourceReference: 'PROP-REAL',
+      destinationCustodyMode: 'STORAGE',
+    },
+    expiresAt: new Date(Date.now() + 3600000).toISOString(),
+    observations: [{ assetUuid: asset.uuid, identifier: null }],
+  });
+  await page.goto('/inventario/propuestas/' + proposal.proposal.uuid);
+  await page.getByLabel('Motivo obligatorio').fill('Coincidencia revisada');
+  await page.getByRole('button', { name: 'Registrar decisión' }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'Ver movimiento resultante' })).toBeVisible();
+  await page.goto('/inventario/conteos?yardUuid=' + yard.uuid);
+  await page.getByRole('button', { name: 'Abrir conteo manual', exact: true }).click();
+  await page.getByLabel('Referencia de apertura').fill('COUNT-REAL');
+  await page.getByRole('button', { name: 'Abrir conteo', exact: true }).click();
+  await expect(page).toHaveURL(/inventario\/conteos\/[a-f0-9-]+$/);
+  const countUuid = page.url().split('/').at(-1)!;
+  await page.getByRole('button', { name: /REAL-INV-01/ }).click();
+  await page.getByRole('button', { name: /BAY_REAL/ }).click();
+  await page.getByLabel('Referencia de observación').fill('Planilla manual real');
+  await page.getByRole('button', { name: 'Registrar observación', exact: true }).click();
+  await expect(page.getByText('Observación registrada.', { exact: true })).toBeVisible();
+  expect((await get('/inventory/counts/' + countUuid + '/items'))[0].difference).toBe('MATCHED');
+  await page.getByLabel('Motivo de cierre o cancelación').fill('Conteo conciliado');
+  await page
+    .getByRole('button', { name: 'Cerrar (todas las diferencias resueltas)', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByText('Manual · Cerrado · Apertura', { exact: false })).toBeVisible();
+  expect((await get('/inventory/counts/' + countUuid)).state).toBe('CLOSED');
+  await page.goto('/inventario/ubicaciones/' + location.uuid);
+  await page.getByRole('button', { name: 'Editar', exact: true }).click();
+  await page
+    .getByRole('dialog')
+    .getByLabel('Nombre', { exact: true })
+    .fill('Bahía real actualizada');
+  await page.getByRole('dialog').getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  expect((await get('/inventory/locations/' + location.uuid)).maxWeightKgExact).toBe(
+    '999999999999.999999',
+  );
+  await page.goto('/inventario/sitios');
+  await page.getByRole('button', { name: 'Nuevo sitio', exact: true }).click();
+  const siteDialog = page.getByRole('dialog');
+  await siteDialog.getByLabel('Código', { exact: true }).fill('SITE_REAL');
+  await siteDialog.getByLabel('Nombre', { exact: true }).fill('Sitio externo real');
+  await siteDialog.getByLabel('Dirección', { exact: true }).fill('Dirección externa manual');
+  await siteDialog.getByLabel('Latitud (opcional)', { exact: true }).fill('25.123456');
+  await siteDialog.getByLabel('Longitud (opcional)', { exact: true }).fill('-100.123456');
+  await siteDialog.getByRole('button', { name: 'Guardar', exact: true }).click();
+  await expect(siteDialog).toHaveCount(0);
+  const realSite = (await get('/inventory/sites')).find(
+    (s: { code: string }) => s.code === 'SITE_REAL',
+  );
+  expect((await get('/inventory/sites/' + realSite.uuid)).longitudeExact).toBe('-100.123456');
+  const permissions = await get('/permissions?limit=100');
+  const role = await post('/roles', { code: 'INV_ONLY_READ', name: 'Lectura operativa aislada' });
+  await post('/roles/' + role.uuid + '/permissions', {
+    permissionUuid: permissions.find((p: { code: string }) => p.code === 'INVENTORY_READ').uuid,
+  });
+  const operator = await post('/users', {
+    name: 'Operador Inventario',
+    email: 'inventory@example.test',
+    password: 'InventoryOnly123!',
+  });
+  await post('/users/' + operator.uuid + '/assignments', {
+    roleUuid: role.uuid,
+    scopeType: 'YARD',
+    companyUuid: company.uuid,
+    yardUuid: yard.uuid,
+    validFrom: null,
+    validTo: null,
+  });
+  const context = await browser.newContext({ baseURL: process.env['TRACECORE_E2E_FRONT_URL'] });
+  try {
+    const other = await context.newPage();
+    await other.goto('/login');
+    await other.getByLabel('Correo electrónico', { exact: true }).fill(operator.email);
+    await other.getByLabel('Contraseña', { exact: true }).fill('InventoryOnly123!');
+    await other.getByRole('button', { name: 'Iniciar sesión', exact: true }).click();
+    await expect(other).toHaveURL(/inicio/);
+    await other.goto('/inventario/patios');
+    await expect(other.getByText('Bahía real actualizada', { exact: false })).toBeVisible();
+    await other.goto('/inventario/equipos/' + asset.uuid + '/actual');
+    await expect(other.getByRole('heading', { name: 'REAL-INV-01' })).toBeVisible();
+    await expect(other.getByRole('link', { name: 'Expediente técnico', exact: true })).toHaveCount(
+      0,
+    );
+    await other.goto('/catalogo/categorias');
+    await expect(other).toHaveURL(/sin-acceso/);
+  } finally {
+    await context.close();
+  }
+  const destinationYard = await post('/yards', {
+    code: 'INV_DEST',
+    name: 'Patio recepción',
+    address: 'Destino prueba',
+    timezone: 'America/Mexico_City',
+  });
+  const destination = await post('/inventory/locations', {
+    yardUuid: destinationYard.uuid,
+    parentUuid: null,
+    code: 'DEST_REAL',
+    name: 'Destino recepción',
+    type: 'BAY',
+    active: true,
+    maxPositions: 5,
+    maxWeightKg: null,
+    exclusive: false,
+  });
+  const transfer = await post('/inventory/movements', {
+    requestKey: crypto.randomUUID(),
+    type: 'TRANSFER',
+    roots: [{ assetUuid: asset.uuid, destinationLocationUuid: destination.uuid }],
+    reason: 'Traslado entre patios',
+    sourceReference: 'TRANSFER-REAL',
+    destinationCustodyMode: 'STORAGE',
+  });
+  await page.goto('/inventario/movimientos/' + transfer.movement.uuid);
+  await page.getByRole('button', { name: 'Confirmar salida', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page.getByText('Salida confirmada.', { exact: true })).toBeVisible();
+  expect((await get('/inventory/movements/' + transfer.movement.uuid)).movement.state).toBe(
+    'IN_TRANSIT',
+  );
+  await page.goto('/inventario/movimientos/' + transfer.movement.uuid + '/recepcion');
+  await page.getByLabel('Condición', { exact: true }).selectOption('DAMAGED');
+  await page.getByLabel('Motivo', { exact: true }).fill('Daño declarado al recibir');
+  await page.getByRole('button', { name: 'Confirmar recepción completa' }).click();
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(page).toHaveURL('/inventario/movimientos/' + transfer.movement.uuid);
+  expect((await get('/inventory/assets/' + asset.uuid)).assignment.locationUuid).toBe(
+    destination.uuid,
+  );
+  expect((await get('/equipment/assets/' + asset.uuid)).condition.condition).toBe('DAMAGED');
 });

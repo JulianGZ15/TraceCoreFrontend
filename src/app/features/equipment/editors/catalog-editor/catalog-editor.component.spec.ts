@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { CatalogEditorComponent } from './catalog-editor.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('CatalogEditorComponent', () => {
-
-  let component: CatalogEditorComponent;
-
-  let fixture: ComponentFixture<CatalogEditorComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [CatalogEditorComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(CatalogEditorComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(CatalogEditorComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

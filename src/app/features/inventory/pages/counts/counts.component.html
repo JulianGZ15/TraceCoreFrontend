@@ -1,0 +1,80 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Conteos físicos"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<div class="toolbar">
+  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
+  @if (access.can('INVENTORY_OBSERVE', yard())) {
+    <button class="btn primary" (click)="opening.set(!opening())">Abrir conteo manual</button>
+  }
+</div>
+@if (opening()) {
+  <section class="panel">
+    <h2>Abrir snapshot</h2>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <tc-inventory-lookup
+        kind="locations"
+        title="Subárbol opcional"
+        [filters]="{ yardUuid: yard() }"
+        [value]="form.controls.locationUuid.value"
+        (picked)="pick($event)"
+      />
+      <div class="field">
+        <label for="sourceReference">Referencia de apertura</label
+        ><input id="sourceReference" type="text" formControlName="sourceReference" />
+      </div>
+      <p>
+        Sin subárbol, cuenta todo el patio. El esperado se congela al abrir y admite hasta 10000
+        piezas.
+      </p>
+      <button class="btn primary" [disabled]="busy()">Abrir conteo</button>
+    </form>
+  </section>
+}
+<div
+  class="table-scroll"
+  tabindex="0"
+  role="region"
+  aria-label="Tabla con desplazamiento horizontal"
+>
+  <table>
+    <thead>
+      <tr>
+        <th>Folio</th>
+        <th>Método / estado</th>
+        <th>Esperado congelado</th>
+        <th>Apertura</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.uuid) {
+        <tr>
+          <td>{{ r.folio }}</td>
+          <td>{{ label(r.method) }} · {{ label(r.state) }}</td>
+          <td>{{ r.expectedCount }} piezas</td>
+          <td>{{ date(r.openedAt) }}</td>
+          <td><a [routerLink]="'/inventario/conteos/' + r.uuid">Abrir</a></td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5">Sin conteos en esta página.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="query({ limit: $event, offset: 0 })"
+/>

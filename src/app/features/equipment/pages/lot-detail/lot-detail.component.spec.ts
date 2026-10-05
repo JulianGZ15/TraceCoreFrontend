@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { LotDetailComponent } from './lot-detail.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('LotDetailComponent', () => {
-
-  let component: LotDetailComponent;
-
-  let fixture: ComponentFixture<LotDetailComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [LotDetailComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(LotDetailComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(LotDetailComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

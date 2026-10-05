@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { SheetComponent } from './sheet.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('SheetComponent', () => {
-
-  let component: SheetComponent;
-
-  let fixture: ComponentFixture<SheetComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [SheetComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(SheetComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(SheetComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

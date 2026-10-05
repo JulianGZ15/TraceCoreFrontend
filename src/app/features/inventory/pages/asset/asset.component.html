@@ -1,0 +1,170 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Expediente físico"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (profile(); as p) {
+  <section class="panel">
+    <h2>{{ p.asset.internalCode }}</h2>
+    <p class="mono">{{ p.asset.uuid }}</p>
+    <p>{{ label(p.asset.lifecycle) }} · {{ label(p.placementState) }}</p>
+    <nav class="inventory-tabs" aria-label="Expediente físico">
+      @for (s of ['actual', 'ubicacion', 'custodia', 'disponibilidad']; track s) {
+        <a [routerLink]="'/inventario/equipos/' + id() + '/' + s" routerLinkActive="active">{{
+          s === 'actual'
+            ? 'Situación actual'
+            : s === 'ubicacion'
+              ? 'Historial de ubicación'
+              : s === 'custodia'
+                ? 'Custodia'
+                : 'Disponibilidad'
+        }}</a>
+      }
+    </nav>
+    @if (section === 'actual') {
+      <p class="long">
+        Ubicación: {{ p.assignment?.locationUuid ?? p.assignment?.siteUuid ?? 'Sin posición' }}
+      </p>
+      <p>
+        Peso bruto:
+        {{
+          optionalExact(
+            p.assignment?.grossWeightKg,
+            p.assignment?.grossWeightKgExact,
+            'Desconocido'
+          )
+        }}
+        kg
+      </p>
+      <p class="long">
+        Custodio:
+        {{ p.custody?.companyUuid ?? p.custody?.partyUuid ?? 'Sin custodia registrada' }} ·
+        {{ label(p.custody?.mode ?? '') }}
+      </p>
+      @if (p.transit) {
+        <a [routerLink]="'/inventario/movimientos/' + p.transit.uuid">Ver movimiento en tránsito</a>
+      }
+      @if (session.can('EQUIPMENT_READ')) {
+        <a [routerLink]="'/equipos/' + id()">Expediente técnico</a>
+      }
+    }
+    @if (section === 'ubicacion') {
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Tabla con desplazamiento horizontal"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Destino</th>
+              <th>Peso kg</th>
+              <th>Inicio</th>
+              <th>Fin exclusivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of placements(); track r.uuid) {
+              <tr>
+                <td class="long">{{ r.locationUuid ?? r.siteUuid }}</td>
+                <td>{{ optionalExact(r.grossWeightKg, r.grossWeightKgExact, 'Desconocido') }}</td>
+                <td>{{ date(r.validFrom) }}</td>
+                <td>{{ r.validTo ? date(r.validTo) : 'Vigente' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <tc-pagination
+        [offset]="offset()"
+        [limit]="limit()"
+        [count]="rows().length"
+        [busy]="busy()"
+        (move)="page($event)"
+        (resize)="query({ limit: $event, offset: 0 })"
+      />
+    }
+    @if (section === 'custodia') {
+      @if (access.can('CUSTODY_MANAGE', currentYard()) && !p.transit) {
+        <button class="btn primary" (click)="custody()">Transferir custodia del conjunto</button>
+      }
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Tabla con desplazamiento horizontal"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Custodio</th>
+              <th>Modalidad</th>
+              <th>Vigencia</th>
+              <th>Acuerdo / motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of custodians(); track r.uuid) {
+              <tr>
+                <td class="long">{{ r.companyUuid ?? r.partyUuid }}</td>
+                <td>{{ label(r.mode) }}</td>
+                <td>{{ date(r.validFrom) }} — {{ r.validTo ? date(r.validTo) : 'Vigente' }}</td>
+                <td>{{ r.agreementReference }}<br />{{ r.reason }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <tc-pagination
+        [offset]="offset()"
+        [limit]="limit()"
+        [count]="rows().length"
+        [busy]="busy()"
+        (move)="page($event)"
+        (resize)="query({ limit: $event, offset: 0 })"
+      />
+    }
+    @if (section === 'disponibilidad') {
+      <p>Disponibilidad administrativa por intervalo; no acredita liberación de calidad.</p>
+      <form [formGroup]="form" (ngSubmit)="availability()">
+        <div class="form-grid">
+          <div class="field">
+            <label for="from">Inicio</label
+            ><input id="from" type="datetime-local" formControlName="from" />
+          </div>
+          <div class="field">
+            <label for="to">Fin exclusivo</label
+            ><input id="to" type="datetime-local" formControlName="to" />
+          </div>
+          <div class="field">
+            <label for="offset">Desplazamiento UTC</label
+            ><input id="offset" type="text" formControlName="offset" />
+          </div>
+        </div>
+        <button class="btn primary" [disabled]="busy()">Consultar</button>
+      </form>
+      @if (result(); as a) {
+        <p role="status">
+          {{
+            a.administrativelyAvailable
+              ? 'Administrativamente disponible'
+              : 'No disponible administrativamente'
+          }}
+        </p>
+        <ul>
+          @for (reason of a.reasons; track reason) {
+            <li>
+              {{ label(reason) }} <small class="mono">{{ reason }}</small>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+}

@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { MaterialsComponent } from './materials.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('MaterialsComponent', () => {
-
-  let component: MaterialsComponent;
-
-  let fixture: ComponentFixture<MaterialsComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [MaterialsComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(MaterialsComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(MaterialsComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

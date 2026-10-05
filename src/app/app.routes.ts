@@ -11,7 +11,8 @@ export const routes: Routes = [
     path: '',
     canActivate: [accessGuard],
     loadComponent: () => import('./core/layout/shell').then((m) => m.Shell),
-    children: [
+    children: [
+      {path:'inventario',loadChildren:()=>import('./features/inventory/inventory.routes').then(m=>m.inventoryRoutes)},
       {
         path: 'terceros',
         canActivate: [accessGuard],

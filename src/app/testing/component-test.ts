@@ -4,6 +4,8 @@ import { provideRouter } from '@angular/router';
 import { DialogModule, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Api } from '../core/http/api';
 import { Session } from '../core/auth/session';
+import { Subject } from 'rxjs';
+import { AssetStore } from '../features/equipment/asset-store';
 export const company = {
   uuid: '00000000-0000-0000-0000-000000000001',
   legalName: 'TraceCore Test',
@@ -22,6 +24,10 @@ const user = {
 };
 export async function render<T>(component: Type<T>, inputs: Record<string, unknown> = {}) {
   const session = {
+    epoch: signal(0),
+    ended: new Subject<void>(),
+    inventoryRead: () => false,
+    inventoryWrite: () => false,
     user: signal(user),
     context: signal({
       company,
@@ -42,6 +48,10 @@ export async function render<T>(component: Type<T>, inputs: Record<string, unkno
       importProvidersFrom(DialogModule),
       { provide: Session, useValue: session },
       {
+        provide: AssetStore,
+        useValue: { profile: signal(null), uuid: '', load: async () => {}, dispose: () => {} },
+      },
+      {
         provide: Api,
         useValue: {
           get: async (p: string) => (p === '/company' ? company : []),
@@ -56,6 +66,8 @@ export async function render<T>(component: Type<T>, inputs: Record<string, unkno
           ...user,
           title: 'Formulario de prueba',
           fields: [],
+          kind: 'categories',
+          path: 'categories',
           save: async () => true,
           zone: 'UTC',
           event: {

@@ -1,4 +1,4 @@
-param([string]$PostgresBin = 'C:\Program Files\PostgreSQL\17\bin')
+param([string]$PostgresBin = 'C:\Program Files\PostgreSQL\17\bin', [string]$Maven = '', [string]$MavenRepository = '')
 $ErrorActionPreference = 'Stop'
 $frontendRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $backendRoot = [IO.Path]::GetFullPath((Join-Path $frontendRoot '../../Backend/tracecore'))
@@ -16,7 +16,7 @@ $previous = @{}; foreach ($key in $variables) { $previous[$key] = [Environment]:
 $started = $false; $backend = $null
 try {
     Push-Location $backendRoot
-    try { & '.\mvnw.cmd' -B '-DskipTests' package; if ($LASTEXITCODE -ne 0) { throw 'Backend package failed.' } } finally { Pop-Location }
+    try { $mavenArguments = @('-B', '-DskipTests', 'package'); if ($MavenRepository) { $mavenArguments += ('-Dmaven.repo.local=' + $MavenRepository) }; if ($Maven) { & $Maven @mavenArguments } else { & '.\mvnw.cmd' @mavenArguments }; if ($LASTEXITCODE -ne 0) { throw 'Backend package failed.' } } finally { Pop-Location }
     & (Join-Path $PostgresBin 'initdb.exe') -D $clusterPath -U postgres '--auth-local=trust' '--auth-host=trust' '--encoding=UTF8' '--no-locale' *> (Join-Path $testRoot 'initdb.log')
     if ($LASTEXITCODE -ne 0) { throw 'PostgreSQL initialization failed.' }
     Invoke-PgControl @('-D', ('"' + $clusterPath + '"'), '-l', ('"' + (Join-Path $testRoot 'postgres.log') + '"'), '-o', ('"-h 127.0.0.1 -p ' + $dbPort + '"'), '-w', '-t', '30', 'start') 'start'; $started = $true

@@ -1,0 +1,57 @@
+<div class="dialog">
+  <h2>Transferir custodia</h2>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field">
+        <label for="holder">Custodio</label
+        ><select id="holder" formControlName="holder">
+          <option value="COMPANY">Empresa administradora</option>
+          <option value="PARTY">Tercero</option>
+        </select>
+      </div>
+      @if (form.controls.holder.value === 'PARTY') {
+        <tc-inventory-lookup
+          kind="parties"
+          title="Custodio"
+          [filters]="{ yardUuid: data.yardUuid, purpose: 'CUSTODIAN' }"
+          [value]="form.controls.partyUuid.value"
+          (picked)="pick('partyUuid', $event)"
+        />
+      }
+      <div class="field">
+        <label for="mode">Modalidad</label
+        ><select id="mode" formControlName="mode">
+          <option value="STORAGE">{{ label('STORAGE') }}</option>
+          <option value="CONSIGNMENT">{{ label('CONSIGNMENT') }}</option>
+          <option value="REPAIR">{{ label('REPAIR') }}</option>
+          <option value="RENTAL">{{ label('RENTAL') }}</option>
+          <option value="TRANSPORT">{{ label('TRANSPORT') }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="agreementReference">Acuerdo</label
+        ><input id="agreementReference" type="text" formControlName="agreementReference" />
+      </div>
+      <div class="field">
+        <label for="reason">Motivo</label><input id="reason" type="text" formControlName="reason" />
+      </div>
+      <p>Se aplica al conjunto completo y no cambia su propietario.</p>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">
+        Revisa los campos obligatorios, fechas y valores indicados.
+      </p>
+    }
+    <div class="dialog-actions">
+      @if (conflict()) {
+        <button class="btn secondary" type="button" (click)="reload()" [disabled]="busy()">
+          Recargar datos
+        </button>
+      }
+      <button class="btn secondary" type="button" (click)="close()" [disabled]="busy()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">Guardar</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,79 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Situación física de equipos"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<div class="toolbar">
+  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
+  <div class="field">
+    <label for="asset-search">Código o serial</label
+    ><input id="asset-search" [(ngModel)]="search" maxlength="100" />
+  </div>
+  <div class="field">
+    <label for="placement">Situación</label
+    ><select id="placement" [(ngModel)]="placement">
+      <option value="">Todas</option>
+      <option value="YARD">En patio</option>
+      <option value="UNLOCATED">Sin ubicación</option>
+      <option value="IN_TRANSIT">En tránsito</option>
+      <option value="EXTERNAL_SITE">Sitio externo</option>
+    </select>
+  </div>
+  <label><input type="checkbox" [(ngModel)]="rootsOnly" /> Solo raíces</label
+  ><button class="btn primary" (click)="filter()">Aplicar</button>
+</div>
+<div
+  class="table-scroll"
+  tabindex="0"
+  role="region"
+  aria-label="Tabla con desplazamiento horizontal"
+>
+  <table>
+    <thead>
+      <tr>
+        <th>Equipo</th>
+        <th>Ciclo de vida</th>
+        <th>Situación</th>
+        <th>Raíz / ubicación</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.uuid) {
+        <tr>
+          <td>
+            {{ r.internalCode }}<br />{{ r.serialNumber ?? 'Sin serial' }}<br /><small
+              class="mono"
+              >{{ r.uuid }}</small
+            >
+          </td>
+          <td>{{ label(r.lifecycle) }}</td>
+          <td>{{ label(r.placementState) }}</td>
+          <td class="long">
+            {{ r.rootAssetUuid === r.uuid ? 'Raíz' : 'Componente de ' + r.rootAssetUuid }}<br />{{
+              r.locationUuid ?? r.siteUuid ?? 'Sin posición'
+            }}
+          </td>
+          <td><a [routerLink]="'/inventario/equipos/' + r.uuid">Abrir</a></td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5">Sin equipos en esta página.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="query({ limit: $event, offset: 0 })"
+/>

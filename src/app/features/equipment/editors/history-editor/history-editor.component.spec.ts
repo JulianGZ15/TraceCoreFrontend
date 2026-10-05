@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { HistoryEditorComponent } from './history-editor.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('HistoryEditorComponent', () => {
-
-  let component: HistoryEditorComponent;
-
-  let fixture: ComponentFixture<HistoryEditorComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [HistoryEditorComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(HistoryEditorComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(HistoryEditorComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

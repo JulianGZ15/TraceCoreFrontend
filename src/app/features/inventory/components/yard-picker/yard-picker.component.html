@@ -1,0 +1,17 @@
+<div class="field">
+  <label for="inventory-yard">Patio</label
+  ><select id="inventory-yard" [ngModel]="value()" (ngModelChange)="picked.emit($event)">
+    @if (allowGlobal() && access.global('INVENTORY_READ')) {
+      <option value="">Todos los patios</option>
+    } @else {
+      <option value="" disabled>Selecciona un patio</option>
+    }
+    @for (y of access.session.context()?.yards; track y.uuid) {
+      @if (access.can('INVENTORY_READ', y.uuid)) {
+        <option [value]="y.uuid">
+          {{ y.code }} · {{ y.name }}{{ y.active ? '' : ' · Inactivo' }}
+        </option>
+      }
+    }
+  </select>
+</div>

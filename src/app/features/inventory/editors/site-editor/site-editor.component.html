@@ -1,0 +1,67 @@
+<div class="dialog">
+  <h2>Sitio operativo externo</h2>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field">
+        <label for="code">Código</label><input id="code" type="text" formControlName="code" />
+      </div>
+      <div class="field">
+        <label for="name">Nombre</label><input id="name" type="text" formControlName="name" />
+      </div>
+      <div class="field">
+        <label for="type">Tipo</label
+        ><select id="type" formControlName="type">
+          <option value="WELL">{{ label('WELL') }}</option>
+          <option value="RIG">{{ label('RIG') }}</option>
+          <option value="PLATFORM">{{ label('PLATFORM') }}</option>
+          <option value="TERMINAL">{{ label('TERMINAL') }}</option>
+          <option value="OTHER">{{ label('OTHER') }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="address">Dirección</label
+        ><input id="address" type="text" formControlName="address" />
+      </div>
+      <div class="field">
+        <label for="latitude">Latitud (opcional)</label
+        ><input id="latitude" type="text" formControlName="latitude" />
+      </div>
+      <div class="field">
+        <label for="longitude">Longitud (opcional)</label
+        ><input id="longitude" type="text" formControlName="longitude" />
+      </div>
+      @if (!data.row) {
+        <tc-inventory-lookup
+          kind="sites"
+          title="Padre opcional"
+          [value]="form.controls.parentUuid.value"
+          (picked)="pick('parentUuid', $event)"
+        />
+      }
+      <tc-inventory-lookup
+        kind="parties"
+        title="Operador opcional"
+        [filters]="{ purpose: 'OPERATOR' }"
+        [value]="form.controls.operatorUuid.value"
+        (picked)="pick('operatorUuid', $event)"
+      /><label><input type="checkbox" formControlName="active" /> Activo</label>
+      <p>Coordenadas en pareja, con hasta seis decimales; no se publicará un mapa.</p>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">
+        Revisa los campos obligatorios, fechas y valores indicados.
+      </p>
+    }
+    <div class="dialog-actions">
+      @if (conflict()) {
+        <button class="btn secondary" type="button" (click)="reload()" [disabled]="busy()">
+          Recargar datos
+        </button>
+      }
+      <button class="btn secondary" type="button" (click)="close()" [disabled]="busy()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">Guardar</button>
+    </div>
+  </form>
+</div>

@@ -7,7 +7,8 @@ import { Api, Context, Login, User } from '../http/api';
 export function safeReturn(value: string | null): string {
   if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\\\x00-\x20]/.test(value))
     return '/inicio';
-  const path = value.split(/[?#]/)[0];
+  const path = value.split(/[?#]/)[0];
+  if (/^\/inventario\/(?:patios|equipos|movimientos|reservas|propuestas|conteos|sitios|ubicaciones)(?:\/(?:nuevo|nueva|[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12})(?:\/(?:actual|ubicacion|custodia|disponibilidad|recepcion))?)?$/.test(path)) return value;
   const id = '[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}';
   if (new RegExp('^/catalogo(?:/(?:categorias|grados|coladas|lotes(?:/'+id+')?|modelos(?:/'+id+'(?:/fichas/nueva)?)?|fichas/'+id+'))?$').test(path) || new RegExp('^/equipos(?:/nuevo|/'+id+'(?:/(?:general|tecnica|materiales|propiedad|condicion|lotes|composicion|uso))?)?$').test(path)) return value;
   if (
@@ -52,6 +53,8 @@ export class Session implements OnDestroy {
     if (document.visibilityState === 'visible') this.checkExpiry();
   };
   private readonly focus = () => this.checkExpiry();
+  readonly inventoryRead = computed(()=>this.can('INVENTORY_READ')||!!this.context()?.yards.some(y=>y.permissions.includes('INVENTORY_READ')));
+  readonly inventoryWrite = computed(()=>{const codes=['INVENTORY_MANAGE','MOVEMENT_MANAGE','DISPATCH_APPROVE','INVENTORY_ADJUST','RESERVATION_MANAGE','CUSTODY_MANAGE','INVENTORY_OBSERVE'];return codes.some(p=>this.can(p)||!!this.context()?.yards.some(y=>y.permissions.includes(p)));});
   readonly hasAccess = computed(() => {
     const c = this.context();
     return (
@@ -67,6 +70,7 @@ export class Session implements OnDestroy {
           'PARTY_MANAGE',
           'PARTY_APPROVE',
           'AVL_MANAGE',
+          'INVENTORY_READ','INVENTORY_MANAGE','MOVEMENT_MANAGE','DISPATCH_APPROVE','INVENTORY_ADJUST','RESERVATION_MANAGE','CUSTODY_MANAGE','INVENTORY_OBSERVE',
           'EQUIPMENT_READ',
           'EQUIPMENT_MANAGE',
           'TECHNICAL_APPROVE',

@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { RelationshipEditorComponent } from './relationship-editor.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('RelationshipEditorComponent', () => {
-
-  let component: RelationshipEditorComponent;
-
-  let fixture: ComponentFixture<RelationshipEditorComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [RelationshipEditorComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(RelationshipEditorComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(RelationshipEditorComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

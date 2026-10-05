@@ -1,0 +1,159 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Conteo y diferencias"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (row(); as c) {
+  <section class="panel">
+    <h2>{{ c.folio }}</h2>
+    <p class="mono long">
+      Apertura por: {{ c.openedBy }} · Cierre por: {{ c.closedBy ?? 'Sin cierre' }}
+    </p>
+    <p>Referencia: {{ c.sourceReference }}</p>
+    @if (c.closureReason) {
+      <p>Motivo final: {{ c.closureReason }}</p>
+    }
+    <p>{{ label(c.method) }} · {{ label(c.state) }} · Apertura {{ date(c.openedAt) }}</p>
+    <p>
+      Esperado congelado: {{ c.expectedCount }} piezas. Los movimientos posteriores no cambian el
+      snapshot.
+    </p>
+    @if (c.state === 'OPEN' && access.can('INVENTORY_OBSERVE', c.yardUuid)) {
+      <form [formGroup]="observeForm" (ngSubmit)="observe()">
+        <h3>Registrar observación manual</h3>
+        <tc-inventory-lookup
+          kind="assets"
+          title="Pieza conocida (opcional)"
+          [filters]="{ yardUuid: c.yardUuid }"
+          [value]="observeForm.controls.assetUuid.value"
+          (picked)="pick(observeForm, 'assetUuid', $event)"
+        /><tc-inventory-lookup
+          kind="locations"
+          title="Ubicación observada (opcional)"
+          [filters]="{ yardUuid: c.yardUuid }"
+          [value]="observeForm.controls.locationUuid.value"
+          (picked)="pick(observeForm, 'locationUuid', $event)"
+        />
+        <div class="form-grid">
+          <div class="field">
+            <label for="identifier">Identificador si desconocido</label
+            ><input id="identifier" type="text" formControlName="identifier" />
+          </div>
+          <div class="field">
+            <label for="sourceReference">Referencia de observación</label
+            ><input id="sourceReference" type="text" formControlName="sourceReference" />
+          </div>
+        </div>
+        <button class="btn primary" [disabled]="busy()">Registrar observación</button>
+      </form>
+    }
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla con desplazamiento horizontal"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Pieza / identificador</th>
+            <th>Esperado / observado</th>
+            <th>Diferencia</th>
+            <th>Resolución</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r.uuid) {
+            <tr>
+              <td class="mono long">{{ r.assetUuid ?? r.observedIdentifier }}</td>
+              <td class="long">
+                {{ r.expectedLocationUuid ?? 'No esperado' }}<br />{{
+                  r.observedLocationUuid ?? (r.observed ? 'Sin posición declarada' : 'No observado')
+                }}
+              </td>
+              <td>{{ label(r.difference) }}</td>
+              <td>{{ r.resolution ? label(r.resolution) : 'Pendiente' }}</td>
+              <td>
+                @if (
+                  c.state === 'OPEN' && !r.resolution && access.can('INVENTORY_ADJUST', c.yardUuid)
+                ) {
+                  <button class="btn secondary" (click)="select(r)">Resolver</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Sin filas en esta página.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="page($event)"
+      (resize)="query({ limit: $event, offset: 0 })"
+    />
+    @if (selected(); as r) {
+      <form [formGroup]="resolveForm" (ngSubmit)="resolve()">
+        <h3>Resolver {{ label(r.difference) }}</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="resolution">Resolución</label
+            ><select id="resolution" formControlName="resolution">
+              <option value="ACCEPTED_VARIANCE">{{ label('ACCEPTED_VARIANCE') }}</option>
+              <option value="ADJUSTMENT">{{ label('ADJUSTMENT') }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="reason">Motivo obligatorio</label
+            ><input id="reason" type="text" formControlName="reason" />
+          </div>
+        </div>
+        @if (resolveForm.controls.resolution.value === 'ADJUSTMENT') {
+          <tc-inventory-lookup
+            kind="movements"
+            title="Ajuste completado"
+            [filters]="{ yardUuid: c.yardUuid, state: 'COMPLETED' }"
+            [value]="resolveForm.controls.adjustmentMovementUuid.value"
+            (picked)="pick(resolveForm, 'adjustmentMovementUuid', $event)"
+          /><a routerLink="/inventario/movimientos/nuevo" [queryParams]="{ yardUuid: c.yardUuid }"
+            >Preparar ajuste por separado</a
+          >
+        }
+        <p>
+          Vincular requiere ajuste completado posterior a la apertura, del mismo patio y con esta
+          pieza.
+        </p>
+        <button class="btn primary" [disabled]="busy()">Guardar resolución</button>
+      </form>
+    }
+    @if (c.state === 'OPEN' && access.can('INVENTORY_ADJUST', c.yardUuid)) {
+      <div [formGroup]="endForm">
+        <div class="field">
+          <label for="closure-reason">Motivo de cierre o cancelación</label
+          ><input id="closure-reason" type="text" formControlName="reason" />
+        </div>
+        <div class="actions">
+          <button class="btn primary" [disabled]="busy()" (click)="finish('close')">
+            Cerrar (todas las diferencias resueltas)</button
+          ><button class="btn danger" [disabled]="busy()" (click)="finish('cancel')">
+            Cancelar conservando snapshot
+          </button>
+        </div>
+      </div>
+    }
+    @if (conflict()) {
+      <button class="btn secondary" (click)="reload()">Recargar datos</button>
+    }
+  </section>
+}

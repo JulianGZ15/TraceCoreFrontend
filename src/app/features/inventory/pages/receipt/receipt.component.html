@@ -1,0 +1,88 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Recepción del movimiento completo"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (detail(); as d) {
+  <p>{{ d.movement.folio }} · {{ d.items.length }} piezas · {{ label(d.movement.state) }}</p>
+  @if (d.logisticsManaged === false) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <section class="panel">
+        <h2>Destino real por raíz</h2>
+        <p>
+          Si no cambias la posición, se conserva la prevista. Las alternativas pertenecen al mismo
+          patio de destino.
+        </p>
+        @if (d.movement.destinationYardUuid) {
+          @for (g of destinations.controls; track g) {
+            <tc-inventory-lookup
+              kind="locations"
+              [title]="'Destino real ' + g.get('rootAssetUuid')?.value"
+              [filters]="{ yardUuid: d.movement.destinationYardUuid }"
+              [value]="g.get('locationUuid')?.value"
+              (picked)="pick(g, $event)"
+            />
+          }
+        } @else {
+          <p>Recepción en el sitio externo previsto. No admite cambio a otro sitio.</p>
+        }
+      </section>
+      <section class="panel">
+        <h2>Condición opcional por pieza</h2>
+        <p>Esta declaración conserva historial; no genera una inspección.</p>
+        <div formArrayName="conditions">
+          @for (g of pageRows(); track g; let i = $index) {
+            <div class="form-grid" [formGroupName]="pageIndex() + i">
+              <p class="mono long">{{ g.get('assetUuid')?.value }}</p>
+              <div class="field">
+                <label [for]="'condition-' + i">Condición</label
+                ><select [id]="'condition-' + i" formControlName="condition">
+                  <option value="">Sin declaración</option>
+                  @for (
+                    c of ['UNKNOWN', 'NEW', 'SERVICEABLE', 'DAMAGED', 'UNDER_REPAIR', 'SCRAPPED'];
+                    track c
+                  ) {
+                    <option [value]="c">{{ label(c) }}</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label [for]="'reason-' + i">Motivo</label
+                ><input [id]="'reason-' + i" formControlName="reason" />
+              </div>
+            </div>
+          }
+        </div>
+        <tc-pagination
+          [offset]="pageIndex()"
+          [limit]="25"
+          [count]="pageRows().length"
+          (move)="pageIndex.set($event)"
+        />
+      </section>
+      <button
+        class="btn primary"
+        [disabled]="
+          busy() ||
+          d.movement.state !== 'IN_TRANSIT' ||
+          !access.can('MOVEMENT_MANAGE', d.movement.destinationYardUuid)
+        "
+      >
+        Confirmar recepción completa
+      </button>
+      @if (conflict()) {
+        <button class="btn secondary" type="button" (click)="reload()">Recargar datos</button>
+      }
+    </form>
+  } @else {
+    <p role="status">
+      La recepción de este movimiento debe tramitarse desde logística. Si falta su vinculación,
+      actualiza el backend.
+    </p>
+  }
+}

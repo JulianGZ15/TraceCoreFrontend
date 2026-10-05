@@ -1,0 +1,75 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Distribución de patios"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<div class="toolbar">
+  <tc-inventory-yard-picker
+    [allowGlobal]="false"
+    [value]="yard()"
+    (picked)="changeYard($event)"
+  /><button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar</button>
+  @if (access.can('INVENTORY_MANAGE', yard())) {
+    <button class="btn primary" (click)="create()">Nueva ubicación</button>
+  }
+</div>
+<nav class="breadcrumbs" aria-label="Ubicación jerárquica">
+  <a [routerLink]="[]" [queryParams]="{ yardUuid: yard() }">Patio</a>
+  @for (p of overview().path; track p.uuid) {
+    <a [routerLink]="[]" [queryParams]="{ yardUuid: yard(), parentUuid: p.uuid }">{{ p.code }}</a>
+  }
+</nav>
+<div class="cards">
+  @for (item of rows(); track item.location.uuid) {
+    <article class="location-card">
+      <p class="eyebrow">
+        {{ label(item.location.type) }} · {{ item.location.active ? 'Activa' : 'Inactiva' }}
+      </p>
+      <h2>{{ item.location.code }} · {{ item.location.name }}</h2>
+      <div class="metrics">
+        <div class="metric">
+          <strong>{{ item.occupancy.positions }}</strong
+          >Posiciones
+        </div>
+        <div class="metric">
+          <strong>{{ item.occupancy.identifiedPieces }}</strong
+          >Piezas
+        </div>
+      </div>
+      <p>Peso conocido: {{ numberText(item.occupancy.knownWeightKgExact) }} kg</p>
+      <p>Grupos sin peso: {{ item.occupancy.unknownWeightGroups }}</p>
+      <p>Límite de posiciones: {{ item.occupancy.maxPositions ?? 'Sin límite configurado' }}</p>
+      <p>
+        Límite de peso:
+        {{
+          item.occupancy.maxWeightKgExact === null
+            ? 'Sin límite configurado'
+            : numberText(item.occupancy.maxWeightKgExact)
+        }}
+      </p>
+      @if (item.occupancy.positionPercentExact !== null) {
+        <p>Ocupación: {{ numberText(item.occupancy.positionPercentExact) }} %</p>
+      }
+      <div class="actions">
+        <a [routerLink]="[]" [queryParams]="{ yardUuid: yard(), parentUuid: item.location.uuid }"
+          >Explorar hijos</a
+        ><a [routerLink]="'/inventario/ubicaciones/' + item.location.uuid">Ver ubicación</a>
+      </div>
+    </article>
+  } @empty {
+    <p>No hay ubicaciones en esta página o nivel.</p>
+  }
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="query({ limit: $event, offset: 0 })"
+/>

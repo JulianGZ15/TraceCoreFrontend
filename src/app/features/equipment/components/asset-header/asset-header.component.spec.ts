@@ -1,44 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { AssetHeaderComponent } from './asset-header.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('AssetHeaderComponent', () => {
-
-  let component: AssetHeaderComponent;
-
-  let fixture: ComponentFixture<AssetHeaderComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [AssetHeaderComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(AssetHeaderComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(AssetHeaderComponent, {
+      profile: {
+        asset: { internalCode: 'Prueba', uuid: 'asset', lifecycle: 'REGISTERED' },
+        category: { name: 'Categoría' },
+        model: { code: 'M' },
+        technicalSheet: { revision: 'A', state: 'APPROVED' },
+        owner: { companyUuid: 'company' },
+        condition: { condition: 'UNKNOWN' },
+      },
+    });
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

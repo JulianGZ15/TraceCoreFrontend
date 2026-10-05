@@ -1,0 +1,29 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Sitio operativo"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (row(); as r) {
+  <section class="panel">
+    <h2>{{ r.code }} · {{ r.name }}</h2>
+    <p>{{ label(r.type) }} · {{ r.active ? 'Activo' : 'Inactivo' }}</p>
+    <p>{{ r.address }}</p>
+    @if (r.parentUuid) {
+      <p><a [routerLink]="'/inventario/sitios/' + r.parentUuid">Consultar sitio padre</a></p>
+    }
+    <p>Operador: {{ r.operatorUuid ?? 'Sin operador' }}</p>
+    <p>
+      Coordenadas: {{ optionalExact(r.latitude, r.latitudeExact) }} /
+      {{ optionalExact(r.longitude, r.longitudeExact) }}
+    </p>
+    <p class="mono">{{ r.uuid }}</p>
+    @if (access.global('INVENTORY_MANAGE')) {
+      <button class="btn primary" (click)="edit()">Editar</button>
+    }
+  </section>
+}

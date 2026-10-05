@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { LookupComponent } from './lookup.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('LookupComponent', () => {
-
-  let component: LookupComponent;
-
-  let fixture: ComponentFixture<LookupComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [LookupComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(LookupComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(LookupComponent, { kind: 'category', label: 'Categoría' });
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

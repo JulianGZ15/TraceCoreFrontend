@@ -1,44 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-
-
 import { HeatsComponent } from './heats.component';
-
-
-
+import { render } from '../../../../testing/component-test';
 describe('HeatsComponent', () => {
-
-  let component: HeatsComponent;
-
-  let fixture: ComponentFixture<HeatsComponent>;
-
-
-
-  beforeEach(async () => {
-
-    await TestBed.configureTestingModule({
-
-      imports: [HeatsComponent],
-
-    }).compileComponents();
-
-
-
-    fixture = TestBed.createComponent(HeatsComponent);
-
-    component = fixture.componentInstance;
-
-    await fixture.whenStable();
-
+  it('renderiza su plantilla con dependencias aisladas', async () => {
+    const fixture = await render(HeatsComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    fixture.destroy();
   });
-
-
-
-  it('should create', () => {
-
-    expect(component).toBeTruthy();
-
-  });
-
 });
-

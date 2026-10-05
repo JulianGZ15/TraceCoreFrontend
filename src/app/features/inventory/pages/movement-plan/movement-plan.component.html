@@ -1,0 +1,245 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Preparación y captura de movimiento"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<p>
+  {{
+    proposal()
+      ? 'Captura manual de propuesta: no mueve inventario.'
+      : 'Guardar prepara un borrador; la salida se confirma después.'
+  }}
+</p>
+<nav class="steps" aria-label="Pasos">
+  @for (n of [1, 2, 3, 4]; track n) {
+    <button
+      type="button"
+      class="btn secondary"
+      [attr.aria-current]="step() === n ? 'step' : null"
+      (click)="step.set(n)"
+    >
+      {{ n }} · {{ n === 1 ? 'Contexto' : n === 2 ? 'Raíces' : n === 3 ? 'Destino' : 'Revisión' }}
+    </button>
+  }
+</nav>
+<form [formGroup]="form" (ngSubmit)="save()">
+  @if (step() === 1) {
+    <section class="panel">
+      <h2>Tipo y contexto</h2>
+      <div class="form-grid">
+        <div class="field">
+          <label for="move-type">Tipo</label
+          ><select id="move-type" formControlName="type" (change)="typeChanged()">
+            @for (t of ['INBOUND', 'TRANSFER', 'OUTBOUND', 'RETURN', 'ADJUSTMENT']; track t) {
+              <option [value]="t">{{ label(t) }}</option>
+            }
+          </select>
+        </div>
+        <tc-inventory-yard-picker [value]="yard()" (picked)="sourceChanged($event)" />
+      </div>
+      <p>Las raíces deben compartir origen. Los componentes se moverán con su raíz superior.</p>
+    </section>
+  }
+  @if (step() === 2) {
+    <section class="panel">
+      <h2>Raíces y peso</h2>
+      <div formArrayName="roots">
+        @for (g of roots.controls; track g; let i = $index) {
+          <section class="panel" [formGroupName]="i">
+            <h3>Raíz {{ i + 1 }}</h3>
+            <tc-inventory-lookup
+              kind="assets"
+              [title]="'Raíz ' + (i + 1)"
+              [filters]="sourceFilters()"
+              [value]="g.get('assetUuid')?.value"
+              (picked)="pick(g, 'assetUuid', $event)"
+            />
+            <div class="form-grid">
+              <div class="field">
+                <label [for]="'grossWeightKg-' + i">Peso bruto medido en kg (opcional)</label
+                ><input [id]="'grossWeightKg-' + i" type="text" formControlName="grossWeightKg" />
+              </div>
+              <div class="field">
+                <label [for]="'weightReference-' + i">Referencia de medición</label
+                ><input
+                  [id]="'weightReference-' + i"
+                  type="text"
+                  formControlName="weightReference"
+                />
+              </div>
+            </div>
+            <p>
+              Sin medición, el servidor toma el peso de la ficha. Desconocido no equivale a cero.
+            </p>
+            @if (g.get('assetUuid')?.value && form.controls.type.value !== 'INBOUND') {
+              <tc-inventory-lookup
+                kind="reservations"
+                [title]="'Reserva confirmada ' + (i + 1)"
+                [filters]="{
+                  yardUuid: yard(),
+                  rootsOnly: true,
+                  rootAssetUuid: g.get('assetUuid')?.value,
+                }"
+                [value]="g.get('reservationUuid')?.value"
+                (picked)="pick(g, 'reservationUuid', $event)"
+              />
+            }
+            @if (roots.length > 1) {
+              <button
+                class="btn secondary"
+                type="button"
+                (click)="roots.removeAt(i); form.markAsDirty()"
+              >
+                Retirar raíz
+              </button>
+            }
+          </section>
+        }
+      </div>
+      <button
+        class="btn secondary"
+        type="button"
+        [disabled]="roots.length >= 100"
+        (click)="addRoot()"
+      >
+        Agregar raíz
+      </button>
+    </section>
+  }
+  @if (step() === 3) {
+    <section class="panel">
+      <h2>Destinos y referencias</h2>
+      @if (form.controls.type.value === 'OUTBOUND') {
+        <tc-inventory-lookup
+          kind="sites"
+          title="Sitio externo"
+          [value]="form.controls.destinationSiteUuid.value"
+          (picked)="pick(form, 'destinationSiteUuid', $event)"
+        /><tc-inventory-lookup
+          kind="parties"
+          title="Custodio externo"
+          [filters]="{ yardUuid: yard(), purpose: 'CUSTODIAN' }"
+          [value]="form.controls.destinationCustodianUuid.value"
+          (picked)="pick(form, 'destinationCustodianUuid', $event)"
+        />
+      } @else {
+        <tc-inventory-yard-picker
+          [allowGlobal]="false"
+          [value]="form.controls.destinationYardUuid.value"
+          (picked)="destinationChanged($event)"
+        />
+        @if (form.controls.destinationYardUuid.value) {
+          @for (g of roots.controls; track g; let i = $index) {
+            <tc-inventory-lookup
+              kind="locations"
+              [title]="'Destino raíz ' + (i + 1)"
+              [filters]="{ yardUuid: form.controls.destinationYardUuid.value }"
+              [value]="g.get('destinationLocationUuid')?.value"
+              (picked)="pick(g, 'destinationLocationUuid', $event)"
+            />
+          }
+        }
+        @if (form.controls.type.value === 'ADJUSTMENT') {
+          <p>
+            Para dejar sin posición, conserva el destino vacío. La custodia del patio se mantiene.
+          </p>
+        }
+      }
+      <tc-inventory-lookup
+        kind="parties"
+        title="Transportista opcional"
+        [filters]="{ yardUuid: yard(), purpose: 'CARRIER' }"
+        [value]="form.controls.transitCustodianUuid.value"
+        (picked)="pick(form, 'transitCustodianUuid', $event)"
+      />
+      <div class="form-grid">
+        <div class="field">
+          <label for="destinationCustodyMode">Modalidad de destino</label
+          ><select id="destinationCustodyMode" formControlName="destinationCustodyMode">
+            <option value="STORAGE">{{ label('STORAGE') }}</option>
+            <option value="CONSIGNMENT">{{ label('CONSIGNMENT') }}</option>
+            <option value="REPAIR">{{ label('REPAIR') }}</option>
+            <option value="RENTAL">{{ label('RENTAL') }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="reason">Motivo</label
+          ><input id="reason" type="text" formControlName="reason" />
+        </div>
+        <div class="field">
+          <label for="sourceReference">Referencia de origen</label
+          ><input id="sourceReference" type="text" formControlName="sourceReference" />
+        </div>
+        <div class="field">
+          <label for="ownerAuthorizationReference"
+            >Autorización del propietario tercero (si aplica)</label
+          ><input
+            id="ownerAuthorizationReference"
+            type="text"
+            formControlName="ownerAuthorizationReference"
+          />
+        </div>
+      </div>
+      @if (proposal()) {
+        <tc-inventory-observation-editor
+          [yard]="yard() || null"
+          [value]="observations"
+          (changed)="observations = $event; form.markAsDirty()"
+        />
+        <div class="form-grid">
+          <div class="field">
+            <label for="expiresAt">Expiración de propuesta</label
+            ><input id="expiresAt" type="datetime-local" formControlName="expiresAt" />
+          </div>
+          <div class="field">
+            <label for="offset">Desplazamiento UTC</label
+            ><input id="offset" type="text" formControlName="offset" />
+          </div>
+        </div>
+      }
+    </section>
+  }
+  @if (step() === 4) {
+    <section class="panel">
+      <h2>Revisión</h2>
+      <p>{{ label(form.controls.type.value) }} · {{ form.controls.reason.value }}</p>
+      <p>Referencia: {{ form.controls.sourceReference.value }}</p>
+      <ul>
+        @for (g of roots.controls; track g) {
+          <li class="long">
+            Raíz {{ g.get('assetUuid')?.value }} →
+            {{
+              form.controls.type.value === 'OUTBOUND'
+                ? form.controls.destinationSiteUuid.value
+                : g.get('destinationLocationUuid')?.value || 'Sin posición'
+            }}
+            · Peso: {{ g.get('grossWeightKg')?.value || 'Derivado por servidor' }} · Reserva:
+            {{ g.get('reservationUuid')?.value || 'Sin reserva seleccionada' }}
+          </li>
+        }
+      </ul>
+      <p>
+        El servidor validará origen, propietario, composición, reservas y capacidades. Este guardado
+        no confirma la salida.
+      </p>
+    </section>
+  }
+  @if (form.invalid && form.touched) {
+    <p class="field-error">Completa las raíces, motivo, referencia y revisa las magnitudes.</p>
+  }
+  <div class="actions">
+    @if (step() > 1) {
+      <button class="btn secondary" type="button" (click)="step.update(previousStep)">
+        Anterior
+      </button>
+    }
+    <button class="btn primary" [disabled]="busy()">
+      {{ step() < 4 ? 'Siguiente' : proposal() ? 'Guardar propuesta' : 'Preparar borrador' }}
+    </button>
+  </div>
+</form>

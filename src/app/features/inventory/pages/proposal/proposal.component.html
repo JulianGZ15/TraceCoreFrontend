@@ -1,0 +1,120 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Conciliación de propuesta"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (detail(); as d) {
+  <section class="panel">
+    <h2>{{ d.proposal.sourceReference }}</h2>
+    <p>
+      {{ label(d.proposal.type) }} · {{ label(d.proposal.state) }} · Expira
+      {{ date(d.proposal.expiresAt) }}
+    </p>
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla con desplazamiento horizontal"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Pieza / identificador</th>
+            <th>Esperado</th>
+            <th>Observado</th>
+            <th>Diferencia</th>
+            <th>Grupo corregido</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of d.items; track r.uuid) {
+            <tr>
+              <td class="mono long">{{ r.assetUuid ?? r.observedIdentifier }}</td>
+              <td>{{ r.expected ? 'Sí' : 'No' }}</td>
+              <td>{{ r.observed ? 'Sí' : 'No' }}</td>
+              <td>{{ label(difference(r)) }}</td>
+              <td>
+                @if (
+                  r.expected && r.assetUuid === r.rootAssetUuid && d.proposal.state === 'PENDING'
+                ) {
+                  <label
+                    ><input
+                      type="checkbox"
+                      [checked]="selected().includes(r.rootAssetUuid!)"
+                      (change)="toggle(r.rootAssetUuid)"
+                    />
+                    Aceptar conjunto completo</label
+                  >
+                } @else {
+                  <span>{{
+                    r.accepted === true
+                      ? 'Aceptado'
+                      : r.accepted === false
+                        ? 'No aceptado'
+                        : 'Sin decisión'
+                  }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Extras y desconocidos permanecen como evidencia. Para mover extras, prepara otra propuesta.
+    </p>
+    @if (d.decision) {
+      <p>Decisión: {{ label(d.decision.action) }} · {{ d.decision.reason }}</p>
+      @if (d.decision.movementUuid) {
+        <a [routerLink]="'/inventario/movimientos/' + d.decision.movementUuid"
+          >Ver movimiento resultante</a
+        >
+      }
+    } @else if (d.proposal.state === 'PENDING' && canDecide(d.proposal)) {
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-grid">
+          <div class="field">
+            <label for="action">Decisión</label
+            ><select id="action" formControlName="action">
+              <option value="CONFIRMED">{{ label('CONFIRMED') }}</option>
+              <option value="CORRECTED">{{ label('CORRECTED') }}</option>
+              <option value="REJECTED">{{ label('REJECTED') }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="reason">Motivo obligatorio</label
+            ><input id="reason" type="text" formControlName="reason" />
+          </div>
+          @if (d.proposal.destinationSiteUuid) {
+            <div class="field">
+              <label for="authorizationReference">Autorización documentada de salida</label
+              ><input
+                id="authorizationReference"
+                type="text"
+                formControlName="authorizationReference"
+              />
+            </div>
+            <div class="field">
+              <label for="repairAuthorizationReference"
+                >Excepción de reparación (cuando aplique)</label
+              ><input
+                id="repairAuthorizationReference"
+                type="text"
+                formControlName="repairAuthorizationReference"
+              />
+            </div>
+          }
+        </div>
+        <button class="btn primary" [disabled]="busy()">Registrar decisión</button>
+      </form>
+    }
+    @if (conflict()) {
+      <button class="btn secondary" (click)="reload()">Recargar datos</button>
+    }
+  </section>
+}

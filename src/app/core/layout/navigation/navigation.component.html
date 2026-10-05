@@ -43,6 +43,7 @@
       <a routerLink='/catalogo' routerLinkActive='active' (click)='close()'><tc-icon name='domain' />Catálogo técnico</a>
       <a routerLink='/equipos' routerLinkActive='active' (click)='close()'><tc-icon name='warehouse' />Equipos</a>
     }
+    @if(session.inventoryRead()){<a routerLink="/inventario" routerLinkActive="active" (click)="close()"><tc-icon name="warehouse"/>Inventario y patios</a>}
   </nav>
   <div class="nav-footer">
     <a routerLink="/mi-cuenta" routerLinkActive="active" (click)="close()"

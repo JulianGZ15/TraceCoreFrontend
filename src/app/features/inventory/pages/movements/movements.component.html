@@ -1,0 +1,78 @@
+<tc-page-heading
+  section="Inventario y patios"
+  title="Movimientos de inventario"
+/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<div class="toolbar">
+  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
+  <div class="field">
+    <label for="movement-state">Estado</label
+    ><select
+      id="movement-state"
+      [(ngModel)]="state"
+      (ngModelChange)="query({ state: $event || null, offset: 0 })"
+    >
+      <option value="">Todos</option>
+      @for (s of ['DRAFT', 'IN_TRANSIT', 'COMPLETED', 'CANCELLED']; track s) {
+        <option [value]="s">{{ label(s) }}</option>
+      }
+    </select>
+  </div>
+  @if (access.any('MOVEMENT_MANAGE') || access.any('INVENTORY_ADJUST')) {
+    <a
+      class="btn primary"
+      routerLink="/inventario/movimientos/nuevo"
+      [queryParams]="{ yardUuid: yard() }"
+      >Preparar movimiento</a
+    >
+  }
+</div>
+<div
+  class="table-scroll"
+  tabindex="0"
+  role="region"
+  aria-label="Tabla con desplazamiento horizontal"
+>
+  <table>
+    <thead>
+      <tr>
+        <th>Folio / tipo</th>
+        <th>Estado</th>
+        <th>Origen / destino</th>
+        <th>Fecha</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.uuid) {
+        <tr>
+          <td>{{ r.folio }}<br />{{ label(r.type) }}</td>
+          <td>{{ label(r.state) }}</td>
+          <td class="long">
+            {{ r.sourceYardUuid ?? r.sourceSiteUuid ?? 'Sin ubicación' }} →
+            {{ r.destinationYardUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
+          </td>
+          <td>{{ date(r.createdOn) }}</td>
+          <td><a [routerLink]="'/inventario/movimientos/' + r.uuid">Abrir</a></td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5">Sin movimientos en esta página.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="query({ limit: $event, offset: 0 })"
+/>

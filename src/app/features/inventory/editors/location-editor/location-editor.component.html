@@ -1,0 +1,55 @@
+<div class="dialog">
+  <h2>Ubicación de almacenamiento</h2>
+  <tc-feedback [message]="error()" />
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field">
+        <label for="code">Código</label><input id="code" type="text" formControlName="code" />
+      </div>
+      <div class="field">
+        <label for="name">Nombre</label><input id="name" type="text" formControlName="name" />
+      </div>
+      <div class="field">
+        <label for="type">Tipo</label
+        ><select id="type" formControlName="type">
+          <option value="SECTOR">{{ label('SECTOR') }}</option>
+          <option value="BAY">{{ label('BAY') }}</option>
+          <option value="RACK">{{ label('RACK') }}</option>
+          <option value="SLOT">{{ label('SLOT') }}</option>
+          <option value="WORKSHOP">{{ label('WORKSHOP') }}</option>
+          <option value="QUARANTINE">{{ label('QUARANTINE') }}</option>
+          <option value="BUNKER">{{ label('BUNKER') }}</option>
+          <option value="STAGING">{{ label('STAGING') }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="maxPositions">Máximo de posiciones (opcional)</label
+        ><input id="maxPositions" type="text" formControlName="maxPositions" />
+      </div>
+      <div class="field">
+        <label for="maxWeightKg">Máximo de peso en kg (opcional)</label
+        ><input id="maxWeightKg" type="text" formControlName="maxWeightKg" />
+      </div>
+      <label><input type="checkbox" formControlName="exclusive" /> Exclusiva: una raíz</label
+      ><label><input type="checkbox" formControlName="active" /> Activa</label>
+      <p>
+        Patio y padre se conservan después del alta. La capacidad incluye todos los descendientes.
+      </p>
+    </div>
+    @if (form.invalid && form.touched) {
+      <p class="field-error" role="alert">
+        Revisa los campos obligatorios, fechas y valores indicados.
+      </p>
+    }
+    <div class="dialog-actions">
+      @if (conflict()) {
+        <button class="btn secondary" type="button" (click)="reload()" [disabled]="busy()">
+          Recargar datos
+        </button>
+      }
+      <button class="btn secondary" type="button" (click)="close()" [disabled]="busy()">
+        Cancelar</button
+      ><button class="btn primary" [disabled]="busy()">Guardar</button>
+    </div>
+  </form>
+</div>
