@@ -1,0 +1,34 @@
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<section class="panel">
+  <div class="panel-heading"><h2>Cobertura por traza de material</h2></div>
+  @for (r of rows(); track r.materialTraceUuid) {
+    <div class="record">
+      <h3>{{ r.position }} · {{ r.covered ? 'Cubierta' : 'Sin cobertura' }}</h3>
+      @if (r.heatUuid) {
+        <p class="mono">Colada: {{ r.heatUuid }}</p>
+      }
+      <p>
+        {{ r.number || 'Sin MTR verificado' }} ·
+        {{ r.linkType ? label(r.linkType) : 'Sin vínculo' }}
+      </p>
+      @if (r.certificateUuid && access.global('QUALITY_READ')) {
+        <a class="btn secondary" [routerLink]="['/calidad/mtrs', r.certificateUuid]">Abrir MTR</a>
+      }
+    </div>
+  } @empty {
+    <p class="empty">
+      Sin trazas registradas. Consulta preparación para la exigencia documental de la pieza
+      completa.
+    </p>
+  }
+</section>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="move($event)"
+/>

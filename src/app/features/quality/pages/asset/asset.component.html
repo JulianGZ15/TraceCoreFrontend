@@ -1,0 +1,100 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Expediente técnico"
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<tc-quality-pending />
+@if (record(); as r) {
+  <section class="panel identity">
+    <h2>
+      {{ r.internalCode }} <span class="small-muted">{{ r.serialNumber || 'Sin serial' }}</span>
+    </h2>
+    <p>{{ label(r.lifecycle) }} · Condición declarada: {{ label(r.condition) }}</p>
+    <p>{{ r.categoryCode }} · {{ r.modelCode }} · ficha {{ r.sheetRevision }}</p>
+    <span class="mono">{{ r.uuid }}</span>
+    <div class="actions">
+      @if (session.can('EQUIPMENT_READ')) {
+        <a class="btn secondary" [routerLink]="['/equipos', r.uuid, 'general']">Catálogo técnico</a>
+      }
+      @if (session.inventoryRead()) {
+        <a class="btn secondary" [routerLink]="['/inventario/equipos', r.uuid, 'actual']"
+          >Situación física</a
+        >
+      }
+    </div>
+  </section>
+  <nav class="section-nav" aria-label="Secciones del expediente técnico">
+    @for (s of sections; track s[0]) {
+      <a [routerLink]="['/calidad/equipos', r.uuid, s[0]]" routerLinkActive="active">{{ s[1] }}</a>
+    }
+  </nav>
+  @switch (section()) {
+    @case ('resumen') {
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Preparación técnica por miembro</h2>
+          <button [disabled]="busy()" class="btn secondary" (click)="load()">
+            Evaluar de nuevo
+          </button>
+        </div>
+        @for (status of readiness(); track status.assetUuid) {
+          <div class="record">
+            <span class="mono">{{ status.assetUuid }}</span>
+            <h3>Preparación: {{ status.technicallyReady ? 'Lista' : 'Pendiente' }}</h3>
+            <p>Despacho: {{ status.dispatchReleased ? 'Liberado' : 'Sin liberación eficaz' }}</p>
+            <p>{{ date(status.evaluatedAt) }}</p>
+            @for (cause of status.reasons; track cause) {
+              <p>{{ reason(cause) }}</p>
+            }
+            <p>
+              Próxima revisión: {{ date(status.nextDueAt) }} ·
+              {{
+                decimalDisplay(status.nextDueHours, status.nextDueHoursExact, 'Sin umbral')
+              }}
+              horas
+            </p>
+          </div>
+        }
+      </section>
+    }
+    @case ('politicas') {
+      <tc-quality-section-policies [asset]="r" />
+    }
+    @case ('mtr') {
+      <tc-quality-section-materials [asset]="r" />
+    }
+    @case ('inspecciones') {
+      <tc-quality-section-inspections [asset]="r" />
+    }
+    @case ('certificaciones') {
+      <tc-quality-section-certifications [asset]="r" />
+    }
+    @case ('mantenimiento') {
+      <tc-quality-section-maintenance [asset]="r" />
+    }
+    @case ('retenciones') {
+      <tc-quality-section-holds [asset]="r" />
+    }
+    @case ('liberaciones') {
+      <section class="panel record">
+        <h2>Despacho del conjunto</h2>
+        <p>
+          La salida requiere liberación eficaz de la raíz y cada componente. La autorización final
+          se verifica en la transacción del movimiento.
+        </p>
+        @for (status of readiness(); track status.assetUuid) {
+          <p class="mono">
+            {{ status.assetUuid }} ·
+            {{ status.dispatchReleased ? 'Despacho liberado' : 'Sin liberación de despacho' }}
+          </p>
+        }
+      </section>
+      <tc-quality-section-releases [asset]="r" />
+    }
+  }
+}

@@ -1,1 +1,17 @@
-<tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/>@if(error()){<button class="btn secondary" (click)="load()">Reintentar consulta</button>}@if(ready()&&store.profile();as profile){<tc-equipment-asset-header [profile]="profile"/><tc-equipment-section-navigation [uuid]="profile.asset.uuid"/><router-outlet/>}@else if(!error()){<p role="status">Cargando expediente…</p>}
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (error()) {
+  <button class="btn secondary" (click)="load()">Reintentar consulta</button>
+}
+@if (ready() && store.profile(); as profile) {
+  <tc-equipment-asset-header [profile]="profile" /><tc-equipment-section-navigation
+    [uuid]="profile.asset.uuid"
+  />
+  @if (session.qualityRead()) {
+    <a class="btn secondary" [routerLink]="['/calidad/equipos', profile.asset.uuid, 'resumen']"
+      >Calidad y mantenimiento</a
+    >
+  }
+  <router-outlet />
+} @else if (!error()) {
+  <p role="status">Cargando expediente…</p>
+}

@@ -1,0 +1,84 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Política de inspección"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (record(); as r) {
+  <section class="panel identity">
+    <h2>{{ r.method }} · {{ r.revision }}</h2>
+    <p>{{ label(r.state) }}</p>
+    <dl>
+      <div>
+        <dt>Destino</dt>
+        <dd class="mono">{{ r.modelUuid || r.categoryUuid }}</dd>
+      </div>
+      <div>
+        <dt>Norma</dt>
+        <dd class="mono">{{ r.standardUuid }}</dd>
+      </div>
+      <div>
+        <dt>Vigencia [inicio, fin)</dt>
+        <dd>{{ date(r.validFrom) }} — {{ date(r.validTo) }}</dd>
+      </div>
+      <div>
+        <dt>Intervalos</dt>
+        <dd>
+          {{ r.calendarDays ?? 'Sin intervalo' }} días ·
+          {{ decimalDisplay(r.hourInterval, r.hourIntervalExact, 'Sin intervalo') }} horas
+        </dd>
+      </div>
+    </dl>
+    <p>
+      MTR: {{ r.requireMtr ? 'Exigido' : 'No exigido' }} · Certificación:
+      {{ r.requireCertification ? 'Exigida' : 'No exigida' }}
+    </p>
+    <div class="actions">
+      @if (access.global('QUALITY_APPROVE')) {
+        @if (r.state === 'DRAFT') {
+          <button
+            [disabled]="busy()"
+            class="btn primary"
+            (click)="transition('/policies/' + r.uuid + '/approve', r.version)"
+          >
+            Aprobar borrador
+          </button>
+        }
+        @if (r.state === 'APPROVED') {
+          <button
+            [disabled]="busy()"
+            class="btn secondary"
+            (click)="transition('/policies/' + r.uuid + '/retire', r.version)"
+          >
+            Retirar política
+          </button>
+        }
+      }
+    </div>
+  </section>
+  @if (r.state === 'DRAFT' && access.global('QUALITY_MANAGE')) {
+    <tc-quality-policy-editor (saved)="load()" />
+  } @else {
+    <section class="panel record">
+      <h2>Criterios congelados</h2>
+      @for (c of r.criteria; track c.parameter) {
+        <p>
+          {{ c.parameter }} · {{ c.unit }} ·
+          {{ decimalDisplay(c.minimum, c.minimumExact, 'Sin mínimo') }} /
+          {{ decimalDisplay(c.maximum, c.maximumExact, 'Sin máximo') }}
+        </p>
+      }
+    </section>
+  }
+} @else if (!route.snapshot.paramMap.has('uuid')) {
+  <tc-quality-policy-editor (saved)="load()" />
+}

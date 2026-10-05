@@ -12,6 +12,11 @@
   <section class="panel">
     <h2>{{ p.asset.internalCode }}</h2>
     <p class="mono">{{ p.asset.uuid }}</p>
+    @if (session.qualityRead()) {
+      <a class="btn secondary" [routerLink]="['/calidad/equipos', p.asset.uuid, 'resumen']"
+        >Consultar preparación técnica</a
+      >
+    }
     <p>{{ label(p.asset.lifecycle) }} · {{ label(p.placementState) }}</p>
     <nav class="inventory-tabs" aria-label="Expediente físico">
       @for (s of ['actual', 'ubicacion', 'custodia', 'disponibilidad']; track s) {

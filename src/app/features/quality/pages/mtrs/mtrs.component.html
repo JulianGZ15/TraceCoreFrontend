@@ -1,0 +1,59 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Documentos MTR"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (access.global('QUALITY_MANAGE')) {
+  <div class="actions">
+    <button [disabled]="busy()" class="btn primary" (click)="create()">Nuevo MTR</button>
+  </div>
+}
+<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
+  <table>
+    <thead>
+      <tr>
+        <th>Folio / revisión</th>
+        <th>Emisión</th>
+        <th>Estado</th>
+        <th>Expediente</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.uuid) {
+        <tr>
+          <td>
+            {{ row.number }} · {{ row.documentRevision }}
+            <p>{{ row.certificateType }}</p>
+          </td>
+          <td>{{ date(row.issuedAt) }}</td>
+          <td>{{ label(row.state) }}</td>
+          <td>
+            <a class="btn secondary" [routerLink]="['/calidad/mtrs', row.uuid]">Abrir documento</a>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="empty">Sin registros para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

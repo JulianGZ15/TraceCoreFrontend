@@ -1,0 +1,113 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Expediente MTR"
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<tc-quality-pending />
+@if (record(); as r) {
+  <section class="panel identity">
+    <h2>{{ r.number }} · revisión {{ r.documentRevision }}</h2>
+    <p>{{ label(r.state) }} · {{ r.certificateType }}</p>
+    <dl>
+      <div>
+        <dt>Emisor</dt>
+        <dd class="mono">{{ r.issuerUuid }}</dd>
+      </div>
+      <div>
+        <dt>Emisión</dt>
+        <dd>{{ date(r.issuedAt) }}</dd>
+      </div>
+      <div>
+        <dt>Evidencia</dt>
+        <dd class="mono">{{ r.evidenceUuid }}</dd>
+      </div>
+      <div>
+        <dt>UUID / versión</dt>
+        <dd class="mono">{{ r.uuid }} · {{ r.version }}</dd>
+      </div>
+    </dl>
+    <p>{{ r.reviewReason }}</p>
+    <div class="actions">
+      @if (r.state === 'DRAFT' && access.global('QUALITY_MANAGE')) {
+        <button [disabled]="busy()" class="btn secondary" (click)="edit()">
+          Corregir documento
+        </button>
+      }
+      @if (access.global('QUALITY_APPROVE')) {
+        @if (r.state === 'DRAFT') {
+          <button [disabled]="busy()" class="btn primary" (click)="transition('review', true)">
+            Verificar</button
+          ><button [disabled]="busy()" class="btn secondary" (click)="transition('review', false)">
+            Rechazar
+          </button>
+        }
+        @if (r.state === 'VERIFIED') {
+          <button [disabled]="busy()" class="btn secondary" (click)="transition('revoke')">
+            Revocar
+          </button>
+        }
+      }
+      <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar estado</button>
+    </div>
+  </section>
+  <section class="panel record">
+    <h2>Vínculos a coladas</h2>
+    @for (l of heats(); track l.uuid) {
+      <div class="record">
+        <span class="mono">{{ l.heatUuid }}</span>
+        <p>{{ l.withdrawnAt ? 'Retirado · ' + date(l.withdrawnAt) : 'Activo' }}</p>
+        <p>{{ l.withdrawalReason }}</p>
+        @if (r.state === 'DRAFT' && !l.withdrawnAt && access.global('QUALITY_MANAGE')) {
+          <button [disabled]="busy()" class="btn secondary" (click)="withdraw('heats', l)">
+            Retirar vínculo
+          </button>
+        }
+      </div>
+    } @empty {
+      <p>Sin vínculos a coladas.</p>
+    }
+    @if (r.state === 'DRAFT' && access.global('QUALITY_MANAGE')) {
+      <tc-quality-option [control]="heat" kind="HEAT" title="Colada" /><button
+        class="btn secondary"
+        [disabled]="busy()"
+        (click)="link('heats')"
+      >
+        Vincular colada
+      </button>
+    }
+  </section>
+  <section class="panel record">
+    <h2>Vínculos a piezas y trazas</h2>
+    @for (l of assets(); track l.uuid) {
+      <div class="record">
+        <span class="mono">{{ l.assetUuid }}</span>
+        <p class="mono">{{ l.materialTraceUuid || 'Pieza completa' }}</p>
+        <p>{{ l.withdrawnAt ? 'Retirado · ' + date(l.withdrawnAt) : 'Activo' }}</p>
+        <p>{{ l.withdrawalReason }}</p>
+        @if (r.state === 'DRAFT' && !l.withdrawnAt && access.global('QUALITY_MANAGE')) {
+          <button [disabled]="busy()" class="btn secondary" (click)="withdraw('assets', l)">
+            Retirar vínculo
+          </button>
+        }
+      </div>
+    } @empty {
+      <p>Sin vínculos a piezas.</p>
+    }
+    @if (r.state === 'DRAFT' && access.global('QUALITY_MANAGE')) {
+      <tc-quality-option [control]="asset" kind="ASSET" title="Pieza" /><tc-quality-option
+        [control]="trace"
+        kind="TRACE"
+        title="Traza de material (opcional)"
+        [assetUuid]="asset.value || ''"
+        [nullable]="true"
+      /><button class="btn secondary" [disabled]="busy()" (click)="link('assets')">
+        Vincular pieza / traza
+      </button>
+    }
+  </section>
+}

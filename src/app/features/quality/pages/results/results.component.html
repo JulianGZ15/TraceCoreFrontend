@@ -1,0 +1,68 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Resultados de inspección"
+  description="Registra el dictamen manual y cada criterio congelado. El servidor determina el resultado de las mediciones."
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (record(); as r) {
+  <section class="panel record">
+    <h2>{{ asset()?.internalCode }}</h2>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <label>Realizada en (con desplazamiento UTC)<input formControlName="performedAt" /></label
+        ><label
+          >Dictamen manual<select formControlName="verdict">
+            <option value="PASS">Conforme</option>
+            <option value="FAIL">No conforme</option>
+            <option value="INCONCLUSIVE">Inconcluso</option>
+          </select></label
+        ><label class="wide"
+          >Hallazgos<textarea formControlName="findings" rows="4"></textarea>
+        </label>
+        <div class="wide"><tc-quality-evidence [control]="form.controls.evidenceUuid" /></div>
+      </div>
+      <div formArrayName="measurements">
+        @for (m of measurements.controls; track m; let i = $index) {
+          <fieldset class="criteria" [formGroupName]="i">
+            <legend>{{ r.criteria[i].parameter }} · {{ r.criteria[i].unit }}</legend>
+            <p>
+              Límites:
+              {{
+                decimalDisplay(r.criteria[i].minimum, r.criteria[i].minimumExact, 'Sin mínimo')
+              }}
+              /
+              {{ decimalDisplay(r.criteria[i].maximum, r.criteria[i].maximumExact, 'Sin máximo') }}
+            </p>
+            <label>Valor decimal exacto<input formControlName="value" inputmode="decimal" /></label>
+          </fieldset>
+        }
+      </div>
+      @if (form.invalid && form.touched) {
+        <tc-feedback
+          message="Completa todos los criterios con hasta 12 enteros y 6 decimales, evidencia y hallazgos."
+        />
+      }
+      <div class="actions">
+        <button
+          class="btn primary"
+          [disabled]="
+            busy() || !compatible() || !access.can('INSPECTION_MANAGE', asset()?.yardUuid)
+          "
+        >
+          Registrar resultados</button
+        ><button [disabled]="busy()" class="btn secondary" type="button" (click)="reload()">
+          Recargar registro</button
+        ><a class="btn secondary" [routerLink]="['/calidad/inspecciones', r.uuid]">Volver</a>
+      </div>
+    </form>
+  </section>
+}

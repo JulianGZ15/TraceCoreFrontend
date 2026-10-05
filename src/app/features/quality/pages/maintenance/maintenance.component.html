@@ -1,0 +1,94 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Agenda de mantenimiento"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (access.any('MAINTENANCE_MANAGE')) {
+  <div class="actions">
+    <a class="btn primary" routerLink="/calidad/mantenimiento/nuevo">Planificar orden</a>
+  </div>
+}
+<form class="filters" (ngSubmit)="apply()">
+  <label
+    >Patio<select [ngModel]="yard()" (ngModelChange)="yard.set($event)" name="yard">
+      <option value="">Alcances autorizados</option>
+      @for (y of session.context()?.yards; track y.uuid) {
+        @if (access.can('QUALITY_READ', y.uuid)) {
+          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+        }
+      }
+    </select></label
+  ><label>Pieza (UUID)<input [(ngModel)]="assetUuid" name="asset" /></label
+  ><label
+    >Estado<select [(ngModel)]="state" name="state">
+      <option value="">Todos</option>
+      <option value="PLANNED">{{ label('PLANNED') }}</option>
+      <option value="IN_PROGRESS">{{ label('IN_PROGRESS') }}</option>
+      <option value="COMPLETED">{{ label('COMPLETED') }}</option>
+      <option value="CANCELLED">{{ label('CANCELLED') }}</option>
+    </select></label
+  ><label>Responsable (UUID)<input [(ngModel)]="responsible" name="responsible" /></label
+  ><label>Desde (con desplazamiento UTC)<input [(ngModel)]="from" name="from" /></label
+  ><label>Hasta excluyente (con desplazamiento UTC)<input [(ngModel)]="to" name="to" /></label
+  ><label
+    >Tipo<select [(ngModel)]="kind" name="kind">
+      <option value="">Todos</option>
+      <option value="PREVENTIVE">Preventivo</option>
+      <option value="CORRECTIVE">Correctivo</option>
+      <option value="PRESERVATION">Preservación</option>
+    </select></label
+  ><button class="btn secondary" [disabled]="busy()">Aplicar filtros</button>
+</form>
+<div class="panel table-wrap" tabindex="0">
+  <table>
+    <thead>
+      <tr>
+        <th>Pieza</th>
+        <th>Programación</th>
+        <th>Estado</th>
+        <th>Responsable</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.record.uuid) {
+        <tr>
+          <td>
+            {{ row.assetCode }}
+            <p>{{ row.serialNumber || 'Sin serial' }}</p>
+          </td>
+          <td>{{ date(row.record.scheduledAt) }}</td>
+          <td>{{ label(row.record.state) }}</td>
+          <td class="mono">{{ row.record.responsibleUuid }}</td>
+          <td>
+            <a class="btn secondary" [routerLink]="['/calidad/mantenimiento', row.record.uuid]"
+              >Abrir</a
+            >
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty">Sin registros.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

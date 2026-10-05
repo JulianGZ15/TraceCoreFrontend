@@ -1,0 +1,29 @@
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<section class="panel">
+  <div class="panel-heading"><h2>Políticas efectivas por método</h2></div>
+  @for (r of rows(); track r.uuid) {
+    <div class="record">
+      <h3>{{ r.method }} · {{ r.revision }}</h3>
+      <p>
+        {{ r.calendarDays ?? 'Sin intervalo' }} días ·
+        {{ decimalDisplay(r.hourInterval, r.hourIntervalExact, 'Sin intervalo') }} horas
+      </p>
+      <p>{{ date(r.validFrom) }} — {{ date(r.validTo) }}</p>
+      <p>
+        MTR: {{ r.requireMtr ? 'Exigido' : 'No exigido' }} · Certificación:
+        {{ r.requireCertification ? 'Exigida' : 'No exigida' }}
+      </p>
+      @for (c of r.criteria; track c.parameter) {
+        <p>
+          {{ c.parameter }} · {{ decimalDisplay(c.minimum, c.minimumExact, 'Sin mínimo') }} /
+          {{ decimalDisplay(c.maximum, c.maximumExact, 'Sin máximo') }} {{ c.unit }}
+        </p>
+      }
+    </div>
+  } @empty {
+    <p class="empty">Sin políticas aplicables. La selección depende del servidor.</p>
+  }
+</section>

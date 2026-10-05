@@ -1,0 +1,26 @@
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+@if (pending.own().length) {
+  <section class="panel">
+    <div class="panel-heading"><h2>Solicitudes pendientes de confirmación</h2></div>
+    <p>
+      Consulta el resultado o repite manualmente los mismos datos. Un resultado no encontrado no
+      demuestra que la solicitud no se ejecutó.
+    </p>
+    @for (row of pending.own(); track row.key) {
+      <div class="record">
+        <span class="mono">{{ row.key }}</span>
+        <p>{{ row.resource }} · {{ date(row.createdAt) }}</p>
+        <div class="actions">
+          <button class="btn secondary" [disabled]="busy()" (click)="consult(row)">
+            Consultar resultado</button
+          ><button class="btn secondary" [disabled]="busy()" (click)="repeat(row)">
+            Repetir misma solicitud</button
+          ><button class="btn secondary" [disabled]="busy()" (click)="forget(row)">
+            Retirar pendiente local
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+}

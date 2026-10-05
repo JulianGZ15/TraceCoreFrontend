@@ -1,0 +1,36 @@
+<div class="dialog-body" [class.embedded]="!ref">
+  @if (ref) {
+    <tc-page-heading section="Calidad" title="Abrir retención" />
+  }
+  <tc-feedback [message]="error()" />
+  @if (conflict()) {
+    <p>Conservamos el borrador. Recarga el registro y vuelve a confirmar los cambios.</p>
+    <button [disabled]="busy()" type="button" class="btn secondary" (click)="reload()">
+      Recargar datos
+    </button>
+  }
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+      <label
+        >Tipo<select formControlName="type">
+          <option value="QUALITY">{{ label('QUALITY') }}</option>
+          <option value="SAFETY">{{ label('SAFETY') }}</option>
+          <option value="DOCUMENTATION">{{ label('DOCUMENTATION') }}</option>
+        </select></label
+      ><label class="wide">Motivo<textarea formControlName="reason" rows="3"></textarea></label>
+      <div class="wide"><tc-quality-evidence [control]="form.controls['evidenceUuid']" /></div>
+    </div>
+    @if (form.invalid && form.touched) {
+      <tc-feedback
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+      />
+    }
+    <div class="actions">
+      <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}</button
+      ><button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

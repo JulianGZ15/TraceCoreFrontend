@@ -1,0 +1,102 @@
+<div class="dialog-body" [class.embedded]="!ref">
+  @if (ref) {
+    <tc-page-heading section="Calidad" title="Política de inspección" />
+  }
+  <tc-feedback [message]="error()" />
+  @if (conflict()) {
+    <p>Conservamos el borrador. Recarga el registro y vuelve a confirmar los cambios.</p>
+    <button [disabled]="busy()" type="button" class="btn secondary" (click)="reload()">
+      Recargar datos
+    </button>
+  }
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+      <label
+        >Destino<select formControlName="target">
+          <option value="MODEL">{{ label('MODEL') }}</option>
+          <option value="CATEGORY">{{ label('CATEGORY') }}</option>
+        </select></label
+      >
+      @if (form.controls.target.value === 'MODEL') {
+        <tc-quality-option
+          [control]="form.controls['modelUuid']"
+          title="Modelo"
+          kind="MODEL"
+          [assetUuid]="''"
+          [nullable]="true"
+        />
+      } @else {
+        <tc-quality-option
+          [control]="form.controls['categoryUuid']"
+          title="Categoría"
+          kind="CATEGORY"
+          [assetUuid]="''"
+          [nullable]="true"
+        />
+      }
+      <tc-quality-option
+        [control]="form.controls['standardUuid']"
+        title="Norma"
+        kind="STANDARD"
+        [assetUuid]="''"
+        [nullable]="false"
+      /><label>Revisión<input type="text" formControlName="revision" /></label
+      ><label>Método (código)<input type="text" formControlName="method" /></label
+      ><label
+        >Intervalo de calendario (días)<input type="number" formControlName="calendarDays" /></label
+      ><label
+        >Intervalo de horas (decimal exacto)<input
+          type="text"
+          formControlName="hourInterval" /></label
+      ><label>Inicio con desplazamiento UTC<input type="text" formControlName="validFrom" /></label
+      ><label
+        >Fin con desplazamiento UTC (opcional)<input type="text" formControlName="validTo" /></label
+      ><label class="check"><input type="checkbox" formControlName="requireMtr" />Exige MTR</label
+      ><label class="check"
+        ><input type="checkbox" formControlName="requireCertification" />Exige certificación</label
+      >
+      <div class="wide">
+        <h2>Criterios de inspección</h2>
+        <p>Hasta 50 criterios únicos. Unidades explícitas, sin conversión automática.</p>
+        <div formArrayName="criteria">
+          @for (c of criteria.controls; track c; let i = $index) {
+            <div class="criteria form-grid" [formGroupName]="i">
+              <label>Parámetro<input type="text" formControlName="parameter" /></label
+              ><label>Unidad (código)<input type="text" formControlName="unit" /></label
+              ><label>Mínimo exacto<input type="text" formControlName="minimum" /></label
+              ><label>Máximo exacto<input type="text" formControlName="maximum" /></label
+              ><button
+                [disabled]="busy()"
+                class="btn secondary"
+                type="button"
+                (click)="criteria.removeAt(i); form.markAsDirty()"
+              >
+                Retirar criterio
+              </button>
+            </div>
+          }
+        </div>
+        <button
+          class="btn secondary"
+          type="button"
+          [disabled]="criteria.length >= 50"
+          (click)="addCriterion()"
+        >
+          Agregar criterio
+        </button>
+      </div>
+    </div>
+    @if (form.invalid && form.touched) {
+      <tc-feedback
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+      />
+    }
+    <div class="actions">
+      <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}</button
+      ><button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

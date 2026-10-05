@@ -1,0 +1,89 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Requisitos de ficha"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+<div class="filters">
+  <tc-quality-option [control]="sheet" title="Ficha aprobada" kind="SHEET" /><button
+    [disabled]="busy()"
+    class="btn secondary"
+    (click)="filter({ sheetUuid: sheet.value })"
+  >
+    Consultar ficha
+  </button>
+  @if (access.global('QUALITY_MANAGE')) {
+    <button [disabled]="busy()" class="btn primary" (click)="create()">Nuevo requisito</button>
+  }
+</div>
+<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
+  <table>
+    <thead>
+      <tr>
+        <th>Ficha / norma</th>
+        <th>Requisitos</th>
+        <th>Revisión</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.uuid) {
+        <tr>
+          <td class="mono">{{ row.sheetUuid }}<br />{{ row.standardUuid }}</td>
+          <td>
+            {{ row.scope }}
+            <p>{{ row.requirements }}</p>
+            <small
+              >MTR: {{ row.requireMtr ? 'Exigido' : 'No exigido' }} · Certificación:
+              {{ row.requireCertification ? 'Exigida' : 'No exigida' }}</small
+            >
+          </td>
+          <td>{{ row.revokedAt ? 'Revocado' : row.approvedAt ? 'Aprobado' : 'Pendiente' }}</td>
+          <td>
+            @if (access.global('QUALITY_APPROVE')) {
+              @if (!row.approvedAt && !row.revokedAt) {
+                <button
+                  [disabled]="busy()"
+                  class="btn secondary"
+                  (click)="transition('/requirements/' + row.uuid + '/approve', row.version)"
+                >
+                  Aprobar
+                </button>
+              }
+              @if (row.approvedAt && !row.revokedAt) {
+                <button
+                  [disabled]="busy()"
+                  class="btn secondary"
+                  (click)="transition('/requirements/' + row.uuid + '/revoke', row.version)"
+                >
+                  Revocar
+                </button>
+              }
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="empty">Sin registros para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

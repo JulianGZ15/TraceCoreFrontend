@@ -1,0 +1,33 @@
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Historial de inspecciones</h2>
+    @if (asset().lifecycle === 'REGISTERED' && access.can('INSPECTION_MANAGE', asset().yardUuid)) {
+      <button [disabled]="busy()" class="btn primary" (click)="create()">
+        Programar inspección
+      </button>
+    }
+  </div>
+  @for (row of rows(); track row.record.uuid) {
+    @let r = row.record;
+    <div class="record">
+      <h3>{{ label(r.state) }} · {{ label(r.verdict) }}</h3>
+      <p>{{ date(r.scheduledAt) }}</p>
+      <p>{{ r.findings }}</p>
+      <a class="btn secondary" [routerLink]="['/calidad/inspecciones', r.uuid]">Abrir inspección</a>
+      <p class="mono">{{ r.uuid }}</p>
+    </div>
+  } @empty {
+    <p class="empty">Sin registros.</p>
+  }
+</section>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="move($event)"
+/>

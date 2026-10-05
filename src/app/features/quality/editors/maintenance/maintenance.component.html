@@ -1,0 +1,64 @@
+<div class="dialog-body" [class.embedded]="!ref">
+  @if (ref) {
+    <tc-page-heading section="Calidad" title="Planificar mantenimiento" />
+  }
+  <tc-feedback [message]="error()" />
+  @if (conflict()) {
+    <p>Conservamos el borrador. Recarga el registro y vuelve a confirmar los cambios.</p>
+    <button [disabled]="busy()" type="button" class="btn secondary" (click)="reload()">
+      Recargar datos
+    </button>
+  }
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+      <tc-quality-option
+        [control]="form.controls['assetUuid']"
+        title="Pieza"
+        kind="ASSET"
+        [assetUuid]="form.get('assetUuid')?.value ?? data['assetUuid'] ?? ''"
+        [nullable]="false"
+      /><label
+        >Tipo<select formControlName="kind">
+          <option value="PREVENTIVE">{{ label('PREVENTIVE') }}</option>
+          <option value="CORRECTIVE">{{ label('CORRECTIVE') }}</option>
+          <option value="PRESERVATION">{{ label('PRESERVATION') }}</option>
+        </select></label
+      ><label class="wide">Motivo<textarea formControlName="reason" rows="3"></textarea></label
+      ><label
+        >Fecha programada con desplazamiento UTC<input
+          type="text"
+          formControlName="scheduledAt" /></label
+      ><tc-quality-option
+        [control]="form.controls['responsibleUuid']"
+        title="Responsable activo"
+        kind="USER"
+        [assetUuid]="form.get('assetUuid')?.value ?? data['assetUuid'] ?? ''"
+        [nullable]="false"
+      /><tc-quality-option
+        [control]="form.controls['workshopUuid']"
+        title="Taller del patio"
+        kind="WORKSHOP"
+        [assetUuid]="form.get('assetUuid')?.value ?? data['assetUuid'] ?? ''"
+        [nullable]="true"
+      /><tc-quality-option
+        [control]="form.controls['providerUuid']"
+        title="Proveedor externo"
+        kind="PARTY"
+        [assetUuid]="form.get('assetUuid')?.value ?? data['assetUuid'] ?? ''"
+        [nullable]="true"
+      />
+    </div>
+    @if (form.invalid && form.touched) {
+      <tc-feedback
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+      />
+    }
+    <div class="actions">
+      <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}</button
+      ><button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

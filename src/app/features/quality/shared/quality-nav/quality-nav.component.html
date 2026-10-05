@@ -1,0 +1,12 @@
+<nav class="quality-nav" aria-label="Calidad y mantenimiento">
+  <a routerLink="/calidad/equipos" routerLinkActive="active">Equipos</a
+  ><a routerLink="/calidad/inspecciones" routerLinkActive="active">Inspecciones</a
+  ><a routerLink="/calidad/mantenimiento" routerLinkActive="active">Mantenimiento</a>
+  @if (access.global('QUALITY_READ')) {
+    <a routerLink="/calidad/estandares" routerLinkActive="active">Estándares</a
+    ><a routerLink="/calidad/requisitos" routerLinkActive="active">Requisitos</a
+    ><a routerLink="/calidad/politicas" routerLinkActive="active">Políticas</a
+    ><a routerLink="/calidad/mtrs" routerLinkActive="active">MTR</a
+    ><a routerLink="/calidad/evidencias" routerLinkActive="active">Evidencias</a>
+  }
+</nav>

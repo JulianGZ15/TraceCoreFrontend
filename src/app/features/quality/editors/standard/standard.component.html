@@ -1,0 +1,32 @@
+<div class="dialog-body" [class.embedded]="!ref">
+  @if (ref) {
+    <tc-page-heading section="Calidad" title="Nuevo estándar" />
+  }
+  <tc-feedback [message]="error()" />
+  @if (conflict()) {
+    <p>Conservamos el borrador. Recarga el registro y vuelve a confirmar los cambios.</p>
+    <button [disabled]="busy()" type="button" class="btn secondary" (click)="reload()">
+      Recargar datos
+    </button>
+  }
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+      <label>Organización<input type="text" formControlName="organization" /></label
+      ><label>Código<input type="text" formControlName="code" /></label
+      ><label>Edición<input type="text" formControlName="edition" /></label
+      ><label class="wide">Título<textarea formControlName="title" rows="3"></textarea></label>
+    </div>
+    @if (form.invalid && form.touched) {
+      <tc-feedback
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+      />
+    }
+    <div class="actions">
+      <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}</button
+      ><button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

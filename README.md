@@ -52,6 +52,12 @@ Para comprobar el navegador contra Spring Boot y PostgreSQL reales:
 .\tools\test-live-api.ps1
 ```
 
-Requiere Java 21 y PostgreSQL local; `-PostgresBin` admite otra carpeta. El script empaqueta el backend, crea una base aislada y un administrador de prueba, elige puertos libres y ejecuta los flujos de ambas etapas. Incluye expedientes, contactos principales, carga/descarga de evidencia, revisión documental, crédito exacto, elegibilidad AVL y cuotas. Cada ejecución usa un directorio exclusivo de evidencias. Detiene backend y clúster en `finally`, restaura las variables de entorno y conserva logs en `Backend/tracecore/target/frontend-smoke`; los artefactos de navegador quedan en `test-results-live`. No utiliza la base de trabajo.
+Requiere Java 21 y PostgreSQL local; `-PostgresBin` admite otra carpeta. El script empaqueta el backend, crea una base aislada y un administrador de prueba, elige puertos libres y ejecuta los flujos de las cinco etapas. Incluye expedientes, contactos principales, carga/descarga de evidencia, revisión documental, crédito exacto, elegibilidad AVL y cuotas. Cada ejecución usa un directorio exclusivo de evidencias. Detiene backend y clúster en `finally`, restaura las variables de entorno y conserva logs en `Backend/tracecore/target/frontend-smoke`; los artefactos de navegador quedan en `test-results-live`. No utiliza la base de trabajo.
 
 El resultado de cada entrega se registra en [etapa 1](../../docs/front/02-etapa1-organizacion-acceso.md), [etapa 2](../../docs/front/03-etapa2-terceros-contactos-avl.md) y [etapa 3](../../docs/front/04-etapa3-catalogo-tecnico-equipos.md). El contrato ampliado está documentado en [catálogo técnico y equipos](../../docs/back/07-catalogo-tecnico-equipos.md).
+
+## Calidad, mantenimiento y cumplimiento
+
+[Etapa 5 y resultados de verificación](../../docs/front/06-etapa5-calidad-mantenimiento-cumplimiento.md). El módulo quality incluye directorio, estándares, requisitos, políticas, MTR, inspecciones, certificaciones, órdenes/tareas, retenciones, liberaciones y evidencias. Sus 36 componentes se generaron con Angular CLI y conservan plantilla, SCSS y spec independientes. Reutiliza las dependencias, tokens, SVG y controles existentes.
+
+El ejecutor de API real mantiene PostgreSQL y archivos exclusivos por ejecución. Además de los flujos 1–5, reemplaza completamente el proceso backend con bootstrap desactivado y comprueba el recibo idempotente persistente, la representación actual y el rechazo de payload diferente. Restaura configuración y detiene procesos en finally. Evidencias y solicitudes JSON pendientes no comparten almacenamiento: los archivos no se persisten en navegador; pendientes JSON quedan asociados al actor en sessionStorage y se limpian al terminar sesión.

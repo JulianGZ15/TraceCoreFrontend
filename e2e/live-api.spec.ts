@@ -251,7 +251,13 @@ test('stage two real API: dossiers, evidence, exact credit, AVL eligibility and 
   let terms = (await get(base + '/commercial-terms'))[0];
   expect(terms.creditLimitExact).toBe('999999999999999.9999');
   await page.getByRole('button', { name: 'Cerrar vigencia' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Cerrar condición comercial', exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel('Fin exclusivo')).toHaveClass(/ng-pristine/);
   await page.getByLabel('Fin exclusivo').fill('2030-01-01T00:00');
+  await expect(page.getByLabel('Fin exclusivo')).toHaveClass(/ng-dirty/);
+  await expect(page.getByLabel('Fin exclusivo')).toHaveValue('2030-01-01T00:00');
   await page.getByRole('button', { name: 'Guardar', exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   terms = (await get(base + '/commercial-terms'))[0];
@@ -269,6 +275,7 @@ test('stage two real API: dossiers, evidence, exact credit, AVL eligibility and 
   await expect(page.getByText('No elegible', { exact: false })).toBeVisible();
   await section('AVL', 'Evaluaciones AVL');
   await page.getByRole('button', { name: '+ Nueva evaluación' }).click();
+  await expect(page.getByRole('dialog').getByLabel('Alcance AVL')).toHaveClass(/ng-pristine/);
   await page.getByLabel('Alcance AVL').fill('API_6A');
   await page.getByLabel('Score').fill('99.50');
   await page.getByLabel('Clasificación declarada').fill('TIER_1');
@@ -285,7 +292,9 @@ test('stage two real API: dossiers, evidence, exact credit, AVL eligibility and 
   expect(eligibility.allowed).toBe(false);
   await section('Cuotas', 'Cuotas de distribución');
   await page.getByRole('button', { name: '+ Nuevo registro' }).click();
+  await expect(page.getByLabel('Ubicación', { exact: true })).toHaveClass(/ng-pristine/);
   await page.getByLabel('Ubicación', { exact: true }).selectOption('REGION');
+  await expect(page.getByLabel('Ubicación', { exact: true })).toHaveValue('REGION');
   await page.getByLabel('Código de región').fill('NORTH');
   await page.getByLabel('Alcance contractual').fill('TUBULAR_API5CT');
   await page.getByLabel('Cantidad').fill('10');
@@ -640,4 +649,13 @@ test('stage three and four real API: exact catalog, inbound, custody, reservatio
     destination.uuid,
   );
   expect((await get('/equipment/assets/' + asset.uuid)).condition.condition).toBe('DAMAGED');
+});
+
+import { qualityLive } from './quality-live';
+test('stage five real API: evidence, corrected MTR, inspections, maintenance and releases', async ({
+  page,
+}) => {
+  test.skip(!process.env['TRACECORE_E2E_ISOLATED'], 'Requires disposable PostgreSQL.');
+  test.setTimeout(240000);
+  await qualityLive(page);
 });

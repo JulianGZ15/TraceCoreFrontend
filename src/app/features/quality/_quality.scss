@@ -1,0 +1,148 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.quality-nav,
+.section-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.quality-nav a,
+.section-nav a {
+  padding: 8px 12px;
+  border: 1px solid var(--tc-border);
+  border-radius: 4px;
+  min-height: 40px;
+}
+.quality-nav a.active,
+.section-nav a.active {
+  background: var(--tc-selection);
+  border-color: var(--tc-action);
+  color: var(--tc-action-text);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.wide {
+  grid-column: 1/-1;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.dialog-body {
+  padding: 24px;
+  overflow: auto;
+  max-height: calc(100dvh - 48px);
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.filters label {
+  flex: 1;
+  min-width: 160px;
+}
+.identity {
+  padding: 24px;
+  margin-bottom: 24px;
+  border-left: 4px solid var(--tc-action);
+}
+dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+dt {
+  color: var(--tc-text-muted);
+  font-size: 12px;
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.record {
+  padding: 20px;
+  border-bottom: 1px solid var(--tc-border);
+}
+.record:last-child {
+  border: 0;
+}
+.table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.criteria {
+  border: 1px solid var(--tc-border);
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.check {
+  flex-direction: row;
+  align-items: center;
+}
+.empty {
+  padding: 32px;
+  color: var(--tc-text-muted);
+}
+.selected {
+  overflow-wrap: anywhere;
+  color: var(--tc-text-muted);
+}
+.picker {
+  border: 1px solid var(--tc-border);
+  padding: 12px;
+  border-radius: 4px;
+}
+.picker-list {
+  max-height: 240px;
+  overflow: auto;
+  display: grid;
+  gap: 4px;
+}
+.picker-list button {
+  text-align: left;
+  min-height: 44px;
+  background: var(--tc-panel);
+  border: 1px solid var(--tc-border);
+  padding: 8px;
+}
+.picker-list button[aria-pressed='true'] {
+  background: var(--tc-selection);
+  border-color: var(--tc-action);
+}
+@media (max-width: 767px) {
+  .form-grid,
+  dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dialog-body {
+    padding: 16px;
+  }
+  .quality-nav a,
+  .section-nav a {
+    min-height: 44px;
+  }
+}
+
+.dialog-body.embedded {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+}

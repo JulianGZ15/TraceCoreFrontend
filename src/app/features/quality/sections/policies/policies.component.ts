@@ -1,0 +1,48 @@
+import { Component, signal, input, effect, untracked, inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { QualityPage } from '../../page-base';
+import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
+import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
+import { TransitionComponent } from '../../editors/transition/transition.component';
+import { uuidPattern } from '../../rules';
+import * as M from '../../models';
+
+@Component({
+  selector: 'tc-quality-section-policies',
+  imports: [Feedback],
+  templateUrl: './policies.component.html',
+  styleUrl: './policies.component.scss',
+})
+export class PoliciesComponent extends QualityPage {
+  readonly asset = input.required<M.Asset>();
+  readonly rows = signal<M.Policy[]>([]);
+  async load() {
+    await this.request(
+      () => this.get<M.Policy[]>('/assets/' + this.asset().uuid + '/applicable-policies'),
+      (r) => this.rows.set(r),
+    );
+  }
+  constructor() {
+    super();
+    effect(() => {
+      this.asset();
+      this.stop.next();
+      untracked(() => this.watch(() => this.load()));
+    });
+  }
+  move(n: number) {
+    this.page(n);
+  }
+  async transition(path: string, version: number, evidenceRequired = false) {
+    if (
+      await this.editor(
+        TransitionComponent,
+        { path, version, evidenceRequired },
+        'Confirmar operación',
+      )
+    )
+      await this.load();
+  }
+}

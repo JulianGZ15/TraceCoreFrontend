@@ -1,0 +1,30 @@
+<div class="picker">
+  <label>Referencia de evidencia (UUID)<input [formControl]="field" autocomplete="off" /></label>
+  <p class="small-muted">
+    Utiliza una referencia documental existente. Vincularla no verifica su contenido.
+  </p>
+  @if (access.global('QUALITY_READ')) {
+    <tc-feedback [message]="error()" />
+    <div class="picker-list">
+      @for (row of rows(); track row.uuid) {
+        <button
+          [disabled]="busy()"
+          type="button"
+          [attr.aria-pressed]="field.value === row.uuid"
+          (click)="select(row)"
+        >
+          {{ row.fileName }} · {{ row.mediaType }}
+        </button>
+      }
+    </div>
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="move($event)"
+    />
+  } @else {
+    <p class="small-muted">Solicita la referencia al responsable documental.</p>
+  }
+</div>

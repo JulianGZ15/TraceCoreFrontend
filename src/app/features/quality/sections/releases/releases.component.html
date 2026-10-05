@@ -1,0 +1,42 @@
+<tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Liberaciones individuales</h2>
+    @if (asset().lifecycle === 'REGISTERED' && access.can('QUALITY_RELEASE', asset().yardUuid)) {
+      <button [disabled]="busy()" class="btn primary" (click)="create()">Nuevo registro</button>
+    }
+  </div>
+  @for (row of rows(); track row.record.uuid) {
+    @let r = row.record;
+    <div class="record">
+      <h3>{{ label(r.scope) }} · {{ r.effective ? 'Eficaz' : 'Sin eficacia' }}</h3>
+      <p>{{ date(r.validFrom) }} — {{ date(r.validTo) }}</p>
+      <p>Evaluada: {{ date(r.evaluatedAt) }}</p>
+      @for (cause of r.ineffectiveReasons; track cause) {
+        <p>{{ reason(cause) }}</p>
+      }
+      @if (!r.revokedAt && access.can('QUALITY_RELEASE', asset().yardUuid)) {
+        <button
+          [disabled]="busy()"
+          class="btn secondary"
+          (click)="transition('/releases/' + r.uuid + '/revoke', r.version)"
+        >
+          Revocar
+        </button>
+      }
+      <p class="mono">{{ r.uuid }}</p>
+    </div>
+  } @empty {
+    <p class="empty">Sin registros.</p>
+  }
+</section>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="move($event)"
+/>

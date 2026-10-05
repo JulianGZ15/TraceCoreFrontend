@@ -27,6 +27,8 @@ export async function render<T>(component: Type<T>, inputs: Record<string, unkno
     epoch: signal(0),
     ended: new Subject<void>(),
     inventoryRead: () => false,
+    qualityRead: () => false,
+    qualityWrite: () => false,
     inventoryWrite: () => false,
     user: signal(user),
     context: signal({

@@ -1,55 +1,68 @@
-<div class="navigation">
-  @if (ref) {
-    <button class="icon-button nav-close" aria-label="Cerrar navegación" (click)="close()">
-      ×
-    </button>
-  }
-  <a routerLink="/inicio" aria-label="Ir al inicio de TraceCore" (click)="close()"
-    ><tc-brand-logo
-  /></a>
-  <div class="nav-label">Espacio de trabajo</div>
-  <nav aria-label="Principal">
-    <a routerLink="/inicio" routerLinkActive="active" (click)="close()"
-      ><tc-icon name="home" />Inicio</a
-    >
-    @if (session.can('ORGANIZATION_READ')) {
-      <a routerLink="/organizacion/empresa" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="domain" />Empresa</a
-      >
-    }
-    @if (session.can('YARD_MANAGE')) {
-      <a routerLink="/organizacion/patios" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="warehouse" />Patios</a
-      >
-    }
-    @if (session.can('ACCESS_MANAGE')) {
-      <a routerLink="/acceso/usuarios" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="group" />Usuarios</a
-      ><a routerLink="/acceso/roles" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="shield" />Roles y permisos</a
-      >
-    }
-    @if (session.can('AUDIT_READ')) {
-      <a routerLink="/auditoria" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="history" />Auditoría</a
-      >
-    }
-    @if (session.can('PARTY_READ')) {
-      <a routerLink="/terceros" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="group" />Terceros y AVL</a
-      >
-    }
-    @if (session.can('EQUIPMENT_READ')) {
-      <a routerLink='/catalogo' routerLinkActive='active' (click)='close()'><tc-icon name='domain' />Catálogo técnico</a>
-      <a routerLink='/equipos' routerLinkActive='active' (click)='close()'><tc-icon name='warehouse' />Equipos</a>
-    }
-    @if(session.inventoryRead()){<a routerLink="/inventario" routerLinkActive="active" (click)="close()"><tc-icon name="warehouse"/>Inventario y patios</a>}
-  </nav>
-  <div class="nav-footer">
-    <a routerLink="/mi-cuenta" routerLinkActive="active" (click)="close()"
-      ><tc-icon name="person" />Mi cuenta</a
-    ><button class="nav-logout" (click)="close(); session.logout()">
-      <tc-icon name="logout" />Cerrar sesión</button
-    ><small>Administración · TraceCore</small>
-  </div>
-</div>
+<div class="navigation">
+  @if (ref) {
+    <button class="icon-button nav-close" aria-label="Cerrar navegación" (click)="close()">
+      ×
+    </button>
+  }
+  <a routerLink="/inicio" aria-label="Ir al inicio de TraceCore" (click)="close()"
+    ><tc-brand-logo
+  /></a>
+  <div class="nav-label">Espacio de trabajo</div>
+  <nav aria-label="Principal">
+    @if (session.qualityRead()) {
+      <a routerLink="/calidad" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="shield" />Calidad y mantenimiento</a
+      >
+    }
+    <a routerLink="/inicio" routerLinkActive="active" (click)="close()"
+      ><tc-icon name="home" />Inicio</a
+    >
+    @if (session.can('ORGANIZATION_READ')) {
+      <a routerLink="/organizacion/empresa" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="domain" />Empresa</a
+      >
+    }
+    @if (session.can('YARD_MANAGE')) {
+      <a routerLink="/organizacion/patios" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="warehouse" />Patios</a
+      >
+    }
+    @if (session.can('ACCESS_MANAGE')) {
+      <a routerLink="/acceso/usuarios" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="group" />Usuarios</a
+      ><a routerLink="/acceso/roles" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="shield" />Roles y permisos</a
+      >
+    }
+    @if (session.can('AUDIT_READ')) {
+      <a routerLink="/auditoria" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="history" />Auditoría</a
+      >
+    }
+    @if (session.can('PARTY_READ')) {
+      <a routerLink="/terceros" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="group" />Terceros y AVL</a
+      >
+    }
+    @if (session.can('EQUIPMENT_READ')) {
+      <a routerLink="/catalogo" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="domain" />Catálogo técnico</a
+      >
+      <a routerLink="/equipos" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="warehouse" />Equipos</a
+      >
+    }
+    @if (session.inventoryRead()) {
+      <a routerLink="/inventario" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="warehouse" />Inventario y patios</a
+      >
+    }
+  </nav>
+  <div class="nav-footer">
+    <a routerLink="/mi-cuenta" routerLinkActive="active" (click)="close()"
+      ><tc-icon name="person" />Mi cuenta</a
+    ><button class="nav-logout" (click)="close(); session.logout()">
+      <tc-icon name="logout" />Cerrar sesión</button
+    ><small>Administración · TraceCore</small>
+  </div>
+</div>

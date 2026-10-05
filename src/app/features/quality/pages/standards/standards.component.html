@@ -1,0 +1,54 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Estándares"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (access.global('QUALITY_MANAGE')) {
+  <div class="actions">
+    <button [disabled]="busy()" class="btn primary" (click)="create()">Nuevo estándar</button>
+  </div>
+}
+<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
+  <table>
+    <thead>
+      <tr>
+        <th>Organización</th>
+        <th>Código / edición</th>
+        <th>Título</th>
+        <th>UUID</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.uuid) {
+        <tr>
+          <td>{{ row.organization }}</td>
+          <td>{{ row.code }} · {{ row.edition }}</td>
+          <td>{{ row.title }}</td>
+          <td class="mono">{{ row.uuid }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="empty">Sin registros para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

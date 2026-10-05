@@ -1,0 +1,49 @@
+<div class="picker">
+  <strong>{{ title() }}</strong
+  ><label>UUID seleccionado<input [formControl]="field" autocomplete="off" /></label>
+  <p class="selected">{{ selected() || control().value || 'Sin selección' }}</p>
+  @if (!['STANDARD', 'POLICY', 'TRACE'].includes(kind())) {
+    <label
+      >Buscar<input
+        [(ngModel)]="search"
+        [ngModelOptions]="{ standalone: true }"
+        (keydown.enter)="$event.preventDefault(); offset.set(0); load()" /></label
+    ><button
+      [disabled]="busy()"
+      class="btn secondary"
+      type="button"
+      (click)="offset.set(0); load()"
+    >
+      Buscar
+    </button>
+  }
+  <tc-feedback [message]="error()" />
+  <div class="picker-list">
+    @for (row of rows(); track row.uuid) {
+      <button
+        type="button"
+        [disabled]="busy()"
+        [attr.aria-pressed]="control().value === row.uuid"
+        (click)="select(row)"
+      >
+        {{ row.label }}
+      </button>
+    } @empty {
+      <span class="small-muted">Sin opciones disponibles.</span>
+    }
+  </div>
+  @if (kind() !== 'POLICY') {
+    <tc-pagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="move($event)"
+    />
+  }
+  @if (nullable()) {
+    <button [disabled]="busy()" type="button" class="btn secondary" (click)="unset()">
+      Quitar selección
+    </button>
+  }
+</div>

@@ -1,0 +1,107 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Inspección"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (record(); as r) {
+  <section class="panel identity">
+    <h2>{{ asset()?.internalCode }}</h2>
+    <p>{{ label(r.state) }} · {{ date(r.scheduledAt) }}</p>
+    <dl>
+      <div>
+        <dt>Inspector asignado</dt>
+        <dd class="mono">{{ r.inspectorUuid }}</dd>
+      </div>
+      <div>
+        <dt>Política</dt>
+        <dd class="mono">{{ r.policyUuid }}</dd>
+      </div>
+      <div>
+        <dt>Instalación</dt>
+        <dd>{{ r.facility }}</dd>
+      </div>
+      <div>
+        <dt>Dictamen manual</dt>
+        <dd>{{ label(r.verdict) }}</dd>
+      </div>
+      <div>
+        <dt>Base de horas</dt>
+        <dd>{{ decimalDisplay(r.baselineHours, r.baselineHoursExact, 'Sin base') }}</dd>
+      </div>
+      <div>
+        <dt>Próxima revisión</dt>
+        <dd>
+          {{ date(r.nextDueAt) }} ·
+          {{ decimalDisplay(r.nextDueHours, r.nextDueHoursExact, 'Sin umbral') }} horas
+        </dd>
+      </div>
+    </dl>
+    <p>{{ r.findings }}</p>
+    <p>{{ r.reviewReason }}</p>
+    <div class="actions">
+      <a class="btn secondary" [routerLink]="['/calidad/equipos', r.assetUuid, 'inspecciones']"
+        >Expediente</a
+      >
+      @if (r.state === 'PLANNED' && access.can('INSPECTION_MANAGE', asset()?.yardUuid)) {
+        @if (session.user()?.uuid === r.inspectorUuid) {
+          <a class="btn primary" [routerLink]="['/calidad/inspecciones', r.uuid, 'resultados']"
+            >Registrar resultados</a
+          >
+        }
+        <button
+          [disabled]="busy()"
+          class="btn secondary"
+          (click)="transition('/inspections/' + r.uuid + '/cancel', r.version)"
+        >
+          Cancelar inspección
+        </button>
+      }
+      @if (r.state === 'RECORDED' && access.can('QUALITY_APPROVE', asset()?.yardUuid)) {
+        @if (r.verdict === 'PASS' && !measures().some(failed)) {
+          <button
+            [disabled]="busy()"
+            class="btn primary"
+            (click)="transition('/inspections/' + r.uuid + '/review', r.version, true)"
+          >
+            Aprobar
+          </button>
+        }
+        <button
+          [disabled]="busy()"
+          class="btn secondary"
+          (click)="transition('/inspections/' + r.uuid + '/review', r.version, false)"
+        >
+          Rechazar
+        </button>
+      }
+    </div>
+  </section>
+  <section class="panel record">
+    <h2>Criterios congelados</h2>
+    @for (c of r.criteria; track c.parameter) {
+      <p>
+        {{ c.parameter }} · {{ c.unit }} ·
+        {{ decimalDisplay(c.minimum, c.minimumExact, 'Sin mínimo') }} /
+        {{ decimalDisplay(c.maximum, c.maximumExact, 'Sin máximo') }}
+      </p>
+    }
+    @for (m of measures(); track m.uuid) {
+      <p>
+        {{ m.parameter }}: {{ decimalDisplay(m.value, m.valueExact, 'Sin medición') }}
+        {{ m.unit }} · {{ label(m.result) }}
+      </p>
+    }
+  </section>
+} @else if (!route.snapshot.paramMap.has('uuid')) {
+  <tc-quality-inspection-editor />
+}

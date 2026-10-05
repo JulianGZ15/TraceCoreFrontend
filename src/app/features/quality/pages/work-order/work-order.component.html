@@ -1,0 +1,110 @@
+<tc-page-heading
+  section="Calidad y mantenimiento"
+  title="Orden de mantenimiento"
+  description=""
+/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+  [message]="success()"
+  kind="success"
+/>
+@if (busy()) {
+  <p role="status">Cargando…</p>
+}
+@if (conflict()) {
+  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+}
+<tc-quality-pending />
+@if (record(); as r) {
+  <section class="panel identity">
+    <h2>{{ asset()?.internalCode }} · {{ label(r.kind) }}</h2>
+    <p>{{ label(r.state) }} · {{ date(r.scheduledAt) }}</p>
+    <p>{{ r.reason }}</p>
+    <dl>
+      <div>
+        <dt>Responsable</dt>
+        <dd class="mono">{{ r.responsibleUuid }}</dd>
+      </div>
+      <div>
+        <dt>Taller / proveedor</dt>
+        <dd class="mono">{{ r.workshopUuid || r.providerUuid || 'Sin asignación' }}</dd>
+      </div>
+      <div>
+        <dt>Inicio</dt>
+        <dd>{{ date(r.startedAt) }}</dd>
+      </div>
+      <div>
+        <dt>Terminación</dt>
+        <dd>{{ date(r.completedAt) }}</dd>
+      </div>
+    </dl>
+    <p>{{ r.completionReason }}</p>
+    <p>
+      Terminar mantenimiento deja condición desconocida y mantiene la retención abierta. Una nueva
+      inspección permitirá continuar el proceso técnico.
+    </p>
+    <div class="actions">
+      <a class="btn secondary" [routerLink]="['/calidad/equipos', r.assetUuid, 'mantenimiento']"
+        >Expediente</a
+      >
+      @if (access.can('MAINTENANCE_MANAGE', asset()?.yardUuid)) {
+        @if (r.state === 'PLANNED') {
+          <button class="btn secondary" [disabled]="tasks().length >= 100" (click)="task()">
+            Agregar tarea</button
+          ><button
+            class="btn primary"
+            [disabled]="!tasks().length"
+            (click)="transition('/maintenance/' + r.uuid + '/start', r.version, undefined, true)"
+          >
+            Iniciar orden</button
+          ><button
+            [disabled]="busy()"
+            class="btn secondary"
+            (click)="transition('/maintenance/' + r.uuid + '/cancel', r.version)"
+          >
+            Cancelar orden
+          </button>
+        }
+        @if (r.state === 'IN_PROGRESS') {
+          <button
+            class="btn primary"
+            [disabled]="!allCompleted()"
+            (click)="transition('/maintenance/' + r.uuid + '/complete', r.version, undefined, true)"
+          >
+            Terminar orden
+          </button>
+        }
+      }
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-heading">
+      <h2>Tareas · {{ tasks().length }} / 100</h2>
+    </div>
+    @for (t of tasks(); track t.uuid) {
+      <div class="record">
+        <h3>{{ t.code }} · {{ t.description }}</h3>
+        <p>{{ t.requirements }}</p>
+        <p>{{ t.completedAt ? 'Completada · ' + date(t.completedAt) : 'Pendiente' }}</p>
+        @if (access.can('MAINTENANCE_MANAGE', asset()?.yardUuid) && !t.completedAt) {
+          @if (r.state === 'PLANNED') {
+            <button [disabled]="busy()" class="btn secondary" (click)="task(t)">
+              Corregir definición
+            </button>
+          }
+          @if (r.state === 'IN_PROGRESS') {
+            <button
+              [disabled]="busy()"
+              class="btn secondary"
+              (click)="transition('/tasks/' + t.uuid + '/complete', t.version, undefined, true)"
+            >
+              Completar tarea
+            </button>
+          }
+        }
+      </div>
+    } @empty {
+      <p class="empty">Sin tareas definidas.</p>
+    }
+  </section>
+} @else if (!route.snapshot.paramMap.has('uuid')) {
+  <tc-quality-maintenance-editor />
+}

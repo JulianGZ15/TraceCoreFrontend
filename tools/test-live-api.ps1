@@ -11,7 +11,7 @@ function Invoke-PgControl([string[]]$ControlArguments, [string]$Operation) {
     if (-not $control.WaitForExit(35000) -or $control.ExitCode -ne 0) { throw ('PostgreSQL control failed: ' + $Operation) }
 }
 $dbPort = Get-TestPort; $apiPort = Get-TestPort; $frontPort = Get-TestPort
-$variables = @('SPRING_PROFILES_ACTIVE','TRACECORE_DB_URL','TRACECORE_DB_USERNAME','TRACECORE_DB_PASSWORD','TRACECORE_AUTH_SECRET_BASE64','TRACECORE_BOOTSTRAP_ENABLED','TRACECORE_COMPANY_LEGAL_NAME','TRACECORE_COMPANY_NAME','TRACECORE_ADMIN_NAME','TRACECORE_ADMIN_EMAIL','TRACECORE_ADMIN_PASSWORD','TRACECORE_E2E_PROXY','TRACECORE_E2E_ISOLATED','TRACECORE_E2E_FRONT_PORT','TRACECORE_E2E_FRONT_URL','TRACECORE_EVIDENCE_ROOT')
+$variables = @('SPRING_PROFILES_ACTIVE','TRACECORE_DB_URL','TRACECORE_DB_USERNAME','TRACECORE_DB_PASSWORD','TRACECORE_AUTH_SECRET_BASE64','TRACECORE_BOOTSTRAP_ENABLED','TRACECORE_COMPANY_LEGAL_NAME','TRACECORE_COMPANY_NAME','TRACECORE_ADMIN_NAME','TRACECORE_ADMIN_EMAIL','TRACECORE_ADMIN_PASSWORD','TRACECORE_E2E_PROXY','TRACECORE_E2E_ISOLATED','TRACECORE_E2E_FRONT_PORT','TRACECORE_E2E_FRONT_URL','TRACECORE_EVIDENCE_ROOT','TRACECORE_E2E_RECOVERY_FILE','TRACECORE_E2E_RECOVERY','TRACECORE_CORS_ORIGINS','TRACECORE_E2E_API_URL')
 $previous = @{}; foreach ($key in $variables) { $previous[$key] = [Environment]::GetEnvironmentVariable($key, 'Process') }
 $started = $false; $backend = $null
 try {
@@ -22,6 +22,8 @@ try {
     Invoke-PgControl @('-D', ('"' + $clusterPath + '"'), '-l', ('"' + (Join-Path $testRoot 'postgres.log') + '"'), '-o', ('"-h 127.0.0.1 -p ' + $dbPort + '"'), '-w', '-t', '30', 'start') 'start'; $started = $true
     $env:SPRING_PROFILES_ACTIVE = 'postgres'; $env:TRACECORE_DB_URL = 'jdbc:postgresql://127.0.0.1:' + $dbPort + '/postgres'; $env:TRACECORE_DB_USERNAME = 'postgres'; $env:TRACECORE_DB_PASSWORD = 'isolated-test'
     $env:TRACECORE_EVIDENCE_ROOT = Join-Path $testRoot 'party-evidence'
+    $env:TRACECORE_CORS_ORIGINS = 'http://127.0.0.1:' + $frontPort; $env:TRACECORE_E2E_API_URL = 'http://127.0.0.1:' + $apiPort
+    $env:TRACECORE_E2E_RECOVERY_FILE = Join-Path $testRoot 'quality-recovery.json'; $env:TRACECORE_E2E_RECOVERY = 'false'
     $random = New-Object byte[] 32; $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($random); $rng.Dispose(); $env:TRACECORE_AUTH_SECRET_BASE64 = [Convert]::ToBase64String($random)
     $env:TRACECORE_BOOTSTRAP_ENABLED = 'true'; $env:TRACECORE_COMPANY_LEGAL_NAME = 'TraceCore Isolated Test'; $env:TRACECORE_COMPANY_NAME = 'TraceCore Isolated'; $env:TRACECORE_ADMIN_NAME = 'Admin Prueba'; $env:TRACECORE_ADMIN_EMAIL = 'admin@example.test'; $env:TRACECORE_ADMIN_PASSWORD = 'IsolatedAdmin123!'
     $jar = Join-Path $backendRoot 'target/alpha-0.0.1-SNAPSHOT.jar'
@@ -36,6 +38,19 @@ try {
     $env:TRACECORE_E2E_PROXY = $proxy; $env:TRACECORE_E2E_ISOLATED = 'true'; $env:TRACECORE_E2E_FRONT_PORT = [string]$frontPort; $env:TRACECORE_E2E_FRONT_URL = 'http://127.0.0.1:' + $frontPort
     Push-Location $frontendRoot
     try { & node node_modules/@playwright/test/cli.js test --config playwright.live.config.ts; if ($LASTEXITCODE -ne 0) { throw 'Live frontend/API test failed.' } } finally { Pop-Location }
+    # Keep the disposable database/files; replace the complete API process to prove persistence.
+    $backend.Kill(); $backend.WaitForExit(10000) | Out-Null
+    $env:TRACECORE_BOOTSTRAP_ENABLED = "false"
+    $backend = Start-Process -FilePath 'java' -ArgumentList @('-jar', ('"' + $jar + '"'), ('--server.port=' + $apiPort), '--server.address=127.0.0.1') -WorkingDirectory $backendRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $testRoot 'backend-restarted.log') -RedirectStandardError (Join-Path $testRoot 'backend-restarted.err.log')
+    $ready = $false; $deadline = [DateTime]::UtcNow.AddSeconds(60)
+    while ([DateTime]::UtcNow -lt $deadline -and -not $backend.HasExited) {
+        try { Invoke-WebRequest ('http://127.0.0.1:' + $apiPort + '/api/v1/auth/context') -UseBasicParsing -TimeoutSec 2 | Out-Null } catch { if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 401) { $ready = $true; break } }
+        Start-Sleep -Milliseconds 500
+    }
+    if (-not $ready) { throw ('Restarted backend did not become ready. See ' + $testRoot) }
+    $env:TRACECORE_E2E_RECOVERY = 'true'
+    Push-Location $frontendRoot
+    try { & node node_modules/@playwright/test/cli.js test --config playwright.live.config.ts; if ($LASTEXITCODE -ne 0) { throw 'Quality persistence after restart failed.' } } finally { Pop-Location }
 } finally {
     if ($backend -and -not $backend.HasExited) { $backend.Kill(); $backend.WaitForExit(10000) | Out-Null }
     if ($started) { Invoke-PgControl @('-D', ('"' + $clusterPath + '"'), '-m', 'fast', '-w', '-t', '30', 'stop') 'stop' }
