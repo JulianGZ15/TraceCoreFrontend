@@ -1,0 +1,4 @@
+import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
+import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';
+@Component({selector:'tc-rfid-gate-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./gate.component.html',styleUrl:'./gate.component.scss'})
+export class GateComponent extends RfidPage {readonly row=signal<M.Local<M.Gate>|null>(null);ngOnInit(){this.watch(()=>this.load());}async load(){await this.request(()=>this.get<M.Local<M.Gate>>('/gates/'+this.id()),r=>this.row.set(r));}}

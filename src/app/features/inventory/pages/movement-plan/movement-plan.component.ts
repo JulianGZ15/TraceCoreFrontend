@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, input, inject } from '@angular/core';
+import { RfidPending } from '../../../rfid/pending';
 
 import { FormControl, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -28,6 +29,10 @@ import { ObservationEditorComponent } from '../../components/observation-editor/
   styleUrl: './movement-plan.component.scss',
 })
 export class MovementPlanComponent extends InventoryForm {
+  readonly rfidPassage = input<string | null>(null);
+  readonly rfidDirection = input('');
+  readonly rfidYard = input('');
+  readonly rfidPending = inject(RfidPending);
   readonly previousStep = (n: number) => n - 1;
   readonly proposal = signal(false);
   readonly step = signal(1);
@@ -54,8 +59,9 @@ export class MovementPlanComponent extends InventoryForm {
     roots: this.roots,
   });
   ngOnInit() {
-    this.proposal.set(this.route.snapshot.data['proposal'] === true);
-    this.yard.set(this.route.snapshot.queryParamMap.get('yardUuid') ?? this.session.selectedYard());
+    this.proposal.set(this.route.snapshot.data['proposal'] === true || !!this.rfidPassage());
+    this.yard.set(this.rfidYard() || this.route.snapshot.queryParamMap.get('yardUuid') || this.session.selectedYard());
+    if (this.rfidPassage() && this.rfidDirection() === 'ENTRY') this.form.controls.destinationYardUuid.setValue(this.rfidYard());
     this.addRoot();
     this.form.markAsPristine();
   }
@@ -184,6 +190,15 @@ export class MovementPlanComponent extends InventoryForm {
         const expiresAt = toInstant(v.expiresAt, v.offset);
         if (!expiresAt || Date.parse(expiresAt) <= Date.now())
           throw new Error('La propuesta exige expiración futura.');
+        if (this.rfidPassage()) {
+          if (this.rfidDirection() === 'EXIT' && this.yard() !== this.rfidYard() || this.rfidDirection() === 'ENTRY' && v.destinationYardUuid !== this.rfidYard())
+            throw new Error('La propuesta debe respetar el patio y la dirección del paso.');
+          await this.request(
+            () => this.rfidPending.post<M.ProposalDetail>('/passages/' + this.rfidPassage() + '/proposal', { movement: { ...movement, requestKey: crypto.randomUUID() }, expiresAt }),
+            (r: M.ProposalDetail) => { this.form.markAsPristine(); void this.router.navigate(['/inventario/propuestas', r.proposal.uuid]); },
+          );
+          return;
+        }
         await this.submitKeyed<M.ProposalDetail>(
           '/proposals',
           { movement, observations: this.observations, externalEventUuid: null, expiresAt },

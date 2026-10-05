@@ -29,6 +29,22 @@
   </p>
 }
 <div class="access-cards">
+  @if (session.rfidRead()) {
+    <a class="access-card" routerLink="/rfid"
+      ><h3>RFID y dispositivos</h3>
+      <p>Sesiones, recibos, chips, configuración y conciliación controlada.</p>
+      <span class="card-link">Abrir RFID ↗</span></a
+    >
+  }
+  @if (
+    !session.rfidRead() &&
+    (session.can('RFID_SCAN') || session.can('RFID_TAG_MANAGE') || session.can('RFID_DEVICE_MANAGE'))
+  ) {
+    <p class="feedback info">
+      Tienes capacidades operativas RFID, pero necesitas RFID_READ en el alcance correspondiente para
+      consultar sus pantallas.
+    </p>
+  }
   @if (session.qualityRead()) {
     <a class="access-card" routerLink="/calidad/equipos"
       ><h3>Calidad y mantenimiento</h3>

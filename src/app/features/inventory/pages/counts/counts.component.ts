@@ -29,10 +29,12 @@ export class CountsComponent extends InventoryForm {
   readonly rows = signal<M.Count[]>([]);
   readonly opening = signal(false);
   readonly form = new FormGroup({
+    method: new FormControl<'MANUAL' | 'RFID'>('MANUAL', { nonNullable: true }),
     locationUuid: new FormControl('', { nonNullable: true }),
     sourceReference: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
   ngOnInit() {
+    if (this.route.snapshot.queryParamMap.get('method') === 'RFID') this.form.controls.method.setValue('RFID');
     this.watch(() => this.load());
   }
   async load() {
@@ -70,7 +72,7 @@ export class CountsComponent extends InventoryForm {
       {
         yardUuid: this.yard(),
         locationUuid: this.form.controls.locationUuid.value || null,
-        method: 'MANUAL',
+        method: this.form.controls.method.value,
         sourceReference: this.form.controls.sourceReference.value,
       },
       (r) => {

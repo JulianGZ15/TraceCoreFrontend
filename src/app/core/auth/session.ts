@@ -33,6 +33,30 @@ export function safeReturn(value: string | null): string {
     return value;
   if (
     new RegExp(
+      '^/rfid(?:/(?:equipos(?:/' +
+        id +
+        ')?|modelos-tags|tags(?:/' +
+        id +
+        ')?|lectores(?:/' +
+        id +
+        ')?|dispositivos(?:/' +
+        id +
+        ')?|antenas(?:/' +
+        id +
+        ')?|portones(?:/' +
+        id +
+        ')?|sesiones(?:/(?:nueva|' +
+        id +
+        '(?:/conteo)?))?|comandos(?:/(?:nuevo|' +
+        id +
+        ')?)?|pasos(?:/' +
+        id +
+        ')?|entregas))?$',
+    ).test(path)
+  )
+    return value;
+  if (
+    new RegExp(
       '^/catalogo(?:/(?:categorias|grados|coladas|lotes(?:/' +
         id +
         ')?|modelos(?:/' +
@@ -127,6 +151,11 @@ export class Session implements OnDestroy {
         this.can(p) || !!this.context()?.yards.some((y) => y.active && y.permissions.includes(p)),
     ),
   );
+  readonly rfidRead = computed(
+    () =>
+      this.can('RFID_READ') ||
+      !!this.context()?.yards.some((y) => y.active && y.permissions.includes('RFID_READ')),
+  );
   readonly hasAccess = computed(() => {
     const c = this.context();
     return (
@@ -161,6 +190,10 @@ export class Session implements OnDestroy {
           'EQUIPMENT_MANAGE',
           'TECHNICAL_APPROVE',
           'OWNERSHIP_MANAGE',
+          'RFID_READ',
+          'RFID_SCAN',
+          'RFID_TAG_MANAGE',
+          'RFID_DEVICE_MANAGE',
         ].includes(p),
       ) ||
         c.yards.length > 0)
@@ -261,6 +294,7 @@ export class Session implements OnDestroy {
   }
   private clear() {
     sessionStorage.removeItem('tracecore.quality.pending');
+    sessionStorage.removeItem('tracecore.rfid.pending');
     this.epoch.update((n) => n + 1);
     this.ended.next();
     this.token.set(null);

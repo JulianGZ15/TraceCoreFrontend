@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { PendingRequestsComponent } from './pending-requests.component';
+
+describe('PendingRequestsComponent', () => {
+  let component: PendingRequestsComponent;
+  let fixture: ComponentFixture<PendingRequestsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PendingRequestsComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PendingRequestsComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

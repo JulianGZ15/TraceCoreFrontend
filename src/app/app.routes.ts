@@ -13,6 +13,10 @@ export const routes: Routes = [
     loadComponent: () => import('./core/layout/shell').then((m) => m.Shell),
     children: [
       {
+        path: 'rfid',
+        loadChildren: () => import('./features/rfid/rfid.routes').then(m => m.rfidRoutes),
+      },
+      {
         path: 'calidad',
         loadChildren: () =>
           import('./features/quality/quality.routes').then((m) => m.qualityRoutes),

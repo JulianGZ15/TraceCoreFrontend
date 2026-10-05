@@ -1,0 +1,2 @@
+<label class="field"><span>{{label()}}</span><select [value]="value()" [disabled]="disabled()||busy()" (change)="choose($any($event.target).value)"><option value="">Seleccionar…</option>@if(value()){<option [value]="value()">{{selectedLabel()||value()}}</option>}@for(o of options();track o.uuid){@if(o.uuid!==value()){<option [value]="o.uuid">{{o.label}}</option>}}</select></label>
+<tc-feedback [message]="error()"/><tc-pagination [offset]="offset()" [limit]="25" [count]="options().length" [busy]="busy()" (move)="page($event)"/>

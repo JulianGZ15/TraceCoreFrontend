@@ -9,6 +9,9 @@
   /></a>
   <div class="nav-label">Espacio de trabajo</div>
   <nav aria-label="Principal">
+    @if (session.rfidRead()) {
+      <a routerLink="/rfid" routerLinkActive="active" (click)="close()"><tc-icon name="history" />RFID y dispositivos</a>
+    }
     @if (session.qualityRead()) {
       <a routerLink="/calidad" routerLinkActive="active" (click)="close()"
         ><tc-icon name="shield" />Calidad y mantenimiento</a
