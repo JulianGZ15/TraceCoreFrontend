@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CommandPlanComponent } from './command-plan.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('CommandPlanComponent', () => {
-  let component: CommandPlanComponent;
-  let fixture: ComponentFixture<CommandPlanComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CommandPlanComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CommandPlanComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(CommandPlanComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

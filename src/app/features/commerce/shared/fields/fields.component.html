@@ -1,0 +1,54 @@
+<div class="form-grid" [formGroup]="form()">
+  @for (f of fields(); track f.key) {
+    <div class="field">
+      <label [for]="'commerce-' + f.key"
+        >{{ f.label }}
+        @if (f.required) {
+          <span aria-hidden="true"> *</span>
+        }
+      </label>
+      @switch (f.type) {
+        @case ('lookup') {
+          <tc-commerce-lookup
+            [formControlName]="f.key"
+            [resource]="f.resource ?? 'party-options'"
+            [yard]="yard()"
+            [params]="f.params ?? {}"
+            [title]="f.label"
+          />
+        }
+        @case ('textarea') {
+          <textarea
+            [id]="'commerce-' + f.key"
+            [attr.aria-label]="f.label"
+            [formControlName]="f.key"
+            [attr.aria-required]="f.required ?? false"
+            [readonly]="f.readonly ?? false"
+            rows="3"
+          ></textarea>
+        }
+        @case ('select') {
+          <select [id]="'commerce-' + f.key" [attr.aria-label]="f.label" [formControlName]="f.key">
+            @for (c of f.choices ?? []; track c) {
+              <option [value]="c">{{ label(c) }}</option>
+            }
+          </select>
+        }
+        @default {
+          <input
+            [id]="'commerce-' + f.key"
+            [attr.aria-label]="f.label"
+            [formControlName]="f.key"
+            [attr.aria-required]="f.required ?? false"
+            [readonly]="f.readonly ?? false"
+            [attr.inputmode]="f.type === 'decimal' || f.type === 'integer' ? 'decimal' : null"
+            [placeholder]="f.type === 'instant' ? '2026-10-05T12:00:00-06:00' : ''"
+          />
+        }
+      }
+      @if (form().get(f.key)?.invalid && form().get(f.key)?.touched) {
+        <small class="field-error">Revisa {{ f.label.toLowerCase() }}.</small>
+      }
+    </div>
+  }
+</div>

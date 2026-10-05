@@ -659,3 +659,6 @@ test('stage five real API: evidence, corrected MTR, inspections, maintenance and
   test.setTimeout(240000);
   await qualityLive(page);
 });
+
+import {commerceLive} from './commerce-live';
+test('stage seven real API: rental, credit, revised draft, physical delivery, cut and evidence',async({page})=>{test.skip(!process.env['TRACECORE_E2E_ISOLATED'],'Requires disposable PostgreSQL.');test.setTimeout(180000);await commerceLive(page);});

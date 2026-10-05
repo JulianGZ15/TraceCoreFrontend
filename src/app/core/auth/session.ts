@@ -17,6 +17,26 @@ export function safeReturn(value: string | null): string {
   const id = '[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}';
   if (
     new RegExp(
+      '^/comercial(?:/(?:ordenes(?:/nueva|/' +
+        id +
+        '(?:/(?:general|partidas|asignaciones|recepciones|polizas|evidencias|credito))?)?|marcos(?:/nuevo|/' +
+        id +
+        ')?|rentas(?:/' +
+        id +
+        '(?:/(?:general|tarifas|asignaciones|periodos|cortes|devoluciones(?:/nueva)?|garantias))?)?|recepciones(?:/nueva|/' +
+        id +
+        ')?|devoluciones/' +
+        id +
+        '|cortes/' +
+        id +
+        '|asignaciones/' +
+        id +
+        '/corte))?$',
+    ).test(path)
+  )
+    return value;
+  if (
+    new RegExp(
       '^/calidad(?:/(?:equipos(?:/' +
         id +
         '(?:/(?:resumen|politicas|mtr|inspecciones|certificaciones|mantenimiento|retenciones|liberaciones))?)?|estandares|requisitos|evidencias|mtrs(?:/' +
@@ -156,12 +176,37 @@ export class Session implements OnDestroy {
       this.can('RFID_READ') ||
       !!this.context()?.yards.some((y) => y.active && y.permissions.includes('RFID_READ')),
   );
+  readonly commerceRead = computed(
+    () =>
+      this.can('COMMERCIAL_READ') ||
+      !!this.context()?.yards.some((y) => y.active && y.permissions.includes('COMMERCIAL_READ')),
+  );
+  readonly commerceWrite = computed(() =>
+    [
+      'COMMERCIAL_MANAGE',
+      'COMMERCIAL_APPROVE',
+      'COMMERCIAL_FULFILL',
+      'RENTAL_MANAGE',
+      'RENTAL_BILL',
+      'CONTRACT_MANAGE',
+    ].some(
+      (p) =>
+        this.can(p) || !!this.context()?.yards.some((y) => y.active && y.permissions.includes(p)),
+    ),
+  );
   readonly hasAccess = computed(() => {
     const c = this.context();
     return (
       !!c &&
       (c.companyPermissions.some((p) =>
         [
+          'COMMERCIAL_READ',
+          'COMMERCIAL_MANAGE',
+          'COMMERCIAL_APPROVE',
+          'COMMERCIAL_FULFILL',
+          'RENTAL_MANAGE',
+          'RENTAL_BILL',
+          'CONTRACT_MANAGE',
           'QUALITY_READ',
           'QUALITY_MANAGE',
           'QUALITY_APPROVE',
@@ -295,6 +340,7 @@ export class Session implements OnDestroy {
   private clear() {
     sessionStorage.removeItem('tracecore.quality.pending');
     sessionStorage.removeItem('tracecore.rfid.pending');
+    sessionStorage.removeItem('tracecore.commerce.pending');
     this.epoch.update((n) => n + 1);
     this.ended.next();
     this.token.set(null);

@@ -1,0 +1,41 @@
+<tc-page-heading
+  section="Centro comercial"
+  [title]="title"
+  description="Documentos administrativos, cumplimiento y trazabilidad por patio."
+/><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<div class="toolbar">
+  @if (can('CONTRACT_MANAGE')) {
+    <button class="btn secondary" (click)="edit(editor)">Registrar póliza</button>
+  }
+  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
+</div>
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<tc-commerce-records
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="selected.set($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as row) {
+  <section class="selection">
+    <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
+    <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
+    <div class="toolbar">
+      @if (can('CONTRACT_MANAGE') && !row.cancellationReason) {
+        <button class="btn secondary" (click)="edit(transition, row, 'cancel-policy')">
+          Cancelar póliza
+        </button>
+      }
+    </div>
+  </section>
+}

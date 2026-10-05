@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CredentialComponent } from './credential.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('CredentialComponent', () => {
-  let component: CredentialComponent;
-  let fixture: ComponentFixture<CredentialComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CredentialComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CredentialComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(CredentialComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

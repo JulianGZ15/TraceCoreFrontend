@@ -1,0 +1,51 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+@if (can('CONTRACT_MANAGE')) {
+  <label
+    >Cargar evidencia · PDF/PNG/JPEG · máximo 10 MiB<input
+      type="file"
+      accept="application/pdf,image/png,image/jpeg"
+      [disabled]="uploadBusy()"
+      (change)="upload($event)"
+  /></label>
+}
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Archivo</th>
+        <th>Contenido detectado</th>
+        <th>Tamaño</th>
+        <th>SHA-256</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.record.uuid) {
+        <tr>
+          <td>{{ row.record.filename }}</td>
+          <td>{{ row.record.mediaType }}</td>
+          <td>{{ row.record.size }} bytes</td>
+          <td class="mono">{{ row.record.sha256 }}</td>
+          <td><button class="btn secondary" (click)="download(row.record)">Descargar</button></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<p>El hash identifica el archivo; no es una firma ni certificación.</p>
+<tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>

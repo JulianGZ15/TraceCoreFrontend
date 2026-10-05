@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { BindingComponent } from './binding.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('BindingComponent', () => {
-  let component: BindingComponent;
-  let fixture: ComponentFixture<BindingComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [BindingComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(BindingComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(BindingComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

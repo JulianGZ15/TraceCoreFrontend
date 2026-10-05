@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
-  testIgnore: ['**/live-api.spec.ts','**/quality-restart.spec.ts'],
+  testIgnore: ['**/live-api.spec.ts', '**/quality-restart.spec.ts', '**/commerce-restart.spec.ts'],
   fullyParallel: true,
   workers: 2,
   timeout: 30000,

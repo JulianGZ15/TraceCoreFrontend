@@ -1,6 +1,6 @@
 import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
 import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';
-@Component({selector:'tc-rfid-deliveries',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./deliveries.component.html',styleUrl:'./deliveries.component.scss'})
+@Component({selector:'tc-rfid-deliveries',imports:[FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./deliveries.component.html',styleUrl:'./deliveries.component.scss'})
 export class DeliveriesComponent extends RfidPage {
  readonly rows=signal<M.RemoteRow[]>([]);readonly available=signal(true);
  ngOnInit(){this.watch(()=>this.load());}

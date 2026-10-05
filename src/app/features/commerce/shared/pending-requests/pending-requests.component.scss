@@ -1,0 +1,14 @@
+.pending {
+  padding: 16px;
+  border: 1px solid var(--tc-border);
+  margin: 16px 0;
+}
+.pending div {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.mono {
+  overflow-wrap: anywhere;
+}

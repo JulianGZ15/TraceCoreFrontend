@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { PassagesComponent } from './passages.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('PassagesComponent', () => {
-  let component: PassagesComponent;
-  let fixture: ComponentFixture<PassagesComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [PassagesComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(PassagesComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(PassagesComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

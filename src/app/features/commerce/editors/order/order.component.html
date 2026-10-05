@@ -1,0 +1,25 @@
+<section class="editor">
+  <h2>{{ title }}</h2>
+  <p>
+    Guarda primero esta cabecera. Después completa partidas, tarifas y documentos. El alta no
+    aprueba ni reserva equipos.
+  </p>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <tc-commerce-fields [form]="form" [fields]="fields" [yard]="data.yard" /><tc-feedback
+      [message]="error()"
+    />
+    <div class="actions">
+      @if (data.row || data.summary) {
+        <button class="btn secondary" type="button" [disabled]="busy()" (click)="refresh()">
+          Consultar datos actuales
+        </button>
+      }
+      <button class="btn primary" type="submit" [disabled]="busy() || !allowed() || !compatible()">
+        Guardar cabecera DRAFT
+      </button>
+      @if (ref) {
+        <button class="btn secondary" type="button" (click)="cancel()">Cancelar</button>
+      }
+    </div>
+  </form>
+</section>

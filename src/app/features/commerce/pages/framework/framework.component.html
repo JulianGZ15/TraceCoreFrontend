@@ -1,0 +1,52 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+@if (record(); as r) {
+  <section class="panel">
+    <h2>{{ r.folio }} · {{ label(r.state) }}</h2>
+    <p class="mono">{{ r.uuid }} · versión {{ r.version }}</p>
+    <p>{{ r['scope'] }}</p>
+    <p>{{ r['terms'] }}</p>
+    <div class="toolbar">
+      @if (r.state === 'DRAFT' && session.can('CONTRACT_MANAGE')) {
+        <button class="btn secondary" (click)="edit(editor, r)">Corregir borrador</button>
+      }
+      @if (r.state === 'DRAFT' && session.can('COMMERCIAL_APPROVE')) {
+        <button class="btn secondary" (click)="edit(transition, r, 'approve-framework')">
+          Aprobar marco
+        </button>
+      }
+      @if (session.can('CONTRACT_MANAGE')) {
+        <button class="btn secondary" (click)="edit(transition, r, 'end-framework')">
+          Finalizar marco</button
+        ><label
+          >Evidencia privada<input
+            type="file"
+            accept="application/pdf,image/png,image/jpeg"
+            (change)="upload($event)"
+        /></label>
+      }
+    </div>
+    @for (doc of documents(); track doc.uuid) {
+      <button class="btn secondary" (click)="api.download(doc.uuid, doc.filename ?? 'evidencia')">
+        Descargar {{ doc.filename }}
+      </button>
+    }
+    <tc-pagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="documents().length"
+      (move)="move($event)"
+    />
+  </section>
+}
+@if (!id) {
+  <tc-commerce-framework-editor [context]="context()" (saved)="done($event)" />
+}

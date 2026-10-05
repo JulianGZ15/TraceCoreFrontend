@@ -1,0 +1,17 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+@if (data(); as context) {
+  @if (context.yard) {
+    <tc-commerce-order-editor [context]="context" (saved)="done($event)" />
+  } @else {
+    <p>No hay un patio autorizado para crear órdenes.</p>
+  }
+}

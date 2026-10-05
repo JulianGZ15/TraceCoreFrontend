@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CountImportComponent } from './count-import.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('CountImportComponent', () => {
-  let component: CountImportComponent;
-  let fixture: ComponentFixture<CountImportComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CountImportComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CountImportComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(CountImportComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

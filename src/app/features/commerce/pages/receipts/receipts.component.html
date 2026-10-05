@@ -1,0 +1,66 @@
+<tc-page-heading
+  section="Centro comercial"
+  [title]="title"
+  description="Documentos administrativos, cumplimiento y trazabilidad por patio."
+/><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<div class="toolbar">
+  <label
+    >Patio<select #y [value]="yard" (change)="update('yardUuid', y.value)">
+      @for (item of yards; track item.uuid) {
+        <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
+      }
+    </select></label
+  >
+  @if (can('COMMERCIAL_FULFILL')) {
+    <a routerLink="/comercial/recepciones/nueva" [queryParams]="{ yardUuid: yard }"
+      >Nueva recepción</a
+    >
+  }
+  <div class="directory-filter">
+    <tc-commerce-lookup
+      resource="party-options"
+      [yard]="yard"
+      [params]="{ purpose: 'ORIGIN' }"
+      title="Origen"
+      [value]="filters['originPartyUuid'] ?? ''"
+      (selectedChange)="update('originPartyUuid', $event)"
+    />
+  </div>
+  <div class="directory-filter">
+    <tc-commerce-lookup
+      resource="orders/directory"
+      [yard]="yard"
+      [params]="{ purpose: 'CONTRACTOR' }"
+      title="Orden"
+      [value]="filters['orderUuid'] ?? ''"
+      (selectedChange)="update('orderUuid', $event)"
+    />
+  </div>
+  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
+</div>
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<tc-commerce-records
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="selected.set($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as row) {
+  <section class="selection">
+    <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
+    <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
+    <div class="toolbar">
+      <a [routerLink]="'/comercial/recepciones/' + row.uuid">Abrir recepción</a>
+    </div>
+  </section>
+}

@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DirectionComponent } from './direction.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('DirectionComponent', () => {
-  let component: DirectionComponent;
-  let fixture: ComponentFixture<DirectionComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [DirectionComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DirectionComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(DirectionComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

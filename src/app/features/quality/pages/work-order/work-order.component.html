@@ -47,11 +47,11 @@
       >
       @if (access.can('MAINTENANCE_MANAGE', asset()?.yardUuid)) {
         @if (r.state === 'PLANNED') {
-          <button class="btn secondary" [disabled]="tasks().length >= 100" (click)="task()">
+          <button class="btn secondary" [disabled]="busy() || tasks().length >= 100" (click)="task()">
             Agregar tarea</button
           ><button
             class="btn primary"
-            [disabled]="!tasks().length"
+            [disabled]="busy() || !tasks().length"
             (click)="transition('/maintenance/' + r.uuid + '/start', r.version, undefined, true)"
           >
             Iniciar orden</button
@@ -66,7 +66,7 @@
         @if (r.state === 'IN_PROGRESS') {
           <button
             class="btn primary"
-            [disabled]="!allCompleted()"
+            [disabled]="busy() || !allCompleted()"
             (click)="transition('/maintenance/' + r.uuid + '/complete', r.version, undefined, true)"
           >
             Terminar orden

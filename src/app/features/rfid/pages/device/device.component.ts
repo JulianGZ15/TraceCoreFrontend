@@ -1,6 +1,6 @@
 import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
 import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';import {DeviceComponent as DeviceEditor} from '../../editors/device/device.component';import {CredentialComponent} from '../../editors/credential/credential.component';import {confirm} from '../../../../shared/ui/editor';import {firstValueFrom} from 'rxjs';
-@Component({selector:'tc-rfid-device-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./device.component.html',styleUrl:'./device.component.scss'})
+@Component({selector:'tc-rfid-device-detail',imports:[FormsModule,PageHeading,Feedback,RfidNavComponent,PendingRequestsComponent],templateUrl:'./device.component.html',styleUrl:'./device.component.scss'})
 export class DeviceComponent extends RfidPage {
  readonly row=signal<M.RemoteRow|null>(null);readonly available=signal(true);
  ngOnInit(){this.watch(()=>this.load());}

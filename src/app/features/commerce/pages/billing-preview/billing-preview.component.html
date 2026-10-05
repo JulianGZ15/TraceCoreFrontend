@@ -1,0 +1,59 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+<p>
+  HOUR/DAY miden tiempo contratado; MONTH usa aniversarios de calendario. Dividir cortes puede
+  cambiar el importe debido a mínimos y periodos iniciados.
+</p>
+<form [formGroup]="form" (ngSubmit)="calculate()">
+  <tc-commerce-fields [form]="form" [fields]="fields" [yard]="yard" /><button
+    class="btn primary"
+    type="submit"
+    [disabled]="busy()"
+  >
+    Previsualizar en servidor
+  </button>
+</form>
+@if (preview(); as p) {
+  <section class="panel">
+    <h2 class="mono">{{ p.totalAmountExact }} {{ p.currency }}</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Segmento</th>
+            <th>Modo</th>
+            <th>Tarifa congelada</th>
+            <th>Unidad y redondeo</th>
+            <th>Mínimo</th>
+            <th>Unidades</th>
+            <th>Importe</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of p.slices; track $index) {
+            <tr>
+              <td>{{ s['from'] }} → {{ s['to'] }}</td>
+              <td>{{ label(s.mode) }}</td>
+              <td>{{ rate(s) ? numberText(rate(s)?.amountExact) : 'Pausa sin cargo' }}</td>
+              <td>{{ label(rate(s)?.['timeUnit']) }} · {{ label(rate(s)?.['rounding']) }}</td>
+              <td>{{ rate(s) ? numberText(rate(s)?.minimumUnitsExact) : 'No aplica' }}</td>
+              <td>{{ numberText(s.unitsExact) }}</td>
+              <td>{{ numberText(s.amountExact) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <button class="btn primary" (click)="confirm()" [disabled]="busy()">
+      Confirmar corte definitivo
+    </button>
+  </section>
+}

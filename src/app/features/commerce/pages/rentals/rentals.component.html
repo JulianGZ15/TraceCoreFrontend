@@ -1,0 +1,87 @@
+<tc-page-heading
+  section="Centro comercial"
+  [title]="title"
+  description="Documentos administrativos, cumplimiento y trazabilidad por patio."
+/><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<div class="toolbar">
+  <label
+    >Estado<select #s [value]="filters['state'] ?? ''" (change)="update('state', s.value)">
+      <option value="">Todos</option>
+      <option value="DRAFT">Borrador</option>
+      <option value="ACTIVE">Activo</option>
+      <option value="CLOSED">Cerrado</option>
+      <option value="CANCELLED">Cancelado</option>
+    </select></label
+  ><label
+    >Patio<select #y [value]="yard" (change)="update('yardUuid', y.value)">
+      @for (item of yards; track item.uuid) {
+        <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
+      }
+    </select></label
+  >
+  <div class="directory-filter">
+    <tc-commerce-lookup
+      resource="party-options"
+      [yard]="yard"
+      [params]="{ purpose: 'CONTRACTOR' }"
+      title="Contratante"
+      [value]="filters['partyUuid'] ?? ''"
+      (selectedChange)="update('partyUuid', $event)"
+    />
+  </div>
+  <div class="directory-filter">
+    <tc-commerce-lookup
+      resource="party-options"
+      [yard]="yard"
+      [params]="{ purpose: 'DISTRIBUTOR' }"
+      title="Distribuidor"
+      [value]="filters['distributorUuid'] ?? ''"
+      (selectedChange)="update('distributorUuid', $event)"
+    />
+  </div>
+  <div class="directory-filter">
+    <tc-commerce-lookup
+      resource="party-options"
+      [yard]="yard"
+      [params]="{ purpose: 'END_CUSTOMER' }"
+      title="Cliente final"
+      [value]="filters['endCustomerUuid'] ?? ''"
+      (selectedChange)="update('endCustomerUuid', $event)"
+    />
+  </div>
+  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
+</div>
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<tc-commerce-records
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="selected.set($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as row) {
+  <section class="selection">
+    <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
+    <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
+    <div class="toolbar">
+      <label
+        >Estado<select #s [value]="filters['state'] ?? ''" (change)="update('state', s.value)">
+          <option value="">Todos</option>
+          <option value="DRAFT">Borrador</option>
+          <option value="ACTIVE">Activo</option>
+          <option value="CLOSED">Cerrado</option>
+          <option value="CANCELLED">Cancelado</option>
+        </select></label
+      ><a [routerLink]="'/comercial/rentas/' + row.uuid + '/general'">Abrir renta</a>
+    </div>
+  </section>
+}

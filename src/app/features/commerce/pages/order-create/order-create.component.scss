@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.panel {
+  padding: 24px;
+  border: 1px solid var(--tc-border);
+  margin: 16px 0;
+  min-width: 0;
+}
+dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+dd {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+.mono {
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow: auto;
+  max-width: 100%;
+}
+table {
+  min-width: 640px;
+}
+@media (max-width: 767px) {
+  .panel {
+    padding: 16px;
+  }
+  dl {
+    grid-template-columns: 1fr;
+  }
+}

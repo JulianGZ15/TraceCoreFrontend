@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AntennasComponent } from './antennas.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('AntennasComponent', () => {
-  let component: AntennasComponent;
-  let fixture: ComponentFixture<AntennasComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AntennasComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(AntennasComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(AntennasComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

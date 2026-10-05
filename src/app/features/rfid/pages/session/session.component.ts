@@ -1,7 +1,7 @@
 import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
 import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';
 import {inject} from '@angular/core';import {RfidPending} from '../../pending';import {RfidSelection} from '../../selection';import {confirm} from '../../../../shared/ui/editor';
-@Component({selector:'tc-rfid-session-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./session.component.html',styleUrl:'./session.component.scss'})
+@Component({selector:'tc-rfid-session-detail',imports:[FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./session.component.html',styleUrl:'./session.component.scss'})
 export class SessionComponent extends RfidPage {
  readonly view=signal<M.SessionView|null>(null);readonly events=signal<M.Local<M.Event>[]>([]);readonly selected=signal<M.Local<M.Event>[]>([]);readonly direction=signal('UNKNOWN');readonly pending=inject(RfidPending);readonly selection=inject(RfidSelection);private selectedSession='';
  ngOnInit(){this.watch(()=>this.load());this.follow(()=>this.load());}

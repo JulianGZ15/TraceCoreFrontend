@@ -1,0 +1,28 @@
+@if (pending.own().length) {
+  <section class="pending">
+    <h2>Solicitudes pendientes de conciliación</h2>
+    <p>
+      Una respuesta perdida no confirma que la operación haya fallado. Consulta antes de repetir.
+    </p>
+    @for (p of pending.own(); track p.key) {
+      <div>
+        <strong>{{ p.operation }}</strong
+        ><span class="mono">{{ p.key }}</span
+        ><button class="btn secondary" [disabled]="busy()" (click)="act(p, true)">
+          Consultar resultado</button
+        ><button class="btn secondary" [disabled]="busy()" (click)="act(p, false)">
+          Repetir misma solicitud
+        </button>
+      </div>
+    }
+    @if (error()) {
+      <p role="alert">{{ error() }}</p>
+    }
+  </section>
+}
+@if (recovered(); as r) {
+  <p role="status">
+    Resultado recuperado: <span class="mono">{{ r.uuid }}</span
+    >. <a [routerLink]="r.path">Abrir resultado</a>
+  </p>
+}

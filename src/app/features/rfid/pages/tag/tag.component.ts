@@ -1,7 +1,7 @@
 import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
 import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';
 import {diagnostic} from '../../rules';
-@Component({selector:'tc-rfid-tag-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./tag.component.html',styleUrl:'./tag.component.scss'})
+@Component({selector:'tc-rfid-tag-detail',imports:[FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./tag.component.html',styleUrl:'./tag.component.scss'})
 export class TagComponent extends RfidPage {
  readonly row=signal<M.Local<M.Tag>|null>(null);readonly epcs=signal<M.Local<M.Epc>[]>([]);readonly inspections=signal<M.Local<M.Inspection>[]>([]);readonly tab=signal('epcs');readonly diagnostic=diagnostic;
  ngOnInit(){this.watch(()=>this.load());}

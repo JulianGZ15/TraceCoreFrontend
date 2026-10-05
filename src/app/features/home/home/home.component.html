@@ -29,6 +29,8 @@
   </p>
 }
 <div class="access-cards">
+  @if(session.commerceRead()){<a class="access-card" routerLink="/comercial"><h3>Centro comercial</h3><p>Compras, ventas, rentas, contratos y cumplimiento.</p><span class="card-link">Abrir comercial ↗</span></a>}
+  @if(session.commerceWrite()&&!session.commerceRead()){<p class="feedback info">Tienes capacidades comerciales; necesitas COMMERCIAL_READ en el alcance correspondiente para consultar las pantallas.</p>}
   @if (session.rfidRead()) {
     <a class="access-card" routerLink="/rfid"
       ><h3>RFID y dispositivos</h3>

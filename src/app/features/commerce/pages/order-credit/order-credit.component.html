@@ -1,0 +1,46 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+@if (credit(); as c) {
+  <section class="panel">
+    <dl>
+      <div>
+        <dt>Divisa</dt>
+        <dd>{{ c.currency }} · {{ c.fractionDigits }} decimales</dd>
+      </div>
+      <div>
+        <dt>Cuenta</dt>
+        <dd>{{ label(c.account?.state) }}</dd>
+      </div>
+      <div>
+        <dt>Compromiso actual</dt>
+        <dd class="mono">
+          {{ c.commitment ? numberText(c.commitment['approvedAmountExact']) : 'No registrado' }}
+        </dd>
+      </div>
+    </dl>
+    @if (session.can('FINANCE_CREDIT')) {
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <tc-commerce-fields [form]="form" [fields]="fields" [yard]="yard" /><button
+          class="btn primary"
+          type="submit"
+          [disabled]="saving()"
+        >
+          Aprobar compromiso de crédito
+        </button>
+      </form>
+    }
+  </section>
+} @else {
+  <p>
+    La revisión de crédito corresponde a finanzas. Se requiere FINANCE_READ COMPANY para consultar y
+    FINANCE_CREDIT COMPANY para modificar.
+  </p>
+}

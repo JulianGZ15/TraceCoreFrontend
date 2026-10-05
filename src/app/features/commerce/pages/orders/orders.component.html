@@ -1,0 +1,77 @@
+<tc-page-heading
+  section="Centro comercial"
+  [title]="title"
+  description="Documentos administrativos, cumplimiento y trazabilidad por patio."
+/><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<div class="toolbar">
+  <label
+    >Patio<select #y [value]="yard" (change)="update('yardUuid', y.value)">
+      @for (item of yards; track item.uuid) {
+        <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
+      }
+    </select></label
+  ><label
+    >Serie o folio<input
+      #search
+      type="search"
+      [value]="filters['search'] ?? ''"
+      (change)="update('search', search.value)" /></label
+  ><label
+    >Tipo<select #type [value]="filters['type'] ?? ''" (change)="update('type', type.value)">
+      <option value="">Todos</option>
+      <option value="OC">Compra</option>
+      <option value="OV">Venta</option>
+      <option value="OR">Renta</option>
+    </select></label
+  ><label
+    >Estado<select #state [value]="filters['state'] ?? ''" (change)="update('state', state.value)">
+      <option value="">Todos</option>
+      <option value="DRAFT">Borrador</option>
+      <option value="APPROVED">Aprobada</option>
+      <option value="CLOSED">Cerrada</option>
+      <option value="CANCELLED">Cancelada</option>
+    </select></label
+  >
+  @if (can('COMMERCIAL_MANAGE')) {
+    <a class="btn primary" routerLink="/comercial/ordenes/nueva" [queryParams]="{ yardUuid: yard }"
+      >Nueva orden</a
+    >
+  }
+  <div class="directory-filter">
+    <tc-commerce-lookup
+      resource="party-options"
+      [yard]="yard"
+      [params]="{ purpose: 'CONTRACTOR' }"
+      title="Contraparte"
+      [value]="filters['partyUuid'] ?? ''"
+      (selectedChange)="update('partyUuid', $event)"
+    />
+  </div>
+  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
+</div>
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<tc-commerce-records
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="selected.set($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as row) {
+  <section class="selection">
+    <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
+    <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
+    <div class="toolbar">
+      <a [routerLink]="'/comercial/ordenes/' + row.uuid + '/general'">Abrir expediente</a>
+    </div>
+  </section>
+}

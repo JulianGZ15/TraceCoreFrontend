@@ -1,0 +1,123 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+@if (summary(); as s) {
+  <section class="panel">
+    <h2>{{ s.order.type }} · {{ s.order.series }} / {{ s.order.folio }}</h2>
+    <dl>
+      <div>
+        <dt>Estado</dt>
+        <dd>{{ label(s.order.state) }}</dd>
+      </div>
+      <div>
+        <dt>Patio</dt>
+        <dd class="mono">{{ s.labels?.['yard'] || s.order.yardUuid }}</dd>
+      </div>
+      <div>
+        <dt>Contraparte</dt>
+        <dd class="mono">{{ s.labels?.['counterparty'] || s.order.partyUuid }}</dd>
+      </div>
+      <div>
+        <dt>Divisa</dt>
+        <dd>{{ s.order.currency }}</dd>
+      </div>
+      <div>
+        <dt>Versión</dt>
+        <dd>{{ s.order.version }}</dd>
+      </div>
+    </dl>
+    <div class="toolbar">
+      @if (can('COMMERCIAL_MANAGE') && s.order.state === 'DRAFT') {
+        <button class="btn secondary" (click)="editing.set(!editing())">Corregir borrador</button>
+      }
+      @if (can('COMMERCIAL_APPROVE')) {
+        @if (s.order.state === 'DRAFT') {
+          <button class="btn secondary" (click)="edit(transition, s.order, 'approve-order')">
+            Aprobar
+          </button>
+        }
+        @if (s.order.state === 'DRAFT' || s.order.state === 'APPROVED') {
+          <button class="btn secondary" (click)="edit(transition, s.order, 'cancel-order')">
+            Cancelar con motivo
+          </button>
+        }
+        @if (s.order.state === 'APPROVED') {
+          <button class="btn secondary" (click)="edit(transition, s.order, 'close-order')">
+            Cerrar cumplimiento
+          </button>
+        }
+      }
+      @if (s.rental) {
+        <a [routerLink]="'/comercial/rentas/' + s.rental.uuid + '/general'">Contrato de renta</a>
+      }
+    </div>
+  </section>
+  @if (blocks().length) {
+    <section class="panel">
+      <h2>Requisitos de aprobación</h2>
+      <ul>
+        @for (b of blocks(); track $index) {
+          <li>{{ label(b) }}</li>
+        }
+      </ul>
+      <p>La comprobación previa no sustituye la validación transaccional de la aprobación.</p>
+    </section>
+  }
+  @if (s.order['snapshot']; as snapshot) {
+    <section class="panel">
+      <h2>Snapshot aprobado</h2>
+      <p>La ficha actual del tercero no reescribe estos datos.</p>
+      <p>Consulta los totales exactos y términos congelados en el registro aprobado.</p>
+      <dl>
+        <div>
+          <dt>Razón social congelada</dt>
+          <dd>{{ snapshotValue(snapshot, 'partyLegalName') }}</dd>
+        </div>
+        <div>
+          <dt>Identificaciones fiscales</dt>
+          <dd>{{ snapshotValue(snapshot, 'taxIdentities') }}</dd>
+        </div>
+        <div>
+          <dt>Referencia contractual</dt>
+          <dd>{{ snapshotValue(snapshot, 'termsReference') }}</dd>
+        </div>
+        <div>
+          <dt>Neto</dt>
+          <dd class="mono">
+            {{ snapshotValue(snapshot, 'netAmountExact') }} {{ s.order.currency }}
+          </dd>
+        </div>
+        <div>
+          <dt>Impuesto</dt>
+          <dd class="mono">
+            {{ snapshotValue(snapshot, 'taxAmountExact') }} {{ s.order.currency }}
+          </dd>
+        </div>
+        <div>
+          <dt>Total aprobado</dt>
+          <dd class="mono">
+            {{ snapshotValue(snapshot, 'totalAmountExact') }} {{ s.order.currency }}
+          </dd>
+        </div>
+      </dl>
+      @if (terms(snapshot); as t) {
+        <h3>Condiciones comerciales congeladas</h3>
+        <p>{{ t['paymentMethod'] }} · {{ t['paymentCondition'] }} · {{ t['creditDays'] }} días</p>
+        <p>
+          Límite contractual:
+          <span class="mono">{{ numberText(t['creditLimitExact']) }} {{ t['currency'] }}</span>
+        </p>
+      }
+    </section>
+  }
+  @if (editing()) {
+    <tc-commerce-order-editor [context]="context()" (saved)="done()" />
+  }
+}

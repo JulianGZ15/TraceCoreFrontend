@@ -1,1 +1,28 @@
-:host { display: block; }
+:host {
+  display: block;
+  min-width: 0;
+  margin-bottom: 24px;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--tc-border);
+  padding-bottom: 12px;
+}
+a {
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  min-height: 40px;
+}
+a.active {
+  background: var(--tc-gold-soft, #faf5e8);
+  color: var(--tc-text);
+  border-bottom: 2px solid var(--tc-gold, #d4af37);
+}
+@media (max-width: 767px) {
+  a {
+    min-height: 44px;
+  }
+}

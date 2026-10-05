@@ -1,1 +1,22 @@
-:host { display: block; }
+:host {
+  display: block;
+}
+
+.table-wrap {
+  max-width: 100%;
+  overflow: auto;
+  min-width: 0;
+}
+.table-wrap table {
+  min-width: 720px;
+}
+.mono {
+  overflow-wrap: anywhere;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 20px 0;
+}

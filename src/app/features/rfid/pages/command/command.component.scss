@@ -1,1 +1,37 @@
-:host { display: block; }
+:host {
+  display: block;
+}
+
+.panel {
+  min-width: 0;
+}
+dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+dd {
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}
+.mono {
+  overflow-wrap: anywhere;
+}
+
+.table-wrap {
+  max-width: 100%;
+  overflow: auto;
+  min-width: 0;
+}
+.table-wrap table {
+  min-width: 720px;
+}
+.mono {
+  overflow-wrap: anywhere;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 20px 0;
+}

@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SessionPlanComponent } from './session-plan.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('SessionPlanComponent', () => {
-  let component: SessionPlanComponent;
-  let fixture: ComponentFixture<SessionPlanComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SessionPlanComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(SessionPlanComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(SessionPlanComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

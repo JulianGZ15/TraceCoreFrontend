@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.table-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+table {
+  min-width: 640px;
+}
+.uuid {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-top: 4px;
+}

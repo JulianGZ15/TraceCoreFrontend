@@ -1,0 +1,41 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  class="btn secondary"
+  (click)="reload()"
+  [disabled]="loading()"
+>
+  Recargar datos
+</button>
+@if (rental(); as r) {
+  <section class="panel">
+    <h2>Renta · {{ label(r.state) }}</h2>
+    <dl>
+      @for (
+        key of [
+          'contractingPartyUuid',
+          'distributorUuid',
+          'endCustomerUuid',
+          'payerUuid',
+          'siteUuid',
+          'plannedFrom',
+          'plannedTo',
+          'timezone',
+          'responsibilities',
+        ];
+        track key
+      ) {
+        <div>
+          <dt>{{ names[key] }}</dt>
+          <dd>{{ value(r, key) }}</dd>
+        </div>
+      }
+    </dl>
+    <a [routerLink]="'/comercial/ordenes/' + r.orderUuid + '/general'">Abrir orden comercial</a>
+    <p>
+      Inicio y fin previstos son distintos de las fechas efectivas de cada asignación. Horas
+      contratadas no son horas de horómetro.
+    </p>
+  </section>
+}

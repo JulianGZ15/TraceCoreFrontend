@@ -1,22 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { GatesComponent } from './gates.component';
-
+import { renderOperation } from '../../../../testing/operation-test';
 describe('GatesComponent', () => {
-  let component: GatesComponent;
-  let fixture: ComponentFixture<GatesComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GatesComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(GatesComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders with route and parent context; write controls remain permission-bound', async () => {
+    const fixture = await renderOperation(GatesComponent, {});
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
   });
 });

@@ -1,0 +1,82 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<p>
+  Este documento registra piezas que ya llegaron físicamente. No mueve inventario, cambia propiedad
+  ni libera calidad. Cada recepción puede cubrir una partida de compra; repite para otras partidas.
+</p>
+<tc-commerce-fields [form]="form" [fields]="fields" [yard]="yard" />
+<div class="actions">
+  <button class="btn secondary" (click)="inspect()">Consultar snapshot del movimiento</button>
+</div>
+@if (physical(); as p) {
+  <p>Movimiento {{ p.movement.uuid }} · {{ p.items.length }} piezas.</p>
+  @for (root of roots; track root) {
+    <section class="root">
+      <label
+        ><input
+          type="checkbox"
+          #check
+          [checked]="chosen().includes(root)"
+          (change)="toggle(root, check.checked)"
+        />
+        Incluir raíz {{ root }} y todos sus componentes</label
+      >
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Pieza</th>
+              <th>Aceptación</th>
+              <th>Condición declarada</th>
+              <th>Observación obligatoria</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of group(root); track item.uuid) {
+              <tr>
+                <td class="mono">{{ item.assetUuid }}</td>
+                <td>
+                  <select
+                    #a
+                    aria-label="Aceptación"
+                    (change)="capture(item.assetUuid!, 'acceptance', a.value)"
+                  >
+                    <option value="ACCEPTED">Aceptada</option>
+                    <option value="REJECTED">Rechazada</option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    #c
+                    aria-label="Condición declarada"
+                    [value]="captures[item.assetUuid!].condition"
+                    (change)="capture(item.assetUuid!, 'condition', c.value)"
+                  >
+                    @for (option of conditions; track option) {
+                      <option [value]="option">{{ label(option) }}</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <input
+                    #o
+                    aria-label="Observación de pieza"
+                    aria-required="true"
+                    required
+                    maxlength="1000"
+                    (change)="capture(item.assetUuid!, 'observation', o.value)"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+}
+<button class="btn primary" [disabled]="saving()" (click)="save()">
+  Registrar recepción administrativa
+</button>

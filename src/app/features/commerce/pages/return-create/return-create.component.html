@@ -1,0 +1,31 @@
+<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
+  [base]="navBase"
+  [sections]="sections"
+/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<p>
+  El retorno físico RETURN y su recepción administrativa deben estar completados. La devolución
+  finaliza renta; daño o rechazo no equivalen a liberación técnica.
+</p>
+@if (loading()) {
+  <p role="status">Consultando contrato y contexto del patio…</p>
+} @else {
+  <tc-commerce-fields [form]="form" [fields]="fields" [yard]="yard" />
+}
+<div class="actions">
+  <button class="btn secondary" (click)="review()">Revisar grupo completo</button>
+</div>
+@for (a of assignments(); track a.uuid) {
+  <section class="root">
+    <strong class="mono">{{ a.assetUuid }}</strong
+    ><label
+      >Observaciones de cargos pendientes<input
+        #notes
+        [value]="charges[a.uuid]"
+        (change)="charges[a.uuid] = notes.value"
+        maxlength="1000"
+    /></label>
+  </section>
+}
+<button class="btn primary" [disabled]="saving()" (click)="save()">
+  Confirmar devolución administrativa
+</button>

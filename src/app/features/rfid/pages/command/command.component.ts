@@ -1,7 +1,7 @@
 import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
 import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';
 import {BindingComponent} from '../../editors/binding/binding.component';import {diagnostic} from '../../rules';
-@Component({selector:'tc-rfid-command-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./command.component.html',styleUrl:'./command.component.scss'})
+@Component({selector:'tc-rfid-command-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,RfidNavComponent,PendingRequestsComponent],templateUrl:'./command.component.html',styleUrl:'./command.component.scss'})
 export class CommandComponent extends RfidPage {
  readonly view=signal<M.CommandView|null>(null);readonly asset=signal<M.Asset|null>(null);readonly diagnostic=diagnostic;
  ngOnInit(){this.watch(()=>this.load());this.follow(()=>this.load());}

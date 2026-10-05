@@ -1,6 +1,6 @@
 import {Component,signal} from '@angular/core';import {RouterLink} from '@angular/router';import {FormsModule,ReactiveFormsModule,FormControl,FormGroup,Validators} from '@angular/forms';
 import {PageHeading,Feedback,Pagination} from '../../../../shared/ui/page';import {RfidPage} from '../../page-base';import {RfidNavComponent} from '../../shared/rfid-nav/rfid-nav.component';import {PendingRequestsComponent} from '../../shared/pending-requests/pending-requests.component';import * as M from '../../models';import {ReaderComponent as ReaderEditor} from '../../editors/reader/reader.component';
-@Component({selector:'tc-rfid-reader-detail',imports:[RouterLink,FormsModule,PageHeading,Feedback,Pagination,RfidNavComponent,PendingRequestsComponent],templateUrl:'./reader.component.html',styleUrl:'./reader.component.scss'})
+@Component({selector:'tc-rfid-reader-detail',imports:[FormsModule,PageHeading,Feedback,RfidNavComponent,PendingRequestsComponent],templateUrl:'./reader.component.html',styleUrl:'./reader.component.scss'})
 export class ReaderComponent extends RfidPage {
  readonly row=signal<M.RemoteRow|null>(null);readonly available=signal(true);
  ngOnInit(){this.watch(()=>this.load());}

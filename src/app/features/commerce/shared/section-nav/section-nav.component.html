@@ -1,0 +1,10 @@
+<nav aria-label="Secciones comerciales">
+  @for (s of sections(); track s.key) {
+    <a [routerLink]="base() + '/' + s.key" routerLinkActive="active">{{ s.label }}</a>
+  }
+  <a routerLink="/comercial/ordenes">Órdenes</a><a routerLink="/comercial/rentas">Rentas</a
+  ><a routerLink="/comercial/recepciones">Recepciones</a>
+  @if (session.can('COMMERCIAL_READ')) {
+    <a routerLink="/comercial/marcos">Contratos marco</a>
+  }
+</nav>

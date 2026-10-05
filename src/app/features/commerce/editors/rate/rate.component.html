@@ -1,0 +1,26 @@
+<section class="editor">
+  <h2>{{ title }}</h2>
+  <p class="small-muted">
+    Cada operación se guarda por separado. Las referencias se validan nuevamente en el servidor.
+  </p>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <tc-commerce-fields [form]="form" [fields]="fields" [yard]="data.yard" /><tc-feedback
+      [message]="error()"
+    />
+    <div class="actions">
+      @if (data.row || data.summary) {
+        <button class="btn secondary" type="button" [disabled]="busy()" (click)="refresh()">
+          Consultar datos actuales
+        </button>
+      }
+      <button class="btn primary" type="submit" [disabled]="busy() || !allowed() || !compatible()">
+        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      </button>
+      @if (ref) {
+        <button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+          Cancelar
+        </button>
+      }
+    </div>
+  </form>
+</section>
