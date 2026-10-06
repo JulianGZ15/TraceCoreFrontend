@@ -1,0 +1,13 @@
+.lookup {
+  display: grid;
+  gap: 8px;
+}
+.lookup-pages {
+  display: flex;
+  gap: 8px;
+}
+select,
+input {
+  max-width: 100%;
+  width: 100%;
+}

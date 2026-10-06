@@ -1,0 +1,84 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<section class="panel">
+  <div class="form-grid">
+    <div class="field">
+      <label for="logistics-yard">Patio</label
+      ><select
+        id="logistics-yard"
+        [value]="yard"
+        (change)="update('yardUuid', $any($event.target).value)"
+      >
+        @for (y of yards; track y.uuid) {
+          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label for="mf-search">Folio</label
+      ><input
+        id="mf-search"
+        [value]="filters['search']"
+        (change)="update('search', $any($event.target).value)"
+      />
+    </div>
+    <div class="field">
+      <label for="mf-state">Estado</label
+      ><select
+        id="mf-state"
+        [value]="filters['state']"
+        (change)="update('state', $any($event.target).value)"
+      >
+        <option value="">Todos</option>
+        @for (v of states; track v) {
+          <option [value]="v">{{ label(v) }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label for="mf-type">Tipo</label
+      ><select
+        id="mf-type"
+        [value]="filters['type']"
+        (change)="update('type', $any($event.target).value)"
+      >
+        <option value="">Todos</option>
+        @for (v of types; track v) {
+          <option [value]="v">{{ label(v) }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  @if (can('LOGISTICS_MANAGE')) {
+    <a
+      class="btn primary"
+      routerLink="/logistica/manifiestos/nuevo"
+      [queryParams]="{ yardUuid: yard }"
+      >Nuevo manifiesto</a
+    >
+  }
+</section>
+<tc-logistics-records
+  [zone]="zone"
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="open($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as r) {
+  <a class="btn secondary" [routerLink]="['/logistica/manifiestos', r.uuid]">Abrir {{ r.folio }}</a>
+}

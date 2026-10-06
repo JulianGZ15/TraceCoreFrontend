@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+.panel {
+  margin-block: 16px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.long {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-block: 12px;
+}

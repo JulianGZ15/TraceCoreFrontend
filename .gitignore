@@ -33,6 +33,7 @@ yarn-error.log
 /.angular/cache
 /.angular/validation
 /.angular/stage7-temp
+/.angular/stage8-temp
 /.angular/stage4-format.log
 .sass-cache/
 /connect.lock

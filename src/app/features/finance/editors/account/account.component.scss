@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+.editor {
+  padding: 24px;
+  max-width: 860px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.editor p {
+  overflow-wrap: anywhere;
+}

@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
@@ -11,7 +12,7 @@ import { DossierStore } from '../../dossier-store';
 import { confirm } from '../../../../shared/ui/editor';
 @Component({
   selector: 'tc-party-general',
-  imports: [ReactiveFormsModule, Feedback],
+  imports: [ReactiveFormsModule, Feedback, RouterLink],
   templateUrl: './general.component.html',
   styleUrl: './general.component.scss',
 })

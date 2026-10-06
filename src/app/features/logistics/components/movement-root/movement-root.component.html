@@ -1,0 +1,47 @@
+<section class="panel">
+  <h3>Preparar una raíz</h3>
+  <p>
+    Este guardado crea un movimiento DRAFT independiente. Conserva su UUID si todavía no creas el
+    manifiesto.
+  </p>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <label>Raíz superior</label
+    ><tc-inventory-lookup
+      kind="assets"
+      title="Raíz superior"
+      [filters]="sourceFilters()"
+      [value]="form.get('assetUuid')?.value ?? ''"
+      (picked)="pick('assetUuid', $event)"
+    />
+    @if (context()['type'] !== 'OUTBOUND') {
+      <tc-logistics-lookup
+        resource="location-options"
+        title="Ubicación de destino"
+        [yard]="context()['destinationYardUuid']"
+        [value]="form.get('destinationLocationUuid')?.value"
+        (selectedChange)="pick('destinationLocationUuid', $event)"
+      />
+    }
+    <label>Reserva confirmada opcional</label
+    ><tc-inventory-lookup
+      kind="reservations"
+      title="Reserva confirmada"
+      [filters]="{
+        yardUuid: context()['yardUuid'],
+        rootAssetUuid: form.get('assetUuid')?.value,
+        rootsOnly: true,
+      }"
+      [value]="form.get('reservationUuid')?.value ?? ''"
+      (picked)="pick('reservationUuid', $event)"
+    /><tc-logistics-fields
+      [form]="form"
+      [fields]="fields"
+      [yard]="context()['yardUuid']"
+    /><tc-feedback [message]="error()" /><button
+      class="btn secondary"
+      [disabled]="busy() || form.invalid"
+    >
+      Guardar movimiento de esta raíz
+    </button>
+  </form>
+</section>

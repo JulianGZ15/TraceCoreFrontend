@@ -1,0 +1,27 @@
+@if (pending.own().length) {
+  <section class="panel">
+    <h2>Solicitudes pendientes</h2>
+    <p>
+      Consulta el resultado antes de preparar otra operación. Un resultado no encontrado puede
+      corresponder a una petición todavía en curso.
+    </p>
+    @for (p of pending.own(); track p.key) {
+      <p class="long">{{ p.operation }} · {{ p.key }}</p>
+      <div class="actions">
+        <button class="btn secondary" [disabled]="busy()" (click)="act(p, true)">
+          Consultar resultado</button
+        ><button class="btn secondary" [disabled]="busy()" (click)="act(p, false)">
+          Repetir la misma solicitud
+        </button>
+      </div>
+    }
+  </section>
+}
+@if (error()) {
+  <p class="feedback error">{{ error() }}</p>
+}
+@if (recovered(); as r) {
+  <p class="feedback success">
+    Resultado confirmado: <a [routerLink]="r.path">Abrir {{ r.uuid }}</a>
+  </p>
+}

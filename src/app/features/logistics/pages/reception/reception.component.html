@@ -1,0 +1,125 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  title="Registrar entrega"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  <section class="panel">
+    <h2>{{ s.manifest.folio }}</h2>
+    <p>
+      {{ s.rootCount - s.deliveredRootCount }} raíces pendientes. Cada raíz se recibe completa; una
+      condición declarada no es liberación técnica.
+    </p>
+    <tc-logistics-records
+      [zone]="zone"
+      [rows]="rows()"
+      [columns]="columns"
+      (selected)="choose($event)"
+    /><tc-pagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="rows().length"
+      [busy]="loading() || selecting()"
+      (move)="move($event)"
+    />
+    @if (selecting()) {
+      <p role="status">Cargando todas las piezas de la raíz…</p>
+    }
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" /><tc-logistics-lookup
+        title="Tercero receptor opcional"
+        resource="party-options"
+        [yard]="s.manifest.destinationYardUuid ?? s.manifest.yardUuid"
+        [params]="{ purpose: 'RECEIVER', manifestUuid: id }"
+        [value]="form.getRawValue()['receiverPartyUuid']"
+        (selectedChange)="pick('receiverPartyUuid', $event)"
+      />
+      @if (form.getRawValue()['receiverPartyUuid']) {
+        <tc-logistics-lookup
+          title="Contacto receptor opcional"
+          resource="contact-options"
+          [yard]="s.manifest.destinationYardUuid ?? s.manifest.yardUuid"
+          [params]="{ partyUuid: form.getRawValue()['receiverPartyUuid'], manifestUuid: id }"
+          [value]="form.getRawValue()['receiverContactUuid']"
+          (selectedChange)="pick('receiverContactUuid', $event)"
+        />
+      }
+      <tc-logistics-lookup
+        title="Evidencia de entrega"
+        [resource]="'manifests/' + id + '/evidence'"
+        [yard]="s.manifest.destinationYardUuid ?? s.manifest.yardUuid"
+        [value]="form.getRawValue()['evidenceUuid']"
+        (selectedChange)="pick('evidenceUuid', $event)"
+      /><a [routerLink]="['/logistica/manifiestos', id, 'evidencias']"
+        >Cargar evidencia de recepción</a
+      >
+      @for (root of chosen(); track root.uuid) {
+        <section class="panel" [formGroup]="root.form">
+          <h3 class="long">Raíz {{ root.uuid }}</h3>
+          @if (s.manifest.destinationYardUuid) {
+            <tc-logistics-lookup
+              title="Ubicación real"
+              resource="location-options"
+              [yard]="s.manifest.destinationYardUuid!"
+              [params]="{ manifestUuid: id }"
+              [value]="root.form.get('locationUuid')?.value"
+              (selectedChange)="
+                root.form.get('locationUuid')?.setValue($event); root.form.markAsDirty()
+              "
+            />
+          }
+          <div class="form-grid">
+            <label
+              >Condición común<select #condition>
+                <option value="">Seleccionar</option>
+                @for (c of conditions; track c) {
+                  <option [value]="c">{{ label(c) }}</option>
+                }
+              </select></label
+            ><label>Observación común<input #note maxlength="500" /></label>
+          </div>
+          <button
+            class="btn secondary"
+            type="button"
+            (click)="apply(root, condition.value, note.value)"
+          >
+            Aplicar explícitamente a estas piezas
+          </button>
+          <div formArrayName="pieces">
+            @for (piece of root.pieces.controls; track $index) {
+              <div [formGroupName]="$index" class="form-grid piece">
+                <span class="long"
+                  >{{ piece.get('label')?.value
+                  }}<small class="mono">{{ piece.get('assetUuid')?.value }}</small></span
+                ><label
+                  >Condición declarada<select formControlName="condition">
+                    <option value="">Seleccionar</option>
+                    @for (c of conditions; track c) {
+                      <option [value]="c">{{ label(c) }}</option>
+                    }
+                  </select></label
+                ><label>Observación<input formControlName="observation" maxlength="500" /></label>
+              </div>
+            }
+          </div>
+          <button class="btn secondary" type="button" (click)="remove(root.uuid)">
+            Retirar raíz de esta entrega
+          </button>
+        </section>
+      }
+      <div class="actions">
+        <button class="btn secondary" type="button" [disabled]="saving()" (click)="current()">
+          Consultar datos actuales</button
+        ><button
+          class="btn primary"
+          [disabled]="saving() || selecting() || !chosen().length || !access.receive(s.manifest)"
+        >
+          Confirmar entrega seleccionada
+        </button>
+      </div>
+    </form>
+  </section>
+}

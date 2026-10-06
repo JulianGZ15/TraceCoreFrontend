@@ -5,7 +5,12 @@ export default defineConfig({
   testDir: './e2e',
   testMatch:
     process.env['TRACECORE_E2E_RECOVERY'] === 'true'
-      ? ['**/quality-restart.spec.ts', '**/commerce-restart.spec.ts']
+      ? [
+          '**/quality-restart.spec.ts',
+          '**/commerce-restart.spec.ts',
+          '**/logistics-restart.spec.ts',
+          '**/finance-restart.spec.ts',
+        ]
       : '**/live-api.spec.ts',
   workers: 1,
   timeout: 60000,

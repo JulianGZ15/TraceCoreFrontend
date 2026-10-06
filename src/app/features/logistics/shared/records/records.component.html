@@ -1,0 +1,48 @@
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Identidad</th>
+        @for (c of columns(); track c.key) {
+          <th>{{ c.label }}</th>
+        }
+        @if (selectable()) {
+          <th>Detalle</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.record.uuid) {
+        <tr>
+          <td>
+            <strong>{{
+              row.record.folio ||
+                row.record['concept'] ||
+                row.record.filename ||
+                row.label ||
+                'Registro'
+            }}</strong>
+            @if (row.label && row.record.folio) {
+              <small>{{ row.label }}</small>
+            }
+            <small class="mono uuid">{{ row.record.uuid }}</small>
+          </td>
+          @for (c of columns(); track c.key) {
+            <td [class.mono]="c.key.endsWith('Exact')">{{ value(row.record, c.key) }}</td>
+          }
+          @if (selectable()) {
+            <td>
+              <button class="btn secondary" type="button" (click)="selected.emit(row.record)">
+                Abrir
+              </button>
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="columns().length + 2">No hay registros para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

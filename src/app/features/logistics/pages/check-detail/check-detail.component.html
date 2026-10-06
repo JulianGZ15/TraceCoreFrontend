@@ -1,0 +1,33 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (selected(); as r) {
+  <section class="panel">
+    <a [routerLink]="['/logistica/manifiestos', r.manifestUuid]">Volver al manifiesto</a>
+    <p>{{ r.reference }}</p>
+    <p class="long mono">{{ r.uuid }}</p>
+    <p>{{ label(r['method']) }} · Coincide: {{ label(r.approved) }}</p>
+    <label
+      >Resultado<select
+        [value]="filters['status']"
+        (change)="update('status', $any($event.target).value)"
+      >
+        <option value="">Todos</option>
+        @for (v of ['MATCHED', 'MISSING', 'EXTRA', 'UNRESOLVED']; track v) {
+          <option [value]="v">{{ label(v) }}</option>
+        }
+      </select></label
+    ><tc-logistics-records [zone]="zone" [rows]="rows()" [columns]="columns" /><tc-pagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="rows().length"
+      [busy]="loading()"
+      (move)="move($event)"
+    />
+  </section>
+}

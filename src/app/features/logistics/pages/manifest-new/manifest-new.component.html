@@ -1,0 +1,100 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  title="Nuevo manifiesto"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+<p>Paso {{ step() }} de 4 · Contexto → raíces → referencias → revisión</p>
+<section class="panel">
+  <div class="actions">
+    @for (n of [1, 2, 3, 4]; track n) {
+      <button
+        class="btn secondary"
+        type="button"
+        (click)="go(n)"
+        [attr.aria-current]="step() === n ? 'step' : null"
+      >
+        Paso {{ n }}
+      </button>
+    }
+  </div>
+  @if (step() === 1) {
+    <label for="new-yard">Patio operativo</label
+    ><select
+      id="new-yard"
+      [value]="yard"
+      (change)="setYard($any($event.target).value)"
+      [disabled]="saved().length > 0"
+    >
+      @for (y of yards; track y.uuid) {
+        <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+      }</select
+    ><tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" />
+  }
+  @if (step() === 2) {
+    <tc-logistics-lookup
+      title="Movimiento DRAFT existente"
+      resource="movement-options"
+      [yard]="yard"
+      [params]="{
+        type: form.getRawValue()['type'],
+        carrierUuid: form.getRawValue()['carrierUuid'],
+      }"
+      (selectedChange)="candidate.set($event)"
+    /><button class="btn secondary" (click)="addCandidate()">Agregar movimiento seleccionado</button
+    ><tc-logistics-movement-root [context]="context()" (saved)="addCreated($event)" />
+  }
+  @if (step() === 3) {
+    <tc-logistics-lookup
+      title="Portón opcional"
+      resource="gate-options"
+      [yard]="yard"
+      [value]="gate"
+      (selectedChange)="setGate($event)"
+    />
+  }
+  @for (r of saved(); track r.movement.uuid) {
+    <section class="panel">
+      <h3>Raíz {{ r.root }}</h3>
+      <p class="long mono">Movimiento: {{ r.movement.uuid }}</p>
+      <a [routerLink]="['/inventario/movimientos', r.movement.uuid]"
+        >Consultar movimiento guardado</a
+      >
+      @if (step() === 3 && form.getRawValue()['type'] !== 'TRANSFER') {
+        <tc-logistics-lookup
+          [title]="
+            form.getRawValue()['type'] === 'RETURN'
+              ? 'Partida de retorno'
+              : 'Asignación comercial raíz'
+          "
+          resource="commercial-load-options"
+          [yard]="yard"
+          [params]="{ assetUuid: r.root, purpose: form.getRawValue()['type'] }"
+          [value]="form.getRawValue()['type'] === 'RETURN' ? r.line : r.allocation"
+          (selectedChange)="
+            setLoad(
+              r.movement.uuid,
+              form.getRawValue()['type'] === 'RETURN' ? 'line' : 'allocation',
+              $event
+            )
+          "
+        /><label [for]="'req-' + r.root">Referencia de requisitos</label
+        ><input
+          [id]="'req-' + r.root"
+          [value]="r.reference"
+          (change)="setLoad(r.movement.uuid, 'reference', $any($event.target).value)"
+        />
+      }
+      <button class="btn secondary" (click)="remove(r.movement.uuid)">
+        Retirar de esta preparación
+      </button>
+    </section>
+  }
+  @if (step() === 4) {
+    <p>
+      Revisa {{ saved().length }} raíces. Crear el manifiesto congela carga, ruta, folio y portón.
+    </p>
+    <button class="btn primary" [disabled]="submitting()" (click)="save()">Crear manifiesto</button>
+  } @else {
+    <button class="btn primary" (click)="next()">Continuar</button>
+  }
+</section>

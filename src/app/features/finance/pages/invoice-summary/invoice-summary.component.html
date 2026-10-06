@@ -1,0 +1,106 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+@if (invoice(); as d) {
+  <section class="panel">
+    <p class="eyebrow">FACTURA ADMINISTRATIVA · {{ label(d.invoice.direction) }}</p>
+    <h2>{{ d.invoice.series }}-{{ d.invoice.folio }}</h2>
+    <p class="long mono">
+      {{ d.invoice.uuid }} · {{ label(d.invoice.state) }}{{ d.reversed ? ' · Revertida' : '' }} ·
+      {{ d.invoice.currency }}
+    </p>
+    <a
+      [routerLink]="['/finanzas/terceros', d.invoice.partyUuid]"
+      [queryParams]="{ currency: d.invoice.currency }"
+      >Expediente financiero del tercero</a
+    >
+  </section>
+}
+@if (invoice(); as d) {
+  <section class="panel metrics">
+    <div class="metric">
+      Neto<strong>{{ numberText(d.invoice.netAmountExact) }}</strong>
+    </div>
+    <div class="metric">
+      Impuesto<strong>{{ numberText(d.invoice.taxAmountExact) }}</strong>
+    </div>
+    <div class="metric">
+      Total<strong>{{ numberText(d.invoice.totalAmountExact) }}</strong>
+    </div>
+    <div class="metric">
+      Saldo actual<strong>{{ numberText(d.balanceExact) }}</strong>
+    </div>
+  </section>
+  <section class="panel">
+    <dl>
+      <dt>Emisión</dt>
+      <dd>{{ date(d.invoice.issuedAt) }}</dd>
+      <dt>Vencimiento</dt>
+      <dd>{{ date(d.invoice.dueAt) }}</dd>
+      <dt>Referencia</dt>
+      <dd>{{ d.invoice.reference }}</dd>
+      <dt>Notas vigentes</dt>
+      <dd class="mono">{{ numberText(d.creditedExact) }}</dd>
+      <dt>Aplicaciones vigentes</dt>
+      <dd class="mono">{{ numberText(d.paidExact) }}</dd>
+    </dl>
+    @if (d.invoice.snapshot) {
+      <h3>Snapshot congelado al confirmar</h3>
+      <dl>
+        <dt>Razón social</dt>
+        <dd>{{ d.invoice.snapshot['partyLegalName'] }}</dd>
+        <dt>Nombre comercial</dt>
+        <dd>{{ d.invoice.snapshot['partyTradeName'] || 'Sin dato' }}</dd>
+      </dl>
+    }
+  </section>
+  <div class="actions">
+    @if (d.invoice.state === 'DRAFT') {
+      @if (can('FINANCE_APPROVE')) {
+        <button class="btn primary" (click)="action('post')">Confirmar factura</button>
+      }
+      @if (can('FINANCE_MANAGE')) {
+        <button class="btn secondary" (click)="action('cancel')">Cancelar borrador</button>
+      }
+    }
+    @if (d.invoice.state === 'CANCELLED' && can('FINANCE_MANAGE')) {
+      <a
+        class="btn primary"
+        routerLink="/finanzas/facturas/nueva"
+        [queryParams]="{ replaceUuid: d.invoice.uuid }"
+        >Recrear con nuevo UUID</a
+      >
+    }
+    @if (d.invoice.state === 'POSTED' && !d.reversed && can('FINANCE_APPROVE')) {
+      <a class="btn secondary" [routerLink]="['/finanzas/facturas', id, 'nota']"
+        >Preparar nota de crédito</a
+      ><button class="btn secondary" (click)="action('allocation')">Aplicar pago</button
+      ><button class="btn secondary" (click)="action('reversal')">Revertir factura</button>
+    }
+  </div>
+}

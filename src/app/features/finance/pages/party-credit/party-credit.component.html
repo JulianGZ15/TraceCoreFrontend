@@ -1,0 +1,87 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+@if (party(); as p) {
+  <section class="panel">
+    <p class="eyebrow">EXPEDIENTE FINANCIERO</p>
+    <h2>{{ p.party['legalName'] }}</h2>
+    <p class="mono long">
+      {{ p.party.uuid }} · {{ p.currency }} · {{ p.fractionDigits }} decimales
+    </p>
+    <label
+      >Divisa<select #cur [value]="currency" (change)="update('currency', cur.value)">
+        @for (c of currencies(); track c.uuid) {
+          <option [value]="c.code">{{ c.code }}</option>
+        }
+      </select></label
+    >
+  </section>
+}
+@if (party()?.account; as a) {
+  <section class="panel">
+    <h2>{{ label(a['state']) }}</h2>
+    <p class="mono long">{{ a.uuid }} · Límite {{ numberText(a['creditLimitExact']) }}</p>
+    <p>{{ date(a['validFrom']) }} → {{ a['validTo'] ? date(a['validTo']) : 'Sin fin' }}</p>
+    <div class="actions">
+      @if (can('FINANCE_CREDIT')) {
+        <button class="btn secondary" (click)="action('limit', a)">Cambiar límite</button>
+        @if (a['state'] !== 'ACTIVE') {
+          <button class="btn secondary" (click)="evaluate('activation')">Revisar activación</button
+          ><button class="btn primary" (click)="action('activate', a)">Activar o reactivar</button>
+        } @else {
+          <button class="btn secondary" (click)="action('block', a)">Bloquear cuenta</button>
+        }
+      }
+    </div>
+    <a [routerLink]="['/finanzas/cuentas', a.uuid]">Consultar historial de límites</a>
+  </section>
+} @else {
+  <p>Este tercero no tiene cuenta en la divisa seleccionada.</p>
+  @if (can('FINANCE_CREDIT')) {
+    <button class="btn primary" (click)="action('account')">Crear cuenta DRAFT</button>
+  }
+}
+@if (check(); as c) {
+  <section class="panel">
+    <h3>{{ c.allowed ? 'Sin bloqueos actuales' : 'Pendientes' }}</h3>
+    @for (b of c.blockers; track $index) {
+      <p class="long">{{ label(b.code) }} {{ b.orderUuid || b.sourceUuid || '' }}</p>
+    }
+    @if (c.projectedExposureExact) {
+      <p>
+        Exposición proyectada: <span class="mono">{{ numberText(c.projectedExposureExact) }}</span>
+      </p>
+    }
+    @if (c.unbilledExact) {
+      <p>
+        Sin facturar: <span class="mono">{{ numberText(c.unbilledExact) }}</span>
+      </p>
+    }
+    <p>La consulta es previa; la operación volverá a validar en servidor.</p>
+  </section>
+}

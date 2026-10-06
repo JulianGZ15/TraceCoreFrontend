@@ -1,0 +1,128 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+@if (party(); as p) {
+  <section class="panel">
+    <p class="eyebrow">EXPEDIENTE FINANCIERO</p>
+    <h2>{{ p.party['legalName'] }}</h2>
+    <p class="mono long">
+      {{ p.party.uuid }} · {{ p.currency }} · {{ p.fractionDigits }} decimales
+    </p>
+    <label
+      >Divisa<select #cur [value]="currency" (change)="update('currency', cur.value)">
+        @for (c of currencies(); track c.uuid) {
+          <option [value]="c.code">{{ c.code }}</option>
+        }
+      </select></label
+    >
+  </section>
+}
+@if (party(); as p) {
+  <section class="panel metrics">
+    <div class="metric">
+      Por cobrar<strong>{{
+        p.balances['receivableExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['receivableExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Por pagar<strong>{{
+        p.balances['payableExact'] === null ? 'Sin cuenta' : numberText(p.balances['payableExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Por cobrar vencido<strong>{{
+        p.balances['overdueReceivableExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['overdueReceivableExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Por pagar vencido<strong>{{
+        p.balances['overduePayableExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['overduePayableExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Anticipos recibidos<strong>{{
+        p.balances['incomingUnappliedExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['incomingUnappliedExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Anticipos entregados<strong>{{
+        p.balances['outgoingUnappliedExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['outgoingUnappliedExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Compromisos pendientes<strong>{{
+        p.balances['commitmentsExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['commitmentsExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Exposición<strong>{{
+        p.balances['exposureExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['exposureExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Límite de crédito<strong>{{
+        p.balances['creditLimitExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['creditLimitExact'])
+      }}</strong>
+    </div>
+    <div class="metric">
+      Crédito disponible<strong>{{
+        p.balances['availableCreditExact'] === null
+          ? 'Sin cuenta'
+          : numberText(p.balances['availableCreditExact'])
+      }}</strong>
+    </div>
+  </section>
+  <p>Evaluado {{ date(p.evaluatedAt) }}. No se suman distintas divisas.</p>
+  @if (!p.account || !p.creditEnabled) {
+    <p>
+      Crédito no habilitado: {{ p.account ? 'cuenta en borrador' : 'sin cuenta' }}. Los saldos
+      administrativos siguen visibles.
+    </p>
+  } @else {
+    <p>
+      Cuenta {{ label(p.account['state']) }} ·
+      {{ p.accountInPeriod ? 'en vigencia' : 'fuera de vigencia' }}.
+    </p>
+  }
+}

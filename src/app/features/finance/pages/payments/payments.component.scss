@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.panel {
+  margin-block: 16px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 16px;
+}
+.filters,
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 16px;
+}
+.long {
+  overflow-wrap: anywhere;
+}
+.metric {
+  border: 1px solid var(--tc-border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.metric strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 16px;
+}
+dl {
+  margin: 0;
+}
+dt {
+  font-size: 12px;
+  color: var(--tc-text-muted);
+}
+dd {
+  margin: 4px 0 12px;
+  overflow-wrap: anywhere;
+}
+.editor {
+  max-width: 1080px;
+}
+.part {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--tc-border);
+}
+.part input {
+  max-width: 220px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 16px;
+}
+.uuid {
+  overflow-wrap: anywhere;
+}

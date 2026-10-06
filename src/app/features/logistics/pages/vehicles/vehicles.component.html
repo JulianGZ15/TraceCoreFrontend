@@ -1,0 +1,38 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<section class="panel">
+  <tc-logistics-lookup
+    title="Transportista"
+    resource="party-options"
+    [yard]="yard"
+    [value]="filters['carrierUuid']"
+    (selectedChange)="update('carrierUuid', $event)"
+  />
+  @if (session.can('LOGISTICS_MANAGE')) {
+    <button class="btn primary" [disabled]="loading()" (click)="add()">Nuevo vehículo</button>
+  }
+</section>
+<tc-logistics-records
+  [zone]="zone"
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="open($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as r) {
+  <a class="btn secondary" [routerLink]="['/logistica/vehiculos', r.uuid]">Abrir ficha</a>
+}

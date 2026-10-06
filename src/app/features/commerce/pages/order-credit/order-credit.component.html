@@ -44,3 +44,12 @@
     FINANCE_CREDIT COMPANY para modificar.
   </p>
 }
+
+@if (session.can('FINANCE_READ') && credit()) {
+  <a
+    class="btn secondary"
+    [routerLink]="['/finanzas/terceros', credit()?.payerUuid]"
+    [queryParams]="{ currency: credit()?.currency }"
+    >Abrir expediente financiero del pagador</a
+  >
+}

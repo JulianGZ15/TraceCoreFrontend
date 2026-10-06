@@ -1,0 +1,10 @@
+<nav aria-label="Secciones financieras">
+  @for (s of sections(); track s.key) {
+    <a
+      [routerLink]="base() + '/' + s.key"
+      [queryParams]="currency() ? { currency: currency() } : {}"
+      routerLinkActive="active"
+      >{{ s.label }}</a
+    >
+  }
+</nav>

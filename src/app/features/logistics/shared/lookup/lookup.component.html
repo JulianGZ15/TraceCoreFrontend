@@ -1,0 +1,53 @@
+<div class="lookup">
+  @if (showLabel()) {
+    <label [for]="id()">{{ title() }}</label>
+  }
+  @if (searchable()) {
+    <input
+      type="search"
+      #q
+      [attr.aria-label]="title() + ' · buscar'"
+      [disabled]="disabled()"
+      (change)="query(q.value)"
+      placeholder="Buscar opciones"
+    />
+  }
+  <select
+    [id]="id()"
+    #choice
+    [attr.aria-label]="title()"
+    [value]="selected()"
+    [disabled]="disabled() || busy()"
+    (change)="choose(choice.value)"
+  >
+    <option value="" [selected]="!selected()">Seleccionar</option>
+    @if (selected()) {
+      <option [value]="selected()" [selected]="true">{{ selectedLabel() || selected() }}</option>
+    }
+    @for (option of options(); track option.uuid) {
+      <option [value]="option.uuid" [selected]="selected() === option.uuid">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+  <div class="lookup-pages">
+    <button
+      class="btn secondary"
+      type="button"
+      [disabled]="offset === 0 || busy() || disabled()"
+      (click)="move(-25)"
+    >
+      Anterior</button
+    ><button
+      class="btn secondary"
+      type="button"
+      [disabled]="options().length < 25 || busy() || disabled()"
+      (click)="move(25)"
+    >
+      Siguiente
+    </button>
+  </div>
+  @if (error()) {
+    <small class="field-error">{{ error() }}</small>
+  }
+</div>

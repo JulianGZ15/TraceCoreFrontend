@@ -1,0 +1,41 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  title="Confirmar despacho"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  <section class="panel">
+    <h2>{{ s.manifest.folio }}</h2>
+    <p>{{ s.rootCount }} raíces · {{ s.pieceCount }} piezas · {{ s.totalWeightKgExact }} kg</p>
+    <p>{{ s.labels['origin'] }} → {{ s.labels['destination'] }}</p>
+    <p>
+      El servidor volverá a comprobar calidad, reservas, propietario, composición y recursos. La
+      salida es una operación completa.
+    </p>
+    @if (check(); as c) {
+      <p>Comprobación {{ c.uuid }} · válida hasta {{ date(expires()) }}</p>
+    } @else {
+      <p class="feedback info">Falta una comprobación aprobada vigente.</p>
+    }
+    <a [routerLink]="['/logistica/manifiestos', id, 'verificacion']">Volver a comprobar carga</a>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" />
+      <div class="actions">
+        <button class="btn secondary" type="button" [disabled]="saving()" (click)="current()">
+          Consultar datos actuales</button
+        ><button class="btn primary" [disabled]="saving() || !allowed() || !check()">
+          Confirmar salida de toda la carga
+        </button>
+      </div>
+      @if (!allowed()) {
+        <p class="feedback info">
+          Requiere estado CHECKED y las capacidades de logística e inventario correspondientes al
+          origen.
+        </p>
+      }
+    </form>
+  </section>
+}

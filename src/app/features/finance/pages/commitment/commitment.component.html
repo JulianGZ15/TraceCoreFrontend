@@ -1,0 +1,69 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+@if (current(); as r) {
+  <section class="panel">
+    <h2>Compromiso {{ r['released'] ? 'liquidado' : 'vigente' }}</h2>
+    <p class="mono long">{{ r.uuid }} · Orden {{ r['orderUuid'] }}</p>
+    <p>{{ numberText(r['approvedAmountExact']) }} {{ r['currency'] }}</p>
+    @if (can('FINANCE_CREDIT') && !r['released']) {
+      <div class="actions">
+        <button class="btn secondary" (click)="action('commitment', r)">Modificar compromiso</button
+        ><button class="btn secondary" (click)="evaluate('settlement')">Consultar pendientes</button
+        ><button class="btn primary" (click)="action('settle', r)">Liquidar excedente</button>
+      </div>
+    }
+  </section>
+}
+@if (check(); as c) {
+  <section class="panel">
+    <h3>{{ c.allowed ? 'Sin bloqueos actuales' : 'Pendientes' }}</h3>
+    @for (b of c.blockers; track $index) {
+      <p class="long">{{ label(b.code) }} {{ b.orderUuid || b.sourceUuid || '' }}</p>
+    }
+    @if (c.projectedExposureExact) {
+      <p>
+        Exposición proyectada: <span class="mono">{{ numberText(c.projectedExposureExact) }}</span>
+      </p>
+    }
+    @if (c.unbilledExact) {
+      <p>
+        Sin facturar: <span class="mono">{{ numberText(c.unbilledExact) }}</span>
+      </p>
+    }
+    <p>La consulta es previa; la operación volverá a validar en servidor.</p>
+  </section>
+}
+<section class="panel">
+  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    (move)="move($event)"
+  />
+</section>

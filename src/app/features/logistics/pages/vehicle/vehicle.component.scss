@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+.panel {
+  margin-block: 16px;
+}
+.long {
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 16px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.selected {
+  border-left: 3px solid var(--tc-action);
+  padding: 16px;
+}

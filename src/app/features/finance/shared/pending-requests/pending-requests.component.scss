@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+.pending {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-block: 16px;
+}
+.mono {
+  overflow-wrap: anywhere;
+}

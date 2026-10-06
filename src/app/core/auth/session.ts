@@ -17,6 +17,38 @@ export function safeReturn(value: string | null): string {
   const id = '[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}';
   if (
     new RegExp(
+      '^/finanzas(?:/(?:facturas(?:/nueva|/' +
+        id +
+        '(?:/(?:resumen|partidas|cargos|aplicaciones|notas|nota|reversos))?)?|pagos(?:/' +
+        id +
+        ')?|cargos|notas/' +
+        id +
+        '|cuentas(?:/' +
+        id +
+        ')?|compromisos(?:/' +
+        id +
+        ')?|reversos(?:/' +
+        id +
+        ')?|divisas|terceros/' +
+        id +
+        '(?:/(?:resumen|facturas|pagos|cargos|credito|compromisos|reversos|evidencias))?))?$',
+    ).test(path)
+  )
+    return value;
+  if (
+    new RegExp(
+      '^/logistica(?:/(?:manifiestos(?:/nuevo|/' +
+        id +
+        '(?:/(?:general|carga|viaje|comprobaciones|entregas|hitos|evidencias|verificacion|despacho|recepcion))?)?|(?:comprobaciones|entregas)/' +
+        id +
+        '|(?:vehiculos|choferes)(?:/' +
+        id +
+        ')?))?$',
+    ).test(path)
+  )
+    return value;
+  if (
+    new RegExp(
       '^/comercial(?:/(?:ordenes(?:/nueva|/' +
         id +
         '(?:/(?:general|partidas|asignaciones|recepciones|polizas|evidencias|credito))?)?|marcos(?:/nuevo|/' +
@@ -176,6 +208,21 @@ export class Session implements OnDestroy {
       this.can('RFID_READ') ||
       !!this.context()?.yards.some((y) => y.active && y.permissions.includes('RFID_READ')),
   );
+  readonly financeRead = computed(() => this.can('FINANCE_READ'));
+  readonly financeWrite = computed(() =>
+    ['FINANCE_MANAGE', 'FINANCE_APPROVE', 'FINANCE_CREDIT'].some((p) => this.can(p)),
+  );
+  readonly logisticsRead = computed(
+    () =>
+      this.can('LOGISTICS_READ') ||
+      !!this.context()?.yards.some((y) => y.active && y.permissions.includes('LOGISTICS_READ')),
+  );
+  readonly logisticsWrite = computed(() =>
+    ['LOGISTICS_MANAGE', 'LOGISTICS_CHECK', 'LOGISTICS_DISPATCH', 'LOGISTICS_RECEIVE'].some(
+      (p) =>
+        this.can(p) || !!this.context()?.yards.some((y) => y.active && y.permissions.includes(p)),
+    ),
+  );
   readonly commerceRead = computed(
     () =>
       this.can('COMMERCIAL_READ') ||
@@ -200,6 +247,15 @@ export class Session implements OnDestroy {
       !!c &&
       (c.companyPermissions.some((p) =>
         [
+          'FINANCE_READ',
+          'FINANCE_MANAGE',
+          'FINANCE_APPROVE',
+          'FINANCE_CREDIT',
+          'LOGISTICS_READ',
+          'LOGISTICS_MANAGE',
+          'LOGISTICS_CHECK',
+          'LOGISTICS_DISPATCH',
+          'LOGISTICS_RECEIVE',
           'COMMERCIAL_READ',
           'COMMERCIAL_MANAGE',
           'COMMERCIAL_APPROVE',
@@ -338,6 +394,8 @@ export class Session implements OnDestroy {
     });
   }
   private clear() {
+    sessionStorage.removeItem('tracecore.logistics.pending');
+    sessionStorage.removeItem('tracecore.logistics.draft');
     sessionStorage.removeItem('tracecore.quality.pending');
     sessionStorage.removeItem('tracecore.rfid.pending');
     sessionStorage.removeItem('tracecore.commerce.pending');

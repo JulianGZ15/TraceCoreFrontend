@@ -660,5 +660,23 @@ test('stage five real API: evidence, corrected MTR, inspections, maintenance and
   await qualityLive(page);
 });
 
-import {commerceLive} from './commerce-live';
-test('stage seven real API: rental, credit, revised draft, physical delivery, cut and evidence',async({page})=>{test.skip(!process.env['TRACECORE_E2E_ISOLATED'],'Requires disposable PostgreSQL.');test.setTimeout(180000);await commerceLive(page);});
+import { commerceLive } from './commerce-live';
+test('stage seven real API: rental, credit, revised draft, physical delivery, cut and evidence', async ({
+  page,
+}) => {
+  test.skip(!process.env['TRACECORE_E2E_ISOLATED'], 'Requires disposable PostgreSQL.');
+  test.setTimeout(180000);
+  await commerceLive(page);
+});
+
+import { logisticsLive } from './logistics-live';
+test('stage eight real API: grouped manifest, trip correction, dispatch and partial whole-root deliveries', async ({
+  page,
+}) => {
+  test.skip(!process.env['TRACECORE_E2E_ISOLATED'], 'Disposable database only');
+  test.setTimeout(180000);
+  await logisticsLive(page);
+});
+
+import { financeLive } from './finance-live';
+test('stage nine real API: charges, invoice preview, payments, applications, notes, reversals, credit and evidence',async({page})=>{test.skip(!process.env['TRACECORE_E2E_ISOLATED'],'Disposable database only');test.setTimeout(180000);await financeLive(page);});

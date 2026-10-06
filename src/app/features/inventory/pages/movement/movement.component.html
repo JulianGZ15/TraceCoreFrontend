@@ -54,6 +54,14 @@
       <p role="status">
         Este movimiento se gestiona desde logística, o el backend no informa su vinculación.
         Consulta habilitada; ejecución deshabilitada aquí.
+        @if (
+          d.manifestUuid &&
+          (session.can('LOGISTICS_READ') ||
+            session.can('LOGISTICS_READ', d.movement.sourceYardUuid ?? undefined) ||
+            session.can('LOGISTICS_READ', d.movement.destinationYardUuid ?? undefined))
+        ) {
+          <a [routerLink]="['/logistica/manifiestos', d.manifestUuid]">Abrir manifiesto</a>
+        }
       </p>
     }
     <p>{{ d.items.length }} piezas del snapshot. Los componentes no ocupan otra posición.</p>

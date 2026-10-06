@@ -1,0 +1,40 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+<tc-logistics-records
+  [zone]="zone"
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="open($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as r) {
+  <section class="panel selected">
+    <h2>Pieza {{ r.assetUuid }}</h2>
+    <p>Raíz: {{ r.rootAssetUuid }}</p>
+    <p>Movimiento: {{ r.movementUuid }}</p>
+    @if (access.can('INVENTORY_READ', yard)) {
+      <a class="btn secondary" [routerLink]="['/inventario/movimientos', r.movementUuid]"
+        >Abrir movimiento</a
+      >
+    }
+    @if (access.can('COMMERCIAL_READ', yard) && orderFor(r)) {
+      <a class="btn secondary" [routerLink]="['/comercial/ordenes', orderFor(r), 'asignaciones']"
+        >Abrir orden comercial</a
+      >
+    }
+  </section>
+}

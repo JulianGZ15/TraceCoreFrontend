@@ -1,0 +1,52 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  <section class="panel">
+    @if (s.trip; as t) {
+      <h2>{{ s.labels['carrier'] }}</h2>
+      <p>Vehículo: {{ s.labels['vehicle'] }} · Chofer: {{ s.labels['driver'] }}</p>
+      <p>Salida prevista: {{ date(t.plannedDeparture) }} · ETA: {{ date(t.eta) }}</p>
+      <p>{{ label(t.state) }} · versión {{ t.version }}</p>
+    } @else {
+      <p>Sin viaje planificado.</p>
+    }
+    @if (manage() && ['DRAFT', 'CHECKED'].includes(s.manifest.state)) {
+      <button class="btn primary" [disabled]="loading()" (click)="plan()">
+        {{ s.trip ? 'Corregir viaje' : 'Planificar viaje' }}
+      </button>
+    }
+    <p>
+      La corrección invalida la comprobación anterior. El transportista y la carga permanecen
+      congelados.
+    </p>
+  </section>
+}
+<tc-logistics-records
+  [zone]="zone"
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="open($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as r) {
+  <section class="panel selected">
+    <h2>Corrección</h2>
+    <p>{{ r['reason'] }}</p>
+    <p>{{ date(r['changedAt']) }}</p>
+    <p>Antes: {{ revisionDate(r, 'before') }}. Después: {{ revisionDate(r, 'after') }}.</p>
+  </section>
+}

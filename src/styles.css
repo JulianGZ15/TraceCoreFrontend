@@ -576,3 +576,12 @@ tbody tr:hover {
   max-width: 720px;
   margin: 0;
 }
+.logistics-dialog {
+  max-width: min(960px, 95vw);
+  max-height: 90dvh;
+  overflow: auto;
+  background: var(--tc-panel);
+  border-radius: 8px;
+}
+
+.finance-dialog {width:min(860px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;background:var(--tc-panel,#fff);border-radius:8px;}

@@ -9,9 +9,25 @@
   /></a>
   <div class="nav-label">Espacio de trabajo</div>
   <nav aria-label="Principal">
-    @if(session.commerceRead()){<a routerLink="/comercial" routerLinkActive="active" (click)="close()"><tc-icon name="domain"/>Centro comercial</a>}
+    @if (session.financeRead()) {
+      <a routerLink="/finanzas" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="domain" />Finanzas</a
+      >
+    }
+    @if (session.logisticsRead()) {
+      <a routerLink="/logistica" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="warehouse" />Logística y despacho</a
+      >
+    }
+    @if (session.commerceRead()) {
+      <a routerLink="/comercial" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="domain" />Centro comercial</a
+      >
+    }
     @if (session.rfidRead()) {
-      <a routerLink="/rfid" routerLinkActive="active" (click)="close()"><tc-icon name="history" />RFID y dispositivos</a>
+      <a routerLink="/rfid" routerLinkActive="active" (click)="close()"
+        ><tc-icon name="history" />RFID y dispositivos</a
+      >
     }
     @if (session.qualityRead()) {
       <a routerLink="/calidad" routerLinkActive="active" (click)="close()"

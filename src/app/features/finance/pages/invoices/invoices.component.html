@@ -1,0 +1,96 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+<section class="panel filters">
+  <tc-finance-lookup
+    title="Tercero"
+    [value]="filters['partyUuid']"
+    (selectedChange)="update('partyUuid', $event)"
+  /><label
+    >Divisa<select #cur [value]="filters['currency']" (change)="update('currency', cur.value)">
+      <option value="">Todas</option>
+      @for (c of currencies(); track c.uuid) {
+        <option [value]="c.code">{{ c.code }}</option>
+      }
+    </select></label
+  ><label
+    >Dirección<select #dir [value]="filters['direction']" (change)="update('direction', dir.value)">
+      <option value="">Ambas</option>
+      <option value="RECEIVABLE">Por cobrar</option>
+      <option value="PAYABLE">Por pagar</option>
+    </select></label
+  >
+</section>
+<section class="panel filters">
+  <label
+    >Serie o folio<input
+      type="search"
+      #search
+      [value]="filters['search']"
+      (change)="update('search', search.value)" /></label
+  ><label
+    >Estado<select #state [value]="filters['state']" (change)="update('state', state.value)">
+      <option value="">Todos</option>
+      <option value="DRAFT">Borrador</option>
+      <option value="POSTED">Confirmada</option>
+      <option value="CANCELLED">Cancelada</option>
+    </select></label
+  ><label
+    >Emitida desde (offset UTC)<input
+      #from
+      [value]="filters['from']"
+      (change)="update('from', from.value)" /></label
+  ><label
+    >Emitida hasta, exclusivo<input #to [value]="filters['to']" (change)="update('to', to.value)"
+  /></label>
+</section>
+<section class="panel filters">
+  <tc-finance-lookup
+    title="Expediente del tercero"
+    (selectedChange)="selectedParty = $event"
+  /><label
+    >Divisa del expediente<input
+      #code
+      [value]="currency"
+      maxlength="3"
+      (change)="currency = code.value.toUpperCase()" /></label
+  ><button class="btn secondary" [disabled]="!selectedParty" (click)="openParty()">
+    Abrir expediente
+  </button>
+</section>
+@if (can('FINANCE_MANAGE')) {
+  <a class="btn primary" routerLink="/finanzas/facturas/nueva">Preparar factura</a>
+}
+<section class="panel">
+  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    (move)="move($event)"
+  />
+</section>

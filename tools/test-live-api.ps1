@@ -11,7 +11,7 @@ function Invoke-PgControl([string[]]$ControlArguments, [string]$Operation) {
     if (-not $control.WaitForExit(35000) -or $control.ExitCode -ne 0) { throw ('PostgreSQL control failed: ' + $Operation) }
 }
 $dbPort = Get-TestPort; $apiPort = Get-TestPort; $frontPort = Get-TestPort
-$variables = @('SPRING_PROFILES_ACTIVE','TRACECORE_DB_URL','TRACECORE_DB_USERNAME','TRACECORE_DB_PASSWORD','TRACECORE_AUTH_SECRET_BASE64','TRACECORE_BOOTSTRAP_ENABLED','TRACECORE_COMPANY_LEGAL_NAME','TRACECORE_COMPANY_NAME','TRACECORE_ADMIN_NAME','TRACECORE_ADMIN_EMAIL','TRACECORE_ADMIN_PASSWORD','TRACECORE_E2E_PROXY','TRACECORE_E2E_ISOLATED','TRACECORE_E2E_FRONT_PORT','TRACECORE_E2E_FRONT_URL','TRACECORE_EVIDENCE_ROOT','TRACECORE_E2E_RECOVERY_FILE','TRACECORE_E2E_COMMERCE_RECOVERY_FILE','TRACECORE_E2E_RECOVERY','TRACECORE_CORS_ORIGINS','TRACECORE_E2E_API_URL')
+$variables = @('SPRING_PROFILES_ACTIVE','TRACECORE_DB_URL','TRACECORE_DB_USERNAME','TRACECORE_DB_PASSWORD','TRACECORE_AUTH_SECRET_BASE64','TRACECORE_BOOTSTRAP_ENABLED','TRACECORE_COMPANY_LEGAL_NAME','TRACECORE_COMPANY_NAME','TRACECORE_ADMIN_NAME','TRACECORE_ADMIN_EMAIL','TRACECORE_ADMIN_PASSWORD','TRACECORE_E2E_PROXY','TRACECORE_E2E_ISOLATED','TRACECORE_E2E_FRONT_PORT','TRACECORE_E2E_FRONT_URL','TRACECORE_EVIDENCE_ROOT','TRACECORE_E2E_RECOVERY_FILE','TRACECORE_E2E_COMMERCE_RECOVERY_FILE','TRACECORE_E2E_LOGISTICS_RECOVERY_FILE','TRACECORE_E2E_FINANCE_RECOVERY_FILE','TRACECORE_E2E_RECOVERY','TRACECORE_CORS_ORIGINS','TRACECORE_E2E_API_URL')
 $previous = @{}; foreach ($key in $variables) { $previous[$key] = [Environment]::GetEnvironmentVariable($key, 'Process') }
 $started = $false; $backend = $null
 try {
@@ -23,6 +23,8 @@ try {
     $env:SPRING_PROFILES_ACTIVE = 'postgres'; $env:TRACECORE_DB_URL = 'jdbc:postgresql://127.0.0.1:' + $dbPort + '/postgres'; $env:TRACECORE_DB_USERNAME = 'postgres'; $env:TRACECORE_DB_PASSWORD = 'isolated-test'
     $env:TRACECORE_EVIDENCE_ROOT = Join-Path $testRoot 'party-evidence'
     $env:TRACECORE_CORS_ORIGINS = 'http://127.0.0.1:' + $frontPort; $env:TRACECORE_E2E_API_URL = 'http://127.0.0.1:' + $apiPort
+    $env:TRACECORE_E2E_LOGISTICS_RECOVERY_FILE = Join-Path $testRoot 'logistics-recovery.json'
+    $env:TRACECORE_E2E_FINANCE_RECOVERY_FILE = Join-Path $testRoot 'finance-recovery.json'
     $env:TRACECORE_E2E_COMMERCE_RECOVERY_FILE = Join-Path $testRoot 'commerce-recovery.json'
     $env:TRACECORE_E2E_RECOVERY_FILE = Join-Path $testRoot 'quality-recovery.json'; $env:TRACECORE_E2E_RECOVERY = 'false'
     $random = New-Object byte[] 32; $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($random); $rng.Dispose(); $env:TRACECORE_AUTH_SECRET_BASE64 = [Convert]::ToBase64String($random)

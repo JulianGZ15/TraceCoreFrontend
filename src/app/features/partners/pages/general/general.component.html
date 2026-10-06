@@ -52,3 +52,9 @@
     }
   </form>
 </section>
+
+@if (session.can('FINANCE_READ') && store.party()) {
+  <a class="btn secondary" [routerLink]="['/finanzas/terceros', store.uuid]"
+    >Abrir expediente financiero</a
+  >
+}

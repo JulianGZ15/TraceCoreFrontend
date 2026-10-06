@@ -1,0 +1,47 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  @if (
+    manage() ||
+    (access.can('LOGISTICS_RECEIVE', s.manifest.destinationYardUuid ?? s.manifest.yardUuid) &&
+      ['IN_TRANSIT', 'PARTIALLY_DELIVERED'].includes(s.manifest.state))
+  ) {
+    <section class="panel">
+      <label for="shipment-file">PDF, PNG o JPEG · máximo 10 MiB</label
+      ><input
+        id="shipment-file"
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        (change)="pickFile($event)"
+      /><button class="btn primary" [disabled]="loading() || !file" (click)="upload()">
+        Cargar archivo
+      </button>
+    </section>
+  }
+}
+<tc-logistics-records
+  [zone]="zone"
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="open($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>
+@if (selected(); as r) {
+  <button class="btn secondary" [disabled]="loading()" (click)="download(r)">
+    Descargar {{ r.filename }}
+  </button>
+}

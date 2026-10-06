@@ -1,0 +1,80 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+@if (payment(); as d) {
+  <section class="panel">
+    <h2>{{ d.payment['operationReference'] }}</h2>
+    <p class="mono long">
+      {{ d.payment.uuid }} · {{ label(d.payment['direction']) }} · {{ d.payment['currency']
+      }}{{ d.reversed ? ' · Revertido' : '' }}
+    </p>
+    <div class="metrics">
+      <div class="metric">
+        Importe registrado<strong>{{ numberText(d.payment['amountExact']) }}</strong>
+      </div>
+      <div class="metric">
+        Remanente sin aplicar<strong>{{ numberText(d.unappliedExact) }}</strong>
+      </div>
+    </div>
+    <p>Método {{ d.payment['method'] }} · {{ date(d.payment['paidAt']) }}</p>
+    <a
+      [routerLink]="['/finanzas/terceros', d.payment['partyUuid']]"
+      [queryParams]="{ currency: d.payment['currency'] }"
+      >Expediente del tercero</a
+    >
+    @if (!d.reversed && can('FINANCE_APPROVE')) {
+      <div class="actions">
+        <button class="btn primary" (click)="action('allocation')">Aplicar a factura</button
+        ><button class="btn secondary" (click)="action('reversal')">Revertir pago</button>
+      </div>
+    }
+  </section>
+}
+<section class="panel">
+  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    (move)="move($event)"
+  />
+</section>
+@if (selected(); as row) {
+  <section class="panel">
+    <h2>Registro seleccionado</h2>
+    <p class="mono long">{{ row.uuid }}</p>
+    <dl>
+      @for (c of columns; track c.key) {
+        <dt>{{ c.label }}</dt>
+        <dd>{{ c.key.endsWith('Exact') ? numberText(row[c.key]) : label(row[c.key]) }}</dd>
+      }
+    </dl>
+    @if (can('FINANCE_APPROVE') && !row['reversed']) {
+      <button class="btn secondary" (click)="editReversal(row)">Revertir aplicación</button>
+    }
+  </section>
+}

@@ -196,6 +196,8 @@ export async function login(page: Page) {
   await page.getByLabel('Correo electrónico', { exact: true }).fill('ana@example.test');
   await page.getByLabel('Contraseña', { exact: true }).fill('FixtureOnly123!');
   await page.getByRole('button', { name: 'Iniciar sesión', exact: true }).click();
+  // Navigation before the login response finishes can cancel session creation.
+  await expect(page).not.toHaveURL(/\/login(?:\?|$)/);
 }
 export async function expectNoPageOverflow(page: Page) {
   expect(

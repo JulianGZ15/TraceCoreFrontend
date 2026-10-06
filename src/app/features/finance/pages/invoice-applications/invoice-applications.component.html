@@ -1,0 +1,66 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+@if (invoice(); as d) {
+  <section class="panel">
+    <p class="eyebrow">FACTURA ADMINISTRATIVA · {{ label(d.invoice.direction) }}</p>
+    <h2>{{ d.invoice.series }}-{{ d.invoice.folio }}</h2>
+    <p class="long mono">
+      {{ d.invoice.uuid }} · {{ label(d.invoice.state) }}{{ d.reversed ? ' · Revertida' : '' }} ·
+      {{ d.invoice.currency }}
+    </p>
+    <a
+      [routerLink]="['/finanzas/terceros', d.invoice.partyUuid]"
+      [queryParams]="{ currency: d.invoice.currency }"
+      >Expediente financiero del tercero</a
+    >
+  </section>
+}
+<section class="panel">
+  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    (move)="move($event)"
+  />
+</section>
+@if (selected(); as row) {
+  <section class="panel">
+    <h2>Registro seleccionado</h2>
+    <p class="mono long">{{ row.uuid }}</p>
+    <dl>
+      @for (c of columns; track c.key) {
+        <dt>{{ c.label }}</dt>
+        <dd>{{ c.key.endsWith('Exact') ? numberText(row[c.key]) : label(row[c.key]) }}</dd>
+      }
+    </dl>
+    @if (can('FINANCE_APPROVE') && !row['reversed']) {
+      <button class="btn secondary" (click)="editReversal(row)">Revertir aplicación</button>
+    }
+  </section>
+}

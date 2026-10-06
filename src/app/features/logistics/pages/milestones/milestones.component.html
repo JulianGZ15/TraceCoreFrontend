@@ -1,0 +1,32 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  @if (manage() && s.trip && !['DELIVERED', 'CANCELLED'].includes(s.manifest.state)) {
+    <button class="btn primary" [disabled]="loading()" (click)="add()">Registrar hito</button>
+  }
+}
+<p>
+  Las incidencias no cambian la ubicación. Salida y llegada se registran mediante sus comandos
+  físicos.
+</p>
+<tc-logistics-records
+  [zone]="zone"
+  [rows]="rows()"
+  [columns]="columns"
+  (selected)="open($event)"
+/><tc-pagination
+  [offset]="offset"
+  [limit]="limit"
+  [count]="rows().length"
+  [busy]="loading()"
+  (move)="move($event)"
+/>

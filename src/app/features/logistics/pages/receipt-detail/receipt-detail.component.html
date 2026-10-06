@@ -1,0 +1,30 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (selected(); as r) {
+  <section class="panel">
+    <a [routerLink]="['/logistica/manifiestos', r.manifestUuid]">Volver al manifiesto</a>
+    <p>{{ r.reference }}</p>
+    <p class="long mono">{{ r.uuid }}</p>
+    <p>Receptor: {{ r['receiverName'] }} · {{ date(r['receivedAt']) }}</p>
+    <p>Este reporte conserva los faltantes de esta entrega, aunque se hayan recibido después.</p>
+    <button class="btn secondary" (click)="download()">Descargar evidencia autorizada</button
+    ><tc-logistics-records
+      [zone]="zone"
+      [selectable]="false"
+      [rows]="rows()"
+      [columns]="columns"
+    /><tc-pagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="rows().length"
+      [busy]="loading()"
+      (move)="move($event)"
+    />
+  </section>
+}

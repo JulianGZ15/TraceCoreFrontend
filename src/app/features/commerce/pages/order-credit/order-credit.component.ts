@@ -22,6 +22,7 @@ import { form, message, instant, exact } from '../../rules';
   selector: 'tc-commerce-order-credit',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     PageHeading,
     Feedback,
     SectionNavComponent,

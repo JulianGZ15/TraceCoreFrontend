@@ -155,6 +155,7 @@ export interface MovementItem extends Versioned {
 }
 export interface MovementDetail {
   logisticsManaged: boolean;
+  manifestUuid?:string|null;
   movement: Movement;
   items: MovementItem[];
 }

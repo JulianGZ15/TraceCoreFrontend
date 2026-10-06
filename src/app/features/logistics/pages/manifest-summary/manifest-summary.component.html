@@ -1,0 +1,66 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  [title]="title"
+/><tc-logistics-section-nav
+  [base]="navBase"
+  [sections]="mode === 'manifest' ? sections : []"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  <section class="panel">
+    <h2>{{ s.manifest.folio }}</h2>
+    <p>{{ label(s.manifest.type) }} · {{ label(s.manifest.state) }}</p>
+    <p>{{ s.labels['origin'] }} → {{ s.labels['destination'] }}</p>
+    <small class="mono long">{{ s.manifest.uuid }} · versión {{ s.manifest.version }}</small>
+    <div class="metrics">
+      <p>
+        <strong>{{ s.rootCount }}</strong> raíces
+      </p>
+      <p>
+        <strong>{{ s.pieceCount }}</strong> piezas
+      </p>
+      <p>
+        <strong>{{ s.deliveredRootCount }}</strong> raíces entregadas
+      </p>
+      <p>
+        {{ s.unknownWeightRoots ? 'Peso conocido' : 'Peso total' }}:
+        <strong>{{ numberText(s.totalWeightKgExact) }}</strong> kg
+      </p>
+    </div>
+    @if (s.unknownWeightRoots) {
+      <p class="feedback info">
+        {{ s.unknownWeightRoots }} raíces sin peso positivo conocido. No puede planificarse el
+        viaje.
+      </p>
+    }
+    <div class="actions">
+      @if (manage() && ['DRAFT', 'CHECKED'].includes(s.manifest.state)) {
+        <button class="btn secondary" [disabled]="loading()" (click)="cancel()">
+          Cancelar manifiesto
+        </button>
+      }
+      @if (can('LOGISTICS_CHECK') && s.trip && ['DRAFT', 'CHECKED'].includes(s.manifest.state)) {
+        <a class="btn secondary" [routerLink]="['/logistica/manifiestos', id, 'verificacion']"
+          >Comprobar carga</a
+        >
+      }
+      @if (can('LOGISTICS_DISPATCH') && s.manifest.state === 'CHECKED') {
+        <a class="btn primary" [routerLink]="['/logistica/manifiestos', id, 'despacho']"
+          >Revisar despacho</a
+        >
+      }
+      @if (
+        access.receive(s.manifest) &&
+        ['IN_TRANSIT', 'PARTIALLY_DELIVERED'].includes(s.manifest.state)
+      ) {
+        <a class="btn primary" [routerLink]="['/logistica/manifiestos', id, 'recepcion']"
+          >Registrar entrega</a
+        >
+      }
+    </div>
+    <p>La recepción física y el cumplimiento comercial se confirman por separado.</p>
+  </section>
+}

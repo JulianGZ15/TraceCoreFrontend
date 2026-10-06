@@ -1,0 +1,72 @@
+<tc-page-heading
+  [description]="'Zona de presentación: ' + zone"
+  section="Logística y despacho"
+  title="Comprobar carga"
+/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+@if (summary(); as s) {
+  <a [routerLink]="['/logistica/manifiestos', id]">Volver al manifiesto {{ s.manifest.folio }}</a>
+  <section class="panel">
+    <p>
+      La comprobación compara piezas; no constituye liberación técnica. Una comprobación aprobada
+      vence a los 30 minutos.
+    </p>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" /><button
+        class="btn secondary"
+        type="button"
+        [disabled]="saving()"
+        (click)="fetchContext()"
+      >
+        Consultar piezas y todos los recibos
+      </button>
+      @if (context(); as c) {
+        <p>{{ c.expected.length }} piezas esperadas · {{ c.receiptCount }} recibos de sesión.</p>
+        @if (form.getRawValue()['method'] === 'MANUAL') {
+          <fieldset>
+            <legend>Piezas efectivamente observadas</legend>
+            @for (uuid of c.expected.slice(offset, offset + limit); track uuid) {
+              <label class="long"
+                ><input
+                  type="checkbox"
+                  [checked]="observed().includes(uuid)"
+                  (change)="toggle(uuid, $any($event.target).checked)"
+                />
+                {{ uuid }}</label
+              >
+            }
+          </fieldset>
+          <tc-pagination
+            [offset]="offset"
+            [limit]="limit"
+            [count]="c.expected.slice(offset, offset + limit).length"
+            (move)="move($event)"
+          />
+        } @else {
+          <p>
+            Se enviarán todos los recibos consultados, incluidos conflictos y desconocidos. Si llega
+            otro, el servidor exigirá consultar nuevamente.
+          </p>
+        }
+      }
+      <div class="actions">
+        <button class="btn secondary" type="button" [disabled]="saving()" (click)="current()">
+          Consultar versiones actuales</button
+        ><button
+          class="btn primary"
+          [disabled]="
+            saving() ||
+            !can('LOGISTICS_CHECK') ||
+            !context() ||
+            !s.trip ||
+            !['DRAFT', 'CHECKED'].includes(s.manifest.state)
+          "
+        >
+          Guardar comprobación
+        </button>
+      </div>
+    </form>
+  </section>
+}

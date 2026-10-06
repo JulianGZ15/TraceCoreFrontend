@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+.panel {
+  margin-block: 16px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.long {
+  overflow-wrap: anywhere;
+}
+.piece {
+  padding: 16px;
+  border-bottom: 1px solid var(--tc-border);
+}
+small {
+  display: block;
+}

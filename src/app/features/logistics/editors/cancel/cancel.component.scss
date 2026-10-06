@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+.editor {
+  padding: 24px;
+  max-width: 860px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}

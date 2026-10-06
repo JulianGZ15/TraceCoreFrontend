@@ -13,6 +13,16 @@ export const routes: Routes = [
     loadComponent: () => import('./core/layout/shell').then((m) => m.Shell),
     children: [
       {
+        path: 'finanzas',
+        loadChildren: () =>
+          import('./features/finance/finance.routes').then((m) => m.financeRoutes),
+      },
+      {
+        path: 'logistica',
+        loadChildren: () =>
+          import('./features/logistics/logistics.routes').then((m) => m.logisticsRoutes),
+      },
+      {
         path: 'comercial',
         loadChildren: () =>
           import('./features/commerce/commerce.routes').then((m) => m.commerceRoutes),

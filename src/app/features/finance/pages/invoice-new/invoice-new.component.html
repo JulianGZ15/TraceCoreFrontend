@@ -1,0 +1,108 @@
+<tc-page-heading
+  [title]="kind === 'INVOICE' ? 'Preparar factura administrativa' : 'Preparar nota de crédito'"
+  section="DOCUMENTO FINANCIERO"
+  description="Selecciona fuentes existentes y solicita el cálculo exacto al servidor."
+/><a class="btn secondary" routerLink="/finanzas/facturas">Volver a facturas</a
+><tc-finance-pending-requests />
+@if (referenceInvoice(); as i) {
+  <section class="panel">
+    <h2>{{ i.invoice.series }}-{{ i.invoice.folio }}</h2>
+    <p>{{ i.invoice.currency }} · Saldo {{ numberText(i.balanceExact) }}</p>
+  </section>
+}
+<section class="panel editor"><tc-finance-fields [form]="form" [fields]="fields" /></section>
+<section class="panel">
+  <h2>{{ kind === 'INVOICE' ? 'Cargos seleccionados' : 'Partidas a acreditar' }}</h2>
+  <p>
+    De 1 a 500 fuentes, sin duplicados. Cada importe es neto y conserva la precisión de su divisa.
+  </p>
+  <tc-finance-lookup
+    [resource]="sourceResource"
+    [params]="sourceParams"
+    [formControl]="source"
+    [title]="kind === 'INVOICE' ? 'Cargo disponible' : 'Partida de factura'"
+  /><button
+    class="btn secondary"
+    type="button"
+    [disabled]="!source.value || loading()"
+    (click)="append()"
+  >
+    Agregar fuente
+  </button>
+  @for (p of parts.controls; track p; let index = $index) {
+    <div class="part" [formGroup]="p">
+      <span class="mono uuid">{{ p.get('sourceUuid')?.value }}</span
+      ><label
+        >Importe neto<input
+          formControlName="netAmount"
+          inputmode="decimal"
+          [attr.aria-label]="'Neto de fuente ' + (index + 1)" /></label
+      ><button class="btn secondary" [disabled]="loading()" (click)="remove(index)">Quitar</button>
+      @if (p.invalid && p.touched) {
+        <small class="field-error">Indica un importe positivo válido.</small>
+      }
+    </div>
+  }
+</section>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+<div class="actions">
+  <button
+    class="btn secondary"
+    type="button"
+    [disabled]="!valid || loading() || !access.can(permission)"
+    (click)="preview()"
+  >
+    Calcular vista previa
+  </button>
+</div>
+@if (calculation(); as c) {
+  <section class="panel">
+    <h2>Vista previa calculada por el servidor</h2>
+    <p>{{ c.currency }} · {{ c.fractionDigits }} decimales</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Partidas de vista previa">
+      <table>
+        <thead>
+          <tr>
+            <th>Fuente</th>
+            <th>Neto</th>
+            <th>Impuesto</th>
+            <th>Neto restante de la fuente</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of c.parts; track p.sourceUuid) {
+            <tr>
+              <td>
+                {{ p.concept }}<small class="mono uuid">{{ p.sourceUuid }}</small>
+              </td>
+              <td class="mono">{{ numberText(p.netAmountExact) }}</td>
+              <td class="mono">{{ numberText(p.taxAmountExact) }}</td>
+              <td class="mono">{{ numberText(p.remainingNetExact) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        Neto<strong>{{ numberText(c.netAmountExact) }}</strong>
+      </div>
+      <div class="metric">
+        Impuesto<strong>{{ numberText(c.taxAmountExact) }}</strong>
+      </div>
+      <div class="metric">
+        Total<strong>{{ numberText(c.totalAmountExact) }}</strong>
+      </div>
+    </div>
+    <p>Modificar datos exige calcular otra vista previa. El guardado revalidará el cálculo.</p>
+    <button
+      class="btn primary"
+      [disabled]="loading() || !valid || !access.can(permission)"
+      (click)="save()"
+    >
+      {{ kind === 'INVOICE' ? 'Guardar DRAFT' : 'Confirmar nota de crédito' }}
+    </button>
+  </section>
+}

@@ -29,8 +29,44 @@
   </p>
 }
 <div class="access-cards">
-  @if(session.commerceRead()){<a class="access-card" routerLink="/comercial"><h3>Centro comercial</h3><p>Compras, ventas, rentas, contratos y cumplimiento.</p><span class="card-link">Abrir comercial ↗</span></a>}
-  @if(session.commerceWrite()&&!session.commerceRead()){<p class="feedback info">Tienes capacidades comerciales; necesitas COMMERCIAL_READ en el alcance correspondiente para consultar las pantallas.</p>}
+  @if (session.logisticsRead()) {
+    <a class="access-card" routerLink="/logistica"
+      ><h3>Logística y despacho</h3>
+      <p>Manifiestos, transporte, comprobaciones y entregas por raíces.</p>
+      <span class="card-link">Abrir logística ↗</span></a
+    >
+  }
+  @if (session.logisticsWrite() && !session.logisticsRead()) {
+    <p class="feedback info">
+      Tienes capacidades logísticas; necesitas LOGISTICS_READ en el alcance correspondiente para
+      consultar el módulo.
+    </p>
+  }
+  @if (session.financeRead()) {
+    <a class="access-card" routerLink="/finanzas"
+      ><h3>Finanzas</h3>
+      <p>Facturas administrativas, pagos, aplicaciones y crédito por divisa.</p>
+      <span class="card-link">Abrir finanzas ↗</span></a
+    >
+  }
+  @if (session.financeWrite() && !session.financeRead()) {
+    <p class="feedback info">
+      Tienes capacidades financieras; necesitas FINANCE_READ COMPANY para consultar el módulo.
+    </p>
+  }
+  @if (session.commerceRead()) {
+    <a class="access-card" routerLink="/comercial"
+      ><h3>Centro comercial</h3>
+      <p>Compras, ventas, rentas, contratos y cumplimiento.</p>
+      <span class="card-link">Abrir comercial ↗</span></a
+    >
+  }
+  @if (session.commerceWrite() && !session.commerceRead()) {
+    <p class="feedback info">
+      Tienes capacidades comerciales; necesitas COMMERCIAL_READ en el alcance correspondiente para
+      consultar las pantallas.
+    </p>
+  }
   @if (session.rfidRead()) {
     <a class="access-card" routerLink="/rfid"
       ><h3>RFID y dispositivos</h3>
@@ -40,11 +76,13 @@
   }
   @if (
     !session.rfidRead() &&
-    (session.can('RFID_SCAN') || session.can('RFID_TAG_MANAGE') || session.can('RFID_DEVICE_MANAGE'))
+    (session.can('RFID_SCAN') ||
+      session.can('RFID_TAG_MANAGE') ||
+      session.can('RFID_DEVICE_MANAGE'))
   ) {
     <p class="feedback info">
-      Tienes capacidades operativas RFID, pero necesitas RFID_READ en el alcance correspondiente para
-      consultar sus pantallas.
+      Tienes capacidades operativas RFID, pero necesitas RFID_READ en el alcance correspondiente
+      para consultar sus pantallas.
     </p>
   }
   @if (session.qualityRead()) {

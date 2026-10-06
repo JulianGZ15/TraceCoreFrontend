@@ -1,0 +1,67 @@
+<tc-page-heading
+  [title]="title"
+  section="ADMINISTRACIÓN FINANCIERA"
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+/>
+<nav class="actions" aria-label="Finanzas">
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
+  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
+  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
+  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
+  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
+  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
+  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+</nav>
+<tc-finance-pending-requests />
+@if (sections.length) {
+  <tc-finance-section-nav
+    [base]="navBase"
+    [sections]="sections"
+    [currency]="mode === 'party' ? currency : ''"
+  />
+}
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando…</p>
+}
+<section class="panel filters">
+  <tc-finance-lookup
+    title="Tercero"
+    [value]="filters['partyUuid']"
+    (selectedChange)="update('partyUuid', $event)"
+  /><label
+    >Divisa<select #cur [value]="filters['currency']" (change)="update('currency', cur.value)">
+      <option value="">Todas</option>
+      @for (c of currencies(); track c.uuid) {
+        <option [value]="c.code">{{ c.code }}</option>
+      }
+    </select></label
+  ><label
+    >Dirección<select #dir [value]="filters['direction']" (change)="update('direction', dir.value)">
+      <option value="">Ambas</option>
+      <option value="RECEIVABLE">Por cobrar</option>
+      <option value="PAYABLE">Por pagar</option>
+    </select></label
+  >
+  <label
+    >Estado<select #state [value]="filters['state']" (change)="update('state', state.value)">
+      <option value="">Todos</option>
+      <option value="DRAFT">Borrador</option>
+      <option value="ACTIVE">Activa</option>
+      <option value="BLOCKED">Bloqueada</option>
+    </select></label
+  >
+</section>
+@if (can('FINANCE_CREDIT')) {
+  <button class="btn primary" (click)="action('account')">Crear cuenta DRAFT</button>
+}
+<section class="panel">
+  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    (move)="move($event)"
+  />
+</section>

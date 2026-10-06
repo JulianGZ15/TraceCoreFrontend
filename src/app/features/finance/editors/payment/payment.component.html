@@ -1,0 +1,28 @@
+<section class="editor">
+  <h2>{{ title }}</h2>
+  <p>{{ hint }}</p>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <tc-finance-fields [form]="form" [fields]="fields" />
+    @if (error()) {
+      <p class="feedback error" role="alert">{{ error() }}</p>
+    }
+    @if (reconcile()) {
+      <button class="btn secondary" type="button" [disabled]="busy()" (click)="refresh()">
+        Consultar datos actuales
+      </button>
+    }
+    <div class="actions">
+      <button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+        Volver</button
+      ><button
+        class="btn primary"
+        type="submit"
+        [disabled]="
+          busy() || form.invalid || reconcile() || !compatible() || !access.can(permission)
+        "
+      >
+        {{ busy() ? 'Guardando…' : 'Confirmar' }}
+      </button>
+    </div>
+  </form>
+</section>
