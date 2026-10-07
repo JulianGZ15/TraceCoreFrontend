@@ -499,7 +499,8 @@ tbody tr:hover {
   flex-wrap: wrap;
   gap: 6px;
 }
-.pill-option {
+.pill-option,
+.pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -514,10 +515,12 @@ tbody tr:hover {
   cursor: pointer;
   transition: all 140ms ease;
 }
-.pill-option:hover {
+.pill-option:hover,
+.pill:hover {
   background: var(--tc-selection);
 }
-.pill-option.active {
+.pill-option.active,
+.pill.active {
   background: var(--tc-action);
   color: var(--tc-on-action);
   border-color: var(--tc-action);

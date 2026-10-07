@@ -1,12 +1,25 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed, TemplateRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
+import { Dialog } from '@angular/cdk/dialog';
 import { ReadPage } from '../../../../shared/ui/read-page';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import {
+  PageHeading,
+  Feedback,
+  Pagination,
+  SearchToolbar,
+  FilterSection,
+  openFilterDrawer,
+  FilterDef,
+  FilterChip,
+  chipsFor,
+  activeCount,
+} from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { Page } from '../../../../core/http/workspace-api';
 import { QueryAccess } from '../../../queries/access';
 import { validateFilters } from '../../../queries/filters';
+
 @Component({
   selector: 'tc-support-audit',
   imports: [
@@ -16,15 +29,19 @@ import { validateFilters } from '../../../queries/filters';
     Feedback,
     Pagination,
     RecordValuesComponent,
+    SearchToolbar,
+    FilterSection,
   ],
   templateUrl: './audit.component.html',
   styleUrl: './audit.component.scss',
 })
 export class AuditComponent extends ReadPage {
+  readonly dialog = inject(Dialog);
   readonly access = inject(QueryAccess);
   readonly rows = signal<Record<string, unknown>[]>([]);
   readonly selected = signal<Record<string, unknown> | null>(null);
   readonly hasMore = signal(false);
+
   readonly form = inject(FormBuilder).nonNullable.group({
     resourceType: '',
     resourceUuid: '',
@@ -33,6 +50,29 @@ export class AuditComponent extends ReadPage {
     from: '',
     to: '',
   });
+
+  readonly drawerForm = new FormGroup({
+    resourceUuid: new FormControl('', { nonNullable: true }),
+    actorUuid: new FormControl('', { nonNullable: true }),
+    correlationUuid: new FormControl('', { nonNullable: true }),
+    from: new FormControl('', { nonNullable: true }),
+    to: new FormControl('', { nonNullable: true }),
+  });
+
+  readonly filterDefs: FilterDef[] = [
+    { key: 'resourceUuid', label: 'UUID recurso' },
+    { key: 'actorUuid', label: 'UUID actor' },
+    { key: 'correlationUuid', label: 'UUID correlación' },
+    { key: 'from', label: 'Desde' },
+    { key: 'to', label: 'Hasta' },
+  ];
+
+  readonly currentFilterValues = signal<Record<string, string>>({});
+  readonly chips = computed(() => chipsFor(this.filterDefs, this.currentFilterValues()));
+  readonly activeFilterCount = computed(() =>
+    activeCount(this.filterDefs, this.currentFilterValues()),
+  );
+
   override async load() {
     const q = this.route.snapshot.queryParamMap;
     const values = { ...this.form.getRawValue() };
@@ -41,6 +81,14 @@ export class AuditComponent extends ReadPage {
         q.get(key) ?? (key === 'yardUuid' ? this.session.selectedYard() : '');
     this.form.patchValue(values);
     this.selected.set(null);
+
+    const drawerValues: Record<string, string> = {};
+    for (const k of ['resourceUuid', 'actorUuid', 'correlationUuid', 'from', 'to']) {
+      const val = (values as any)[k];
+      if (val) drawerValues[k] = val;
+    }
+    this.currentFilterValues.set(drawerValues);
+
     await this.read(
       () => {
         validateFilters(values);
@@ -56,10 +104,12 @@ export class AuditComponent extends ReadPage {
       },
     );
   }
+
   override clear() {
     this.rows.set([]);
     this.selected.set(null);
   }
+
   apply() {
     try {
       validateFilters(this.form.getRawValue());
@@ -67,5 +117,62 @@ export class AuditComponent extends ReadPage {
     } catch (e) {
       this.error.set((e as Error).message);
     }
+  }
+
+  onSearch(term: string) {
+    this.form.controls.resourceType.setValue(term.trim());
+    this.apply();
+  }
+
+  onRemoveChip(chip: FilterChip) {
+    for (const k of chip.keys) {
+      if (k in this.form.controls) {
+        (this.form.controls as any)[k].setValue('');
+      }
+    }
+    this.apply();
+  }
+
+  onClearAll() {
+    this.form.patchValue({
+      resourceType: '',
+      resourceUuid: '',
+      actorUuid: '',
+      correlationUuid: '',
+      from: '',
+      to: '',
+    });
+    this.apply();
+  }
+
+  async openFilters(template: TemplateRef<unknown>) {
+    const cur = this.form.getRawValue();
+    this.drawerForm.reset({
+      resourceUuid: cur.resourceUuid,
+      actorUuid: cur.actorUuid,
+      correlationUuid: cur.correlationUuid,
+      from: cur.from,
+      to: cur.to,
+    });
+
+    await openFilterDrawer(this.dialog, {
+      title: 'Filtros de auditoría',
+      subtitle: 'Identificadores y rango de fechas',
+      template,
+      onApply: () => {
+        const draft = this.drawerForm.getRawValue();
+        this.form.patchValue(draft);
+        this.apply();
+      },
+      onClear: () => {
+        this.drawerForm.reset({
+          resourceUuid: '',
+          actorUuid: '',
+          correlationUuid: '',
+          from: '',
+          to: '',
+        });
+      },
+    });
   }
 }

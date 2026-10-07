@@ -3,49 +3,119 @@
   section="CONSULTAS"
   description="Filtros autorizados y resultados paginados. Los campos monetarios y magnitudes conservan precisión exacta."
 />
+
 <nav class="tabs" aria-label="Consultas">
-  <a routerLink="/consultas/panel">Panel operativo</a><a routerLink="/consultas/ordenes">Órdenes</a>
+  <a routerLink="/consultas/panel">Panel operativo</a>
+  <a routerLink="/consultas/ordenes">Órdenes</a>
 </nav>
-<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
-  <div class="form-grid">
-    <label
-      >Patio<select formControlName="yardUuid">
-        <option value="">Alcance global COMPANY</option>
-        @for (y of session.context()?.yards; track y.uuid) {
-          @if (access.inventory(y.uuid)) {
-            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
-          }
+
+<tc-search-toolbar
+  label="Buscar inventario"
+  placeholder="Buscar código interno o serial…"
+  [value]="form.controls.search.value"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="query-inv-yard" class="sr-only">Patio</label>
+    <select
+      id="query-inv-yard"
+      [value]="form.controls.yardUuid.value"
+      (change)="onYardChange($any($event.target).value)"
+    >
+      <option value="">Alcance global COMPANY</option>
+      @for (y of session.context()?.yards; track y.uuid) {
+        @if (access.inventory(y.uuid)) {
+          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
         }
-      </select></label
-    ><label>Buscar código interno o serial<input formControlName="search" maxlength="100" /></label
-    ><label
-      >Ciclo de vida<select formControlName="lifecycle">
-        <option value="">Todos</option>
-        <option value="ACTIVE">Activo</option>
-        <option value="RETIRED">Retirado</option>
-      </select></label
-    ><label>UUID de equipo<input formControlName="assetUuid" /></label
-    ><label>UUID de modelo<input formControlName="modelUuid" /></label
-    ><label>UUID de categoría<input formControlName="categoryUuid" /></label>
+      }
+    </select>
   </div>
-  <details>
-    <summary>Buscar referencias por nombre</summary>
-    <tc-query-filter-picker
-      query="INVENTORY"
-      kind="MODEL"
-      [yard]="form.controls.yardUuid.value"
-      label="Seleccionar modelo"
-      (selected)="form.controls.modelUuid.setValue($event.uuid)"
-    /><tc-query-filter-picker
-      query="INVENTORY"
-      kind="CATEGORY"
-      [yard]="form.controls.yardUuid.value"
-      label="Seleccionar categoría"
-      (selected)="form.controls.categoryUuid.setValue($event.uuid)"
-    />
-  </details>
-  <button class="btn primary">Aplicar filtros</button>
-</form>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm" class="flex flex-col gap-5">
+    <tc-filter-section title="Ciclo de vida" description="Estado operativo del equipo en inventario">
+      <div class="pill-group">
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.lifecycle.value === ''"
+          (click)="setDraftLifecycle('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.lifecycle.value === 'ACTIVE'"
+          (click)="setDraftLifecycle('ACTIVE')"
+        >
+          Activo
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.lifecycle.value === 'RETIRED'"
+          (click)="setDraftLifecycle('RETIRED')"
+        >
+          Retirado
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Modelo y categoría" description="Filtros por catálogo">
+      <div class="field">
+        <label for="inv-model-uuid">UUID de modelo</label>
+        <input
+          id="inv-model-uuid"
+          formControlName="modelUuid"
+          placeholder="UUID o selector inferior…"
+        />
+      </div>
+      <tc-query-filter-picker
+        query="INVENTORY"
+        kind="MODEL"
+        [yard]="form.controls.yardUuid.value"
+        label="Seleccionar modelo"
+        (selected)="drawerForm.controls.modelUuid.setValue($event.uuid)"
+      />
+
+      <div class="field mt-3">
+        <label for="inv-cat-uuid">UUID de categoría</label>
+        <input
+          id="inv-cat-uuid"
+          formControlName="categoryUuid"
+          placeholder="UUID o selector inferior…"
+        />
+      </div>
+      <tc-query-filter-picker
+        query="INVENTORY"
+        kind="CATEGORY"
+        [yard]="form.controls.yardUuid.value"
+        label="Seleccionar categoría"
+        (selected)="drawerForm.controls.categoryUuid.setValue($event.uuid)"
+      />
+    </tc-filter-section>
+
+    <tc-filter-section title="Equipo específico" description="Identificador único">
+      <div class="field">
+        <label for="inv-asset-uuid">UUID de equipo</label>
+        <input
+          id="inv-asset-uuid"
+          formControlName="assetUuid"
+          placeholder="UUID de equipo…"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -79,8 +149,8 @@
             <td>{{ row.modelCode }}</td>
             <td>{{ row.lifecycle }}</td>
             <td>
-              {{ row.locationUuid ?? row.siteUuid ?? 'Sin ubicación'
-              }}<small>Raíz {{ row.rootAssetUuid ?? row.assetUuid }}</small>
+              {{ row.locationUuid ?? row.siteUuid ?? 'Sin ubicación' }}
+              <small>Raíz {{ row.rootAssetUuid ?? row.assetUuid }}</small>
             </td>
             <td>
               {{

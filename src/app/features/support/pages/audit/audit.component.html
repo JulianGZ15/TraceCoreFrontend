@@ -3,6 +3,7 @@
   section="SOPORTE"
   description="Metadatos de operaciones, actores y campos intervenidos."
 />
+
 <nav class="tabs" aria-label="Soporte">
   @if (access.audit()) {
     <a routerLink="/soporte/auditoria">Auditoría</a>
@@ -11,24 +12,75 @@
     <a routerLink="/soporte/recibos-rfid">Recibos RFID</a>
   }
 </nav>
-<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
-  <div class="form-grid">
-    <label>Tipo del recurso<input formControlName="resourceType" maxlength="100" /></label
-    ><label>UUID del recurso<input formControlName="resourceUuid" /></label
-    ><label>UUID del actor<input formControlName="actorUuid" /></label
-    ><label>UUID de correlación<input formControlName="correlationUuid" /></label
-    ><label
-      >Desde (ISO con offset)<input
-        formControlName="from"
-        placeholder="2026-10-01T00:00:00-06:00" /></label
-    ><label
-      >Hasta, excluido (ISO con offset)<input
-        formControlName="to"
-        placeholder="2026-11-01T00:00:00-06:00"
-    /></label>
-  </div>
-  <button class="btn primary">Aplicar filtros</button>
-</form>
+
+<tc-search-toolbar
+  label="Buscar en auditoría"
+  placeholder="Buscar por tipo del recurso…"
+  [value]="form.controls.resourceType.value"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+/>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm" class="flex flex-col gap-5">
+    <tc-filter-section
+      title="Identificadores"
+      description="UUIDs de recurso, actor y correlación de la operación"
+    >
+      <div class="field">
+        <label for="audit-resource-uuid">UUID del recurso</label>
+        <input
+          id="audit-resource-uuid"
+          formControlName="resourceUuid"
+          placeholder="UUID del recurso…"
+        />
+      </div>
+
+      <div class="field">
+        <label for="audit-actor-uuid">UUID del actor</label>
+        <input
+          id="audit-actor-uuid"
+          formControlName="actorUuid"
+          placeholder="UUID del actor…"
+        />
+      </div>
+
+      <div class="field">
+        <label for="audit-correlation-uuid">UUID de correlación</label>
+        <input
+          id="audit-correlation-uuid"
+          formControlName="correlationUuid"
+          placeholder="UUID de correlación…"
+        />
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Rango de fechas" description="Instante ISO con desplazamiento UTC">
+      <div class="field">
+        <label for="audit-from">Desde (ISO con offset)</label>
+        <input
+          id="audit-from"
+          formControlName="from"
+          placeholder="2026-10-01T00:00:00-06:00"
+        />
+      </div>
+      <div class="field">
+        <label for="audit-to">Hasta, excluido (ISO con offset)</label>
+        <input
+          id="audit-to"
+          formControlName="to"
+          placeholder="2026-11-01T00:00:00-06:00"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -86,6 +138,7 @@
     <tc-record-values
       [timezone]="session.context()?.company?.timezone ?? 'UTC'"
       [value]="row"
-    /><button class="btn secondary" (click)="selected.set(null)">Cerrar detalle</button>
+    />
+    <button class="btn secondary" (click)="selected.set(null)">Cerrar detalle</button>
   </section>
 }

@@ -3,21 +3,29 @@
   section="CONSULTAS"
   description="Situación del patio calculada por el servidor. Cada consulta conserva su fecha de generación."
 />
+
 <nav class="tabs" aria-label="Consultas">
-  <a routerLink="/consultas/inventario">Inventario</a><a routerLink="/consultas/ordenes">Órdenes</a>
+  <a routerLink="/consultas/inventario">Inventario</a>
+  <a routerLink="/consultas/ordenes">Órdenes</a>
 </nav>
-<section class="panel context">
-  <label
-    >Patio operativo<select [value]="yard" (change)="choose($any($event.target).value)">
+
+<tc-search-toolbar [showSearch]="false" [showFilters]="false">
+  <div toolbarContext class="field toolbar-yard">
+    <label for="dash-yard-select" class="sr-only">Patio operativo</label>
+    <select id="dash-yard-select" [value]="yard" (change)="choose($any($event.target).value)">
       <option value="">Selecciona un patio</option>
       @for (y of session.context()?.yards; track y.uuid) {
         @if (access.dashboard(y.uuid)) {
           <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
         }
       }
-    </select></label
-  ><button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
-</section>
+    </select>
+  </div>
+  <button toolbarAction class="btn secondary" (click)="load()" [disabled]="loading()">
+    Actualizar
+  </button>
+</tc-search-toolbar>
+
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -40,8 +48,8 @@
       <span>Posiciones ocupadas</span><strong>{{ d.inventory.positions }}</strong>
     </article>
     <article class="panel">
-      <span>Peso conocido (kg)</span
-      ><strong class="exact" tabindex="0" aria-label="Peso conocido en kilogramos">{{
+      <span>Peso conocido (kg)</span>
+      <strong class="exact" tabindex="0" aria-label="Peso conocido en kilogramos">{{
         d.inventory.knownWeightKgExact ?? 'API incompatible: falta valor exacto'
       }}</strong>
     </article>

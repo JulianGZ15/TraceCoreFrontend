@@ -3,6 +3,7 @@
   section="SOPORTE"
   description="Recibos persistidos y resolución. El seguimiento de entregas permanece en RFID."
 />
+
 <nav class="tabs" aria-label="Soporte">
   @if (access.audit()) {
     <a routerLink="/soporte/auditoria">Auditoría</a>
@@ -11,35 +12,70 @@
     <a routerLink="/soporte/recibos-rfid">Recibos RFID</a>
   }
 </nav>
-<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
-  <div class="form-grid">
-    <label
-      >Patio<select formControlName="yardUuid">
-        <option value="">Alcance global COMPANY</option>
-        @for (y of session.context()?.yards; track y.uuid) {
-          @if (access.receipt(y.uuid)) {
-            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
-          }
+
+<tc-search-toolbar
+  label="Buscar recibos RFID"
+  placeholder="Buscar por código de resultado…"
+  [value]="form.controls.status.value"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="supp-rec-yard" class="sr-only">Patio</label>
+    <select
+      id="supp-rec-yard"
+      [value]="form.controls.yardUuid.value"
+      (change)="onYardChange($any($event.target).value)"
+    >
+      <option value="">Alcance global COMPANY</option>
+      @for (y of session.context()?.yards; track y.uuid) {
+        @if (access.receipt(y.uuid)) {
+          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
         }
-      </select></label
-    ><label>UUID del equipo<input formControlName="assetUuid" /></label
-    ><label
-      >Resultado de resolución<input
-        formControlName="status"
-        maxlength="80"
-        placeholder="Código exacto del resultado" /></label
-    ><label
-      >Desde (ISO con offset)<input
-        formControlName="from"
-        placeholder="2026-10-01T00:00:00-06:00" /></label
-    ><label
-      >Hasta, excluido (ISO con offset)<input
-        formControlName="to"
-        placeholder="2026-11-01T00:00:00-06:00"
-    /></label>
+      }
+    </select>
   </div>
-  <button class="btn primary">Aplicar filtros</button>
-</form>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm" class="flex flex-col gap-5">
+    <tc-filter-section title="Equipo específico" description="UUID del activo asociado">
+      <div class="field">
+        <label for="rec-asset-uuid">UUID del equipo</label>
+        <input
+          id="rec-asset-uuid"
+          formControlName="assetUuid"
+          placeholder="UUID del equipo…"
+        />
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Rango de fechas" description="Instante ISO con desplazamiento UTC">
+      <div class="field">
+        <label for="rec-from">Desde (ISO con offset)</label>
+        <input
+          id="rec-from"
+          formControlName="from"
+          placeholder="2026-10-01T00:00:00-06:00"
+        />
+      </div>
+      <div class="field">
+        <label for="rec-to">Hasta, excluido (ISO con offset)</label>
+        <input
+          id="rec-to"
+          formControlName="to"
+          placeholder="2026-11-01T00:00:00-06:00"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -97,6 +133,7 @@
     <tc-record-values
       [timezone]="session.context()?.company?.timezone ?? 'UTC'"
       [value]="row"
-    /><button class="btn secondary" (click)="selected.set(null)">Cerrar detalle</button>
+    />
+    <button class="btn secondary" (click)="selected.set(null)">Cerrar detalle</button>
   </section>
 }

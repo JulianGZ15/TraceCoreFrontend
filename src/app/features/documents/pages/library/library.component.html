@@ -3,54 +3,129 @@
   section="DOCUMENTOS"
   description="Versiones, decisiones y vínculos autorizados. La clasificación no modifica los permisos de las evidencias originales."
 />
-<div class="actions">
+
+<tc-search-toolbar
+  label="Buscar documentos"
+  placeholder="Buscar por título del documento…"
+  [value]="form.controls.search.value"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
   @if (session.can('DOCUMENT_MANAGE')) {
-    <button class="btn primary" (click)="create()">Nuevo documento</button>
+    <button toolbarAction class="btn primary" (click)="create()">Nuevo documento</button>
   }
-  <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
-</div>
-<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
-  <div class="form-grid">
-    <label>Buscar por título<input formControlName="search" maxlength="250" /></label
-    ><label
-      >Tipo<select formControlName="type">
-        <option value="">Todos</option>
-        @for (t of types; track t) {
-          <option [value]="t">{{ t }}</option>
-        }
-      </select></label
-    ><label
-      >Clasificación<select formControlName="classification">
-        <option value="">Todas autorizadas</option>
-        <option value="INTERNAL">Interno</option>
-        <option value="CONFIDENTIAL">Confidencial</option>
-      </select></label
-    ><label
-      >Estado<select formControlName="state">
-        <option value="ACTIVE">Activo</option>
-        <option value="ARCHIVED">Archivado</option>
-        <option value="">Todos</option>
-      </select></label
-    ><label
-      >Tipo del propietario<select
-        formControlName="ownerKind"
-        (change)="form.controls.ownerUuid.setValue('')"
-      >
-        <option value="">Sin filtro</option>
-        @for (k of kinds; track k) {
-          <option [value]="k">{{ names[k] }}</option>
-        }
-      </select></label
-    ><label>UUID del propietario<input formControlName="ownerUuid" /></label>
-  </div>
-  @if (form.controls.ownerKind.value) {
-    <tc-document-subject-picker
-      [kind]="kind()"
-      (selected)="form.controls.ownerUuid.setValue($event.uuid)"
-    />
-  }
-  <button class="btn secondary">Aplicar filtros</button>
-</form>
+  <button toolbarAction class="btn secondary" (click)="load()" [disabled]="loading()">
+    Actualizar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm" class="flex flex-col gap-5">
+    <tc-filter-section title="Tipo de documento" description="Selecciona la categoría formal">
+      <div class="field">
+        <label for="filter-doc-type">Tipo</label>
+        <select id="filter-doc-type" formControlName="type">
+          <option value="">Todos los tipos</option>
+          @for (t of types; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Clasificación" description="Nivel de acceso confidencial o interno">
+      <div class="pill-group">
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.classification.value === ''"
+          (click)="setDraftClassification('')"
+        >
+          Todas
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.classification.value === 'INTERNAL'"
+          (click)="setDraftClassification('INTERNAL')"
+        >
+          Interno
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.classification.value === 'CONFIDENTIAL'"
+          (click)="setDraftClassification('CONFIDENTIAL')"
+        >
+          Confidencial
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Estado" description="Documentos activos o archivados">
+      <div class="pill-group">
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === 'ACTIVE'"
+          (click)="setDraftState('ACTIVE')"
+        >
+          Activo
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === 'ARCHIVED'"
+          (click)="setDraftState('ARCHIVED')"
+        >
+          Archivado
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Propietario del documento" description="Entidad vinculada">
+      <div class="field">
+        <label for="filter-owner-kind">Tipo del propietario</label>
+        <select
+          id="filter-owner-kind"
+          formControlName="ownerKind"
+          (change)="drawerForm.controls.ownerUuid.setValue('')"
+        >
+          <option value="">Sin filtro</option>
+          @for (k of kinds; track k) {
+            <option [value]="k">{{ names[k] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="filter-owner-uuid">UUID del propietario</label>
+        <input id="filter-owner-uuid" formControlName="ownerUuid" placeholder="UUID del propietario…" />
+      </div>
+
+      @if (drawerForm.controls.ownerKind.value) {
+        <tc-document-subject-picker
+          [kind]="drawerKind()"
+          (selected)="drawerForm.controls.ownerUuid.setValue($event.uuid)"
+        />
+      }
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -63,9 +138,9 @@
     <p>Consulta antes de repetir. Los archivos no se guardan en el navegador.</p>
     @for (p of pending.own(); track p.key) {
       <div class="actions">
-        <span>{{ p.operation }} · {{ p.key }}</span
-        ><button class="btn secondary" (click)="recover(p)">Consultar resultado</button
-        ><button class="btn secondary" (click)="repeat(p)">
+        <span>{{ p.operation }} · {{ p.key }}</span>
+        <button class="btn secondary" (click)="recover(p)">Consultar resultado</button>
+        <button class="btn secondary" (click)="repeat(p)">
           {{
             p.operation === 'UPLOAD' ? 'Seleccionar archivo original' : 'Repetir misma solicitud'
           }}
