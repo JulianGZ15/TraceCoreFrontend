@@ -1,36 +1,87 @@
-<tc-page-heading
-  section="RFID e integración"
-  title="Entregas"
-  description="Configuración y entregas del servicio RFID."
-/>
+<tc-list-container tableLabel="Entregas">
+  <tc-page-heading
+    listHeader
+    section="RFID e integración"
+    title="Entregas"
+    description="Configuración y entregas del servicio RFID."
+  >
+    <tc-rfid-nav />
+  </tc-page-heading>
 
-<tc-rfid-nav />
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
 
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Consultando…</p>
+    }
 
-@if (busy()) {
-  <p role="status">Consultando…</p>
-}
+    <tc-rfid-pending />
 
-<tc-rfid-pending />
+    @if (!available()) {
+      <tc-feedback message="Servicio RFID no disponible. Su situación es desconocida." />
+    }
+  </ng-container>
 
-@if (!available()) {
-  <tc-feedback message="Servicio RFID no disponible. Su situación es desconocida." />
-}
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <button toolbarAction type="button" class="btn" [disabled]="busy()" (click)="load()">
+      Actualizar
+    </button>
+  </tc-search-toolbar>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <button toolbarAction type="button" class="btn" [disabled]="busy()" (click)="load()">
-    Actualizar
-  </button>
-</tc-search-toolbar>
+  <div listTable class="table-wrap" tabindex="0" aria-label="Entregas">
+    <table>
+      <thead>
+        <tr>
+          <th>UUID</th>
+          <th>Estado</th>
+          <th>Intentos</th>
+          <th>Próximo intento</th>
+          <th>Error</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>{{ r.uuid }}</td>
+            <td>{{ label(r.state) }}</td>
+            <td>{{ r.attempts }}</td>
+            <td>{{ date(r.nextAttemptAt) }}</td>
+            <td>{{ r.errorCode ?? 'Sin error' }}</td>
+            <td>
+              @if (r.state === 'FAILED') {
+                <button class="btn" [disabled]="busy()" (click)="requeue(r)">Reencolar</button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="empty">Sin datos disponibles para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm" class="flex flex-col gap-5">
@@ -80,47 +131,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-<div class="panel table-wrap" tabindex="0" aria-label="Entregas">
-  <table>
-    <thead>
-      <tr>
-        <th>UUID</th>
-        <th>Estado</th>
-        <th>Intentos</th>
-        <th>Próximo intento</th>
-        <th>Error</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.uuid) {
-        <tr>
-          <td>{{ r.uuid }}</td>
-          <td>{{ label(r.state) }}</td>
-          <td>{{ r.attempts }}</td>
-          <td>{{ date(r.nextAttemptAt) }}</td>
-          <td>{{ r.errorCode ?? 'Sin error' }}</td>
-          <td>
-            @if (r.state === 'FAILED') {
-              <button class="btn" [disabled]="busy()" (click)="requeue(r)">Reencolar</button>
-            }
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="6" class="empty">Sin datos disponibles para esta consulta.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>

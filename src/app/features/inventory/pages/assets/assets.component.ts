@@ -4,6 +4,7 @@ import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
   PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -27,6 +28,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     YardPickerComponent,

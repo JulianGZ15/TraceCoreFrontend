@@ -124,6 +124,28 @@
     margin: 0 auto;
   }
 }
+@media (min-width: 1024px) and (min-height: 700px) {
+  .workspace:has(tc-list-container) {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+
+    .main-content {
+      padding-top: 16px;
+      padding-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .workspace-footer {
+      padding: 8px 32px;
+      flex: none;
+    }
+  }
+}
 @media (max-width: 1199px) {
   .context-subtitle {
     display: none;

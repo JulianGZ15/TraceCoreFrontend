@@ -4,6 +4,7 @@ import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
   PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -27,6 +28,7 @@ import { SiteEditorComponent } from '../../editors/site-editor/site-editor.compo
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     InventoryNavComponent,

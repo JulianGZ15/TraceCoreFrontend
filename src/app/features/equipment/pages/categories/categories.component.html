@@ -1,1 +1,72 @@
-<tc-equipment-section-navigation [catalog]="true"/><section class="panel"><div class="panel-heading"><h1>Categorías técnicas</h1>@if(session.can('EQUIPMENT_MANAGE')){<button class="btn primary" [disabled]="busy()" (click)="edit()">Nueva categoría</button>}</div><p>Identidad técnica y trazabilidad administrativa.</p></section><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/><section class="panel table-panel" [attr.aria-busy]="busy()"><div class="panel-heading"><h2>Registros</h2><button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>@if(busy()){<span role="status">Cargando…</span>}</div><div class="table-scroll" tabindex="0" aria-label="Categorías técnicas"><table><caption class="sr-only">Categorías técnicas</caption><thead><tr>@for(col of columns;track col.key){<th>{{col.label}}</th>}<th>UUID / acciones</th></tr></thead><tbody>@for(row of rows();track row.uuid){<tr>@for(col of columns;track col.key){<td>{{value(row,col.key)}}</td>}<td><small class="mono">{{row.uuid}}</small><div class="row-actions">@if(session.can('EQUIPMENT_MANAGE')){<button class="btn secondary" (click)="edit(row)">Editar</button>}</div></td></tr>}@empty{@if(!busy()&&!error()){<tr><td [attr.colspan]="columns.length+1" class="empty-state">No hay registros para estos criterios.</td></tr>}}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="apply($event)" (resize)="resize($event)"/></section>
+<tc-list-container tableLabel="Categorías técnicas">
+  <tc-page-heading
+    listHeader
+    section="Catálogo técnico"
+    title="Categorías técnicas"
+    description="Identidad técnica y trazabilidad administrativa."
+  >
+    @if (session.can('EQUIPMENT_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">Nueva categoría</button>
+    }
+    <tc-equipment-section-navigation [catalog]="true" />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </ng-container>
+
+  <div listToolbar class="catalog-toolbar flex items-center justify-end py-2">
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+  </div>
+
+  <table listTable>
+    <caption class="sr-only">Categorías técnicas</caption>
+    <thead>
+      <tr>
+        @for (col of columns; track col.key) {
+          <th>{{ col.label }}</th>
+        }
+        <th>UUID / acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.uuid) {
+        <tr>
+          @for (col of columns; track col.key) {
+            <td>{{ value(row, col.key) }}</td>
+          }
+          <td>
+            <small class="mono">{{ row.uuid }}</small>
+            <div class="row-actions">
+              @if (session.can('EQUIPMENT_MANAGE')) {
+                <button class="btn secondary" (click)="edit(row)">Editar</button>
+              }
+            </div>
+          </td>
+        </tr>
+      } @empty {
+        @if (!busy() && !error()) {
+          <tr>
+            <td [attr.colspan]="columns.length + 1" class="empty-state">
+              No hay registros para estos criterios.
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="apply($event)"
+    (resize)="resize($event)"
+  />
+</tc-list-container>

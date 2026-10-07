@@ -1,5 +1,1 @@
-<nav class="tabs" aria-label="Secciones RFID">
- <a routerLink="/rfid/equipos" routerLinkActive="active">Equipos</a><a routerLink="/rfid/sesiones" routerLinkActive="active">Sesiones</a><a routerLink="/rfid/comandos" routerLinkActive="active">Comandos</a><a routerLink="/rfid/pasos" routerLinkActive="active">Pasos de portón</a><a routerLink="/rfid/portones" routerLinkActive="active">Portones</a>
- @if(access.global('RFID_READ')){<a routerLink="/rfid/modelos-tags" routerLinkActive="active">Modelos de chip</a><a routerLink="/rfid/tags" routerLinkActive="active">Chips</a>}
- @if(access.global('RFID_DEVICE_MANAGE')&&access.global('RFID_READ')){<a routerLink="/rfid/lectores" routerLinkActive="active">Lectores</a><a routerLink="/rfid/dispositivos" routerLinkActive="active">Instalaciones</a><a routerLink="/rfid/antenas" routerLinkActive="active">Antenas</a><a routerLink="/rfid/entregas" routerLinkActive="active">Entregas</a>}
-</nav>
+<tc-page-nav [items]="items()" ariaLabel="Secciones RFID" />

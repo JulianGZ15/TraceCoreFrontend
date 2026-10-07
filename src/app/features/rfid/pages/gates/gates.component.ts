@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PageHeading, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
 import { RfidPage } from '../../page-base';
 import { RfidNavComponent } from '../../shared/rfid-nav/rfid-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -14,6 +14,7 @@ import { GateComponent } from '../../editors/gate/gate.component';
     RouterLink,
     FormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RfidNavComponent,

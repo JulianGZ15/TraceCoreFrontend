@@ -2,11 +2,12 @@
   [title]="'Versión documental ' + (version()?.metadata?.number ?? '')"
   section="DOCUMENTOS"
   description="El hash permite verificar integridad; no representa firma digital ni certificación."
-/>
-<nav class="actions">
-  <a class="btn secondary" [routerLink]="['/documentos', id, 'versiones']">Volver a versiones</a
-  ><button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
-</nav>
+>
+  <div actions class="actions">
+    <a class="btn secondary" [routerLink]="['/documentos', id, 'versiones']">Volver a versiones</a>
+    <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+  </div>
+</tc-page-heading>
 @if (error()) {
   <tc-feedback [message]="error()" />
 }

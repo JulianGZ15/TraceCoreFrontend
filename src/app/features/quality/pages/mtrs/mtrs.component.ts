@@ -9,7 +9,7 @@ import {
   Validators,
   FormBuilder,
 } from '@angular/forms';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -24,6 +24,7 @@ import { MtrComponent } from '../../editors/mtr/mtr.component';
   imports: [
     RouterLink,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     QualityNavComponent,

@@ -7,6 +7,7 @@ import {
   PageHeading,
   Feedback,
   Pagination,
+  ListContainer,
   SearchToolbar,
   FilterSection,
   openFilterDrawer,
@@ -22,6 +23,7 @@ import { CsvDownload } from '../../csv';
 import { validateFilters } from '../../filters';
 import { FilterPickerComponent } from '../../shared/filter-picker/filter-picker.component';
 import { InventoryRow } from '../../models';
+import { SectionNavComponent } from '../../components/section-nav/section-nav.component';
 
 @Component({
   selector: 'tc-query-inventory',
@@ -31,9 +33,11 @@ import { InventoryRow } from '../../models';
     PageHeading,
     Feedback,
     Pagination,
+    ListContainer,
     FilterPickerComponent,
     SearchToolbar,
     FilterSection,
+    SectionNavComponent,
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',

@@ -1,48 +1,58 @@
-<tc-page-heading
-  section="Centro comercial"
-  [title]="title"
-  description="Documentos administrativos, cumplimiento y trazabilidad por patio."
-/>
-<tc-commerce-section-nav
-  [base]="navBase"
-  [sections]="sections"
-/>
-<tc-commerce-pending-requests />
-<tc-feedback [message]="error()" />
+<tc-list-container tableLabel="Recepciones administrativas">
+  <tc-page-heading
+    listHeader
+    section="Centro comercial"
+    [title]="title"
+    description="Documentos administrativos, cumplimiento y trazabilidad por patio."
+  >
+    <tc-commerce-section-nav
+      [base]="navBase"
+      [sections]="sections"
+    />
+  </tc-page-heading>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  label="Filtros de recepciones"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <div toolbarContext class="field toolbar-yard">
-    <label for="receipt-yard-select" class="sr-only">Patio</label>
-    <select id="receipt-yard-select" #y [value]="yard" (change)="update('yardUuid', y.value)">
-      @for (item of yards; track item.uuid) {
-        <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
-      }
-    </select>
-  </div>
+  <ng-container listFeedback>
+    <tc-commerce-pending-requests />
+    <tc-feedback [message]="error()" />
+    @if (loading()) {
+      <p role="status">Cargando…</p>
+    }
+  </ng-container>
 
-  @if (can('COMMERCIAL_FULFILL')) {
-    <a
-      toolbarAction
-      class="btn primary"
-      routerLink="/comercial/recepciones/nueva"
-      [queryParams]="{ yardUuid: yard }"
-    >
-      Nueva recepción
-    </a>
-  }
-  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
-    Recargar
-  </button>
-</tc-search-toolbar>
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    label="Filtros de recepciones"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <div toolbarContext class="field toolbar-yard">
+      <label for="receipt-yard-select" class="sr-only">Patio</label>
+      <select id="receipt-yard-select" #y [value]="yard" (change)="update('yardUuid', y.value)">
+        @for (item of yards; track item.uuid) {
+          <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
+        }
+      </select>
+    </div>
+
+    @if (can('COMMERCIAL_FULFILL')) {
+      <a
+        toolbarAction
+        class="btn primary"
+        routerLink="/comercial/recepciones/nueva"
+        [queryParams]="{ yardUuid: yard }"
+      >
+        Nueva recepción
+      </a>
+    }
+    <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+      Recargar
+    </button>
+  </tc-search-toolbar>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -74,21 +84,21 @@
   </form>
 </ng-template>
 
-@if (loading()) {
-  <p role="status">Cargando…</p>
-}
-<tc-commerce-records
-  [rows]="rows()"
-  [columns]="columns"
-  (selected)="selected.set($event)"
-/>
-<tc-pagination
-  [offset]="offset"
-  [limit]="limit"
-  [count]="rows().length"
-  [busy]="loading()"
-  (move)="move($event)"
-/>
+  <tc-commerce-records
+    listTable
+    [rows]="rows()"
+    [columns]="columns"
+    (selected)="selected.set($event)"
+  />
+  <tc-pagination
+    listPagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [busy]="loading()"
+    (move)="move($event)"
+  />
+</tc-list-container>
 @if (selected(); as row) {
   <section class="selection">
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>

@@ -1,124 +1,126 @@
-<tc-page-heading
-  section="Terceros y AVL"
-  title="Directorio de terceros"
-  description="Identidad comercial y expedientes de clientes, proveedores y aliados."
->
-  @if (session.can('PARTY_MANAGE')) {
-    <button class="btn primary" (click)="create()">+ Nuevo tercero</button>
-  }
-</tc-page-heading>
+<tc-list-container tableLabel="Directorio de terceros">
+  <tc-page-heading
+    listHeader
+    section="Terceros y AVL"
+    title="Directorio de terceros"
+    description="Identidad comercial y expedientes de clientes, proveedores y aliados."
+  >
+    @if (session.can('PARTY_MANAGE')) {
+      <button class="btn primary" (click)="create()">+ Nuevo tercero</button>
+    }
+  </tc-page-heading>
 
-<tc-search-toolbar
-  label="Buscar terceros"
-  placeholder="Razón social o nombre comercial"
-  [value]="form.controls.search.value"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
-/>
-
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Clasificación">
-      <div class="field">
-        <label for="party-role">Rol vigente</label>
-        <select id="party-role" formControlName="role">
-          <option value="">Todos los roles</option>
-          @for (role of roles; track role) {
-            <option [value]="role">{{ label(role) }}</option>
-          }
-        </select>
-      </div>
-    </tc-filter-section>
-
-    <tc-filter-section title="Estado">
-      <div class="field">
-        <label>Estado del tercero</label>
-        <div class="pill-group" role="radiogroup" aria-label="Estado del tercero">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.active.value === ''"
-            (click)="drawerForm.controls.active.setValue('')"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.active.value === 'true'"
-            (click)="drawerForm.controls.active.setValue('true')"
-          >
-            Activos
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.active.value === 'false'"
-            (click)="drawerForm.controls.active.setValue('false')"
-          >
-            Inactivos
-          </button>
-        </div>
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
-
-<tc-feedback [message]="error()" />
-
-<section class="panel table-panel" [attr.aria-busy]="busy()">
-  <div class="panel-heading">
-    <h2>Terceros registrados</h2>
-    <button class="btn secondary" (click)="load()" [disabled]="busy()">Actualizar</button>
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
     @if (busy()) {
       <span role="status">Cargando…</span>
     }
-  </div>
-  <div class="table-scroll" tabindex="0" aria-label="Directorio de terceros">
-    <table>
-      <caption class="sr-only">
-        Directorio de terceros
-      </caption>
-      <thead>
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar terceros"
+    placeholder="Razón social o nombre comercial"
+    [value]="form.controls.search.value"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <button toolbarAction class="btn secondary" (click)="load()" [disabled]="busy()">Actualizar</button>
+  </tc-search-toolbar>
+
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Clasificación">
+        <div class="field">
+          <label for="party-role">Rol vigente</label>
+          <select id="party-role" formControlName="role">
+            <option value="">Todos los roles</option>
+            @for (role of roles; track role) {
+              <option [value]="role">{{ label(role) }}</option>
+            }
+          </select>
+        </div>
+      </tc-filter-section>
+
+      <tc-filter-section title="Estado">
+        <div class="field">
+          <label>Estado del tercero</label>
+          <div class="pill-group" role="radiogroup" aria-label="Estado del tercero">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.active.value === ''"
+              (click)="drawerForm.controls.active.setValue('')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.active.value === 'true'"
+              (click)="drawerForm.controls.active.setValue('true')"
+            >
+              Activos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.active.value === 'false'"
+              (click)="drawerForm.controls.active.setValue('false')"
+            >
+              Inactivos
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
+
+  <table listTable>
+    <caption class="sr-only">
+      Directorio de terceros
+    </caption>
+    <thead>
+      <tr>
+        <th>Identidad</th>
+        <th>País</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (party of rows(); track party.uuid) {
         <tr>
-          <th>Identidad</th>
-          <th>País</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <td>
+            <strong>{{ party.legalName }}</strong
+            ><small>{{ party.tradeName }}</small
+            ><small class="mono">{{ party.uuid }}</small>
+          </td>
+          <td>{{ party.country }}</td>
+          <td><tc-status [active]="party.active" /></td>
+          <td>
+            <a class="btn secondary" [routerLink]="['/terceros', party.uuid, 'general']"
+              >Abrir expediente</a
+            >
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        @for (party of rows(); track party.uuid) {
+      } @empty {
+        @if (!busy() && !error()) {
           <tr>
-            <td>
-              <strong>{{ party.legalName }}</strong
-              ><small>{{ party.tradeName }}</small
-              ><small class="mono">{{ party.uuid }}</small>
-            </td>
-            <td>{{ party.country }}</td>
-            <td><tc-status [active]="party.active" /></td>
-            <td>
-              <a class="btn secondary" [routerLink]="['/terceros', party.uuid, 'general']"
-                >Abrir expediente</a
-              >
-            </td>
+            <td colspan="4" class="empty-state">No hay terceros con estos filtros.</td>
           </tr>
-        } @empty {
-          @if (!busy() && !error()) {
-            <tr>
-              <td colspan="4" class="empty-state">No hay terceros con estos filtros.</td>
-            </tr>
-          }
         }
-      </tbody>
-    </table>
-  </div>
+      }
+    </tbody>
+  </table>
+
   <tc-pagination
+    listPagination
     [offset]="offset()"
     [limit]="limit()"
     [count]="rows().length"
@@ -126,4 +128,5 @@
     (move)="apply($event)"
     (resize)="apply(0, $event)"
   />
-</section>
+</tc-list-container>
+

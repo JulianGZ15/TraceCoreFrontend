@@ -2,14 +2,21 @@
   title="Expediente integral"
   section="CONSULTAS"
   description="Consulta de solo lectura. Cada sección tiene sus permisos, paginación e instantánea independientes."
-/>
-<div class="actions">
-  <a class="btn secondary" routerLink="/consultas">Volver a consultas</a>
-  @if (links()) {
-    <a class="btn secondary" [routerLink]="links()">Abrir módulo de origen</a>
+>
+  <div actions class="actions">
+    @if (links()) {
+      <a class="btn secondary" [routerLink]="links()">Abrir módulo de origen</a>
+    }
+    <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+  </div>
+  @if (summary()) {
+    <tc-page-nav
+      nav
+      ariaLabel="Secciones del expediente"
+      [items]="navItems()"
+    />
   }
-  <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
-</div>
+</tc-page-heading>
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -21,15 +28,6 @@
     <p class="mono">{{ uuid }}</p>
     <p class="small-muted">Identidad generada {{ time(s.generatedAt) }}</p>
   </header>
-  <nav class="tabs" aria-label="Secciones del expediente">
-    @for (pair of visible(); track pair[0]) {
-      <a
-        [routerLink]="['/consultas', equipment ? 'equipos' : 'terceros', uuid, pair[0]]"
-        [class.active]="selected === pair[0]"
-        >{{ pair[1].label }}</a
-      >
-    }
-  </nav>
   @if (selected === 'resumen') {
     <section class="panel">
       <h2>Identidad y situación</h2>

@@ -2,12 +2,9 @@
   title="Panel operativo"
   section="CONSULTAS"
   description="Situación del patio calculada por el servidor. Cada consulta conserva su fecha de generación."
-/>
-
-<nav class="tabs" aria-label="Consultas">
-  <a routerLink="/consultas/inventario">Inventario</a>
-  <a routerLink="/consultas/ordenes">Órdenes</a>
-</nav>
+>
+  <tc-queries-section-nav nav />
+</tc-page-heading>
 
 <tc-search-toolbar [showSearch]="false" [showFilters]="false">
   <div toolbarContext class="field toolbar-yard">

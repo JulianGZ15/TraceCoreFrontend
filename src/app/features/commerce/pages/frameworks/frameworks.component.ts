@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommercePage } from '../../page';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
 import { RecordsComponent } from '../../shared/records/records.component';
 import { SectionNavComponent } from '../../shared/section-nav/section-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -11,6 +11,7 @@ import { FrameworkComponent } from '../../editors/framework/framework.component'
   imports: [
     RouterLink,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RecordsComponent,

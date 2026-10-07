@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
 import { InventoryForm } from '../../page-base';
 
 import * as M from '../../models';
@@ -16,6 +16,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     LookupComponent,

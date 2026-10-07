@@ -1,25 +1,76 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Sitios operativos externos"
-/>
-<tc-inventory-inventory-nav />
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+<tc-list-container tableLabel="Sitios operativos externos">
+  <tc-page-heading
+    listHeader
+    section="Inventario y patios"
+    title="Sitios operativos externos"
+  >
+    <tc-inventory-inventory-nav />
+  </tc-page-heading>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  label="Filtros de sitios"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  @if (access.global('INVENTORY_MANAGE')) {
-    <button toolbarAction class="btn primary" (click)="create()">Nuevo sitio</button>
-  }
-</tc-search-toolbar>
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    label="Filtros de sitios"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    @if (access.global('INVENTORY_MANAGE')) {
+      <button toolbarAction class="btn primary" (click)="create()">Nuevo sitio</button>
+    }
+  </tc-search-toolbar>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Código / nombre</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>{{ r.code }} · {{ r.name }}</td>
+            <td>{{ label(r.type) }}</td>
+            <td>{{ r.active ? 'Activo' : 'Inactivo' }}</td>
+            <td><a [routerLink]="'/inventario/sitios/' + r.uuid">Abrir</a></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4">Sin sitios en esta página.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="query({ limit: $event, offset: 0 })"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -53,43 +104,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-<div
-  class="table-scroll"
-  tabindex="0"
-  role="region"
-  aria-label="Tabla con desplazamiento horizontal"
->
-  <table>
-    <thead>
-      <tr>
-        <th>Código / nombre</th>
-        <th>Tipo</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.uuid) {
-        <tr>
-          <td>{{ r.code }} · {{ r.name }}</td>
-          <td>{{ label(r.type) }}</td>
-          <td>{{ r.active ? 'Activo' : 'Inactivo' }}</td>
-          <td><a [routerLink]="'/inventario/sitios/' + r.uuid">Abrir</a></td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="4">Sin sitios en esta página.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="query({ limit: $event, offset: 0 })"
-/>

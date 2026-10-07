@@ -1,7 +1,9 @@
-<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
-  [base]="navBase"
-  [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<tc-page-heading section="Centro comercial" [title]="title">
+  <tc-commerce-section-nav
+    [base]="navBase"
+    [sections]="sections"
+  />
+</tc-page-heading><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
 <p>
   El retorno físico RETURN y su recepción administrativa deben estar completados. La devolución
   finaliza renta; daño o rechazo no equivalen a liberación técnica.

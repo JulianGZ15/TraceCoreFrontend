@@ -2,6 +2,7 @@ import { Component, signal, computed, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import {
   PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -23,6 +24,7 @@ import * as M from '../../models';
     FormsModule,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RfidNavComponent,

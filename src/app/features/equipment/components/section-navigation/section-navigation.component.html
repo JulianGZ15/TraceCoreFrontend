@@ -1,1 +1,1 @@
-<nav class="section-links" [attr.aria-label]="catalog()?'Catálogo técnico':'Secciones del equipo'">@if(catalog()){@for(s of links;track s[0]){<a [routerLink]="'/catalogo/'+s[0]" routerLinkActive="active" ariaCurrentWhenActive="page">{{s[1]}}</a>}}@else{@for(s of sections;track s[0]){<a [routerLink]="'/equipos/'+uuid()+'/'+s[0]" routerLinkActive="active" ariaCurrentWhenActive="page">{{s[1]}}</a>}}</nav>
+<tc-page-nav [items]="items()" [ariaLabel]="catalog() ? 'Catálogo técnico' : 'Secciones del equipo'" />

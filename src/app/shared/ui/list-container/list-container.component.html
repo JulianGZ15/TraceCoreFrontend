@@ -1,0 +1,29 @@
+<div class="list-layout">
+  <div class="list-zone-header">
+    <ng-content select="[listHeader], tc-page-heading" />
+  </div>
+
+  <div class="list-zone-feedback">
+    <ng-content
+      select="[listFeedback], tc-feedback, [role='status'], [role='alert'], tc-rfid-pending, tc-commerce-pending, tc-logistics-pending, tc-finance-pending, tc-quality-pending"
+    />
+  </div>
+
+  <div class="list-zone-toolbar">
+    <ng-content select="[listToolbar], tc-search-toolbar" />
+  </div>
+
+  <div class="list-zone-table panel table-panel">
+    <div
+      class="table-scroll-wrap"
+      tabindex="0"
+      [attr.aria-label]="tableLabel()"
+    >
+      <ng-content select="[listTable], table, .table-wrap" />
+    </div>
+
+    <div class="list-zone-pagination">
+      <ng-content select="[listPagination], tc-pagination" />
+    </div>
+  </div>
+</div>

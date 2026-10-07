@@ -1,109 +1,113 @@
-<tc-equipment-section-navigation [catalog]="true" />
-
-<section class="panel">
-  <div class="panel-heading">
-    <h1>Lotes de piezas</h1>
+<tc-list-container tableLabel="Lotes de piezas">
+  <tc-page-heading
+    listHeader
+    section="Catálogo técnico"
+    title="Lotes de piezas"
+    description="Identidad técnica y trazabilidad administrativa."
+  >
     @if (session.can('EQUIPMENT_MANAGE')) {
       <button class="btn primary" [disabled]="busy()" (click)="edit()">Nuevo lote</button>
     }
-  </div>
-  <p>Identidad técnica y trazabilidad administrativa.</p>
-</section>
+    <tc-equipment-section-navigation [catalog]="true" />
+  </tc-page-heading>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  label="Filtros de lotes"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
-/>
-
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Tipo de lote">
-      <div class="pill-group" role="group" aria-label="Tipo de lote">
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === ''"
-          (click)="setDraftType('')"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === 'PROCUREMENT'"
-          (click)="setDraftType('PROCUREMENT')"
-        >
-          Adquisición
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === 'ADMINISTRATIVE'"
-          (click)="setDraftType('ADMINISTRATIVE')"
-        >
-          Administrativo
-        </button>
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
-
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
-
-<section class="panel table-panel" [attr.aria-busy]="busy()">
-  <div class="panel-heading">
-    <h2>Registros</h2>
-    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
     @if (busy()) {
       <span role="status">Cargando…</span>
     }
-  </div>
-  <div class="table-scroll" tabindex="0" aria-label="Lotes de piezas">
-    <table>
-      <caption class="sr-only">
-        Lotes de piezas
-      </caption>
-      <thead>
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    label="Filtros de lotes"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <button toolbarAction class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+  </tc-search-toolbar>
+
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Tipo de lote">
+        <div class="field">
+          <label>Tipo</label>
+          <div class="pill-group" role="radiogroup" aria-label="Tipo">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.type.value === ''"
+              (click)="drawerForm.controls.type.setValue('')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.type.value === 'PROCUREMENT'"
+              (click)="drawerForm.controls.type.setValue('PROCUREMENT')"
+            >
+              Adquisición
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.type.value === 'ADMINISTRATIVE'"
+              (click)="drawerForm.controls.type.setValue('ADMINISTRATIVE')"
+            >
+              Administrativo
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
+
+  <table listTable>
+    <caption class="sr-only">
+      Lotes de piezas
+    </caption>
+    <thead>
+      <tr>
+        @for (col of columns; track col.key) {
+          <th>{{ col.label }}</th>
+        }
+        <th>UUID / acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.uuid) {
         <tr>
           @for (col of columns; track col.key) {
-            <th>{{ col.label }}</th>
+            <td>{{ value(row, col.key) }}</td>
           }
-          <th>UUID / acciones</th>
+          <td>
+            <small class="mono">{{ row.uuid }}</small>
+            <div class="row-actions">
+              <a class="btn secondary" [routerLink]="'/catalogo/lotes/' + row.uuid">Ver lote</a>
+            </div>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.uuid) {
+      } @empty {
+        @if (!busy() && !error()) {
           <tr>
-            @for (col of columns; track col.key) {
-              <td>{{ value(row, col.key) }}</td>
-            }
-            <td>
-              <small class="mono">{{ row.uuid }}</small>
-              <div class="row-actions">
-                <a class="btn secondary" [routerLink]="'/catalogo/lotes/' + row.uuid">Ver lote</a>
-              </div>
+            <td [attr.colspan]="columns.length + 1" class="empty-state">
+              No hay registros para estos criterios.
             </td>
           </tr>
-        } @empty {
-          @if (!busy() && !error()) {
-            <tr>
-              <td [attr.colspan]="columns.length + 1" class="empty-state">
-                No hay registros para estos criterios.
-              </td>
-            </tr>
-          }
         }
-      </tbody>
-    </table>
-  </div>
+      }
+    </tbody>
+  </table>
+
   <tc-pagination
+    listPagination
     [offset]="offset()"
     [limit]="limit()"
     [count]="rows().length"
@@ -111,4 +115,4 @@
     (move)="apply($event)"
     (resize)="resize($event)"
   />
-</section>
+</tc-list-container>

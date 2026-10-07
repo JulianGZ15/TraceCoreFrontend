@@ -1,4 +1,6 @@
 export { PageHeading } from './page-heading/page-heading.component';
+export { PageNav, type PageNavItem } from './page-nav/page-nav.component';
+export { ListContainer } from './list-container/list-container.component';
 export { Feedback } from './feedback/feedback.component';
 export { Status } from './status/status.component';
 export { Pagination } from './pagination/pagination.component';

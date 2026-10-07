@@ -1,25 +1,87 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Situación física de equipos"
-/>
-<tc-inventory-inventory-nav />
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+<tc-list-container tableLabel="Situación física de equipos">
+  <tc-page-heading
+    listHeader
+    section="Inventario y patios"
+    title="Situación física de equipos"
+  >
+    <tc-inventory-inventory-nav />
+  </tc-page-heading>
 
-<tc-search-toolbar
-  label="Buscar por código o número de serie"
-  placeholder="Código interno o número de serie…"
-  [value]="search"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (search)="onSearchChange($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
-</tc-search-toolbar>
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar por código o número de serie"
+    placeholder="Código interno o número de serie…"
+    [value]="search"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (search)="onSearchChange($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
+  </tc-search-toolbar>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Equipo</th>
+          <th>Ciclo de vida</th>
+          <th>Situación</th>
+          <th>Raíz / ubicación</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>
+              {{ r.internalCode }}<br />{{ r.serialNumber ?? 'Sin serial' }}<br /><small
+                class="mono"
+                >{{ r.uuid }}</small
+              >
+            </td>
+            <td>{{ label(r.lifecycle) }}</td>
+            <td>{{ label(r.placementState) }}</td>
+            <td class="long">
+              {{ r.rootAssetUuid === r.uuid ? 'Raíz' : 'Componente de ' + r.rootAssetUuid }}<br />{{
+                r.locationUuid ?? r.siteUuid ?? 'Sin posición'
+              }}
+            </td>
+            <td><a [routerLink]="'/inventario/equipos/' + r.uuid">Abrir</a></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">Sin equipos en esta página.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="query({ limit: $event, offset: 0 })"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -60,70 +122,19 @@
         <button
           type="button"
           class="pill-option"
-          [class.active]="drawerForm.controls.placementState.value === 'EXTERNAL_SITE'"
-          (click)="setDraftPlacement('EXTERNAL_SITE')"
+          [class.active]="drawerForm.controls.placementState.value === 'AT_SITE'"
+          (click)="setDraftPlacement('AT_SITE')"
         >
-          Sitio externo
+          En sitio
         </button>
       </div>
     </tc-filter-section>
 
-    <tc-filter-section title="Jerarquía de equipos">
-      <label class="drawer-checkbox-label">
+    <tc-filter-section title="Jerarquía">
+      <label class="checkbox-option">
         <input type="checkbox" formControlName="rootsOnly" />
-        <span>Solo equipos raíz</span>
+        <span>Solo piezas raíz</span>
       </label>
     </tc-filter-section>
   </form>
 </ng-template>
-
-<div
-  class="table-scroll"
-  tabindex="0"
-  role="region"
-  aria-label="Tabla con desplazamiento horizontal"
->
-  <table>
-    <thead>
-      <tr>
-        <th>Equipo</th>
-        <th>Ciclo de vida</th>
-        <th>Situación</th>
-        <th>Raíz / ubicación</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.uuid) {
-        <tr>
-          <td>
-            {{ r.internalCode }}<br />{{ r.serialNumber ?? 'Sin serial' }}<br /><small
-              class="mono"
-              >{{ r.uuid }}</small
-            >
-          </td>
-          <td>{{ label(r.lifecycle) }}</td>
-          <td>{{ label(r.placementState) }}</td>
-          <td class="long">
-            {{ r.rootAssetUuid === r.uuid ? 'Raíz' : 'Componente de ' + r.rootAssetUuid }}<br />{{
-              r.locationUuid ?? r.siteUuid ?? 'Sin posición'
-            }}
-          </td>
-          <td><a [routerLink]="'/inventario/equipos/' + r.uuid">Abrir</a></td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="5">Sin equipos en esta página.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="query({ limit: $event, offset: 0 })"
-/>

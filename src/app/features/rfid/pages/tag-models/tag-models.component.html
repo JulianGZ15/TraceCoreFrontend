@@ -1,1 +1,63 @@
-<tc-page-heading section="RFID e integración" title="Modelos de chip" description="Identificación, autorización y ejecución se consultan por separado."/><tc-rfid-nav/><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/>@if(busy()){<p role="status">Consultando…</p>}<tc-rfid-pending/>@if(access.global('RFID_TAG_MANAGE')){<div class="actions"><button class="btn primary" [disabled]="busy()" (click)="create()">Nuevo registro</button></div>}<div class="panel table-wrap" tabindex="0" aria-label="Modelos de chip"><table><thead><tr><th>Fabricante</th><th>Modelo</th><th>Capacidad EPC</th><th>TID serializado</th></tr></thead><tbody>@for(r of rows();track r.data.uuid){<tr><td>{{r.data.manufacturer}}</td><td>{{r.data.model}}</td><td>{{r.data.epcCapacityBits+' bits'}}</td><td>{{r.data.serializedTid?'Declarado':'No declarado'}}</td></tr>}@empty{<tr><td colspan="5" class="empty">Sin registros para esta consulta.</td></tr>}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="page($event)" (resize)="filter({limit:$event.toString()})"/>
+<tc-list-container tableLabel="Modelos de chip">
+  <tc-page-heading
+    listHeader
+    section="RFID e integración"
+    title="Modelos de chip"
+    description="Identificación, autorización y ejecución se consultan por separado."
+  >
+    @if (access.global('RFID_TAG_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="create()">
+        Nuevo registro
+      </button>
+    }
+    <tc-rfid-nav />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+
+    @if (busy()) {
+      <p role="status">Consultando…</p>
+    }
+
+    <tc-rfid-pending />
+  </ng-container>
+
+  <div listTable class="table-wrap" tabindex="0" aria-label="Modelos de chip">
+    <table>
+      <thead>
+        <tr>
+          <th>Fabricante</th>
+          <th>Modelo</th>
+          <th>Capacidad EPC</th>
+          <th>TID serializado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.data.uuid) {
+          <tr>
+            <td>{{ r.data.manufacturer }}</td>
+            <td>{{ r.data.model }}</td>
+            <td>{{ r.data.epcCapacityBits + ' bits' }}</td>
+            <td>{{ r.data.serializedTid ? 'Declarado' : 'No declarado' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty">Sin registros para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>

@@ -1,1 +1,65 @@
-<tc-page-heading section="RFID e integración" title="Autorizaciones de programación" description="Identificación, autorización y ejecución se consultan por separado."/><tc-rfid-nav/><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/>@if(busy()){<p role="status">Consultando…</p>}<tc-rfid-pending/>@if(access.any('RFID_TAG_MANAGE')){<div class="actions"><a class="btn primary" routerLink="/rfid/comandos/nuevo">Nueva autorización</a></div>}<div class="panel table-wrap" tabindex="0" aria-label="Autorizaciones de programación"><table><thead><tr><th>UUID</th><th>Tipo</th><th>Equipo</th><th>Estado Core</th><th>Detalle</th></tr></thead><tbody>@for(r of rows();track r.data.uuid){<tr><td>{{r.data.uuid}}</td><td>{{label(r.data.command.type)}}</td><td>{{r.data.command.assetUuid}}</td><td>{{label(r.data.state)}}</td><td><a class="btn" [routerLink]="['/rfid/comandos',r.data.uuid]">Consultar</a></td></tr>}@empty{<tr><td colspan="5" class="empty">Sin registros para esta consulta.</td></tr>}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="page($event)" (resize)="filter({limit:$event.toString()})"/>
+<tc-list-container tableLabel="Autorizaciones de programación">
+  <tc-page-heading
+    listHeader
+    section="RFID e integración"
+    title="Autorizaciones de programación"
+    description="Identificación, autorización y ejecución se consultan por separado."
+  >
+    @if (access.any('RFID_TAG_MANAGE')) {
+      <a class="btn primary" routerLink="/rfid/comandos/nuevo">Nueva autorización</a>
+    }
+    <tc-rfid-nav />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+
+    @if (busy()) {
+      <p role="status">Consultando…</p>
+    }
+
+    <tc-rfid-pending />
+  </ng-container>
+
+  <div listTable class="table-wrap" tabindex="0" aria-label="Autorizaciones de programación">
+    <table>
+      <thead>
+        <tr>
+          <th>UUID</th>
+          <th>Tipo</th>
+          <th>Equipo</th>
+          <th>Estado Core</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.data.uuid) {
+          <tr>
+            <td>{{ r.data.uuid }}</td>
+            <td>{{ label(r.data.command.type) }}</td>
+            <td>{{ r.data.command.assetUuid }}</td>
+            <td>{{ label(r.data.state) }}</td>
+            <td>
+              <a class="btn" [routerLink]="['/rfid/comandos', r.data.uuid]">Consultar</a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty">Sin registros para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>

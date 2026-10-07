@@ -1,7 +1,9 @@
-<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
-  [base]="navBase"
-  [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+<tc-page-heading section="Centro comercial" [title]="title">
+  <tc-commerce-section-nav
+    [base]="navBase"
+    [sections]="sections"
+  />
+</tc-page-heading><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
   class="btn secondary"
   (click)="reload()"
   [disabled]="loading()"

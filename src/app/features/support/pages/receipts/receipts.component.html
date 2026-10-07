@@ -1,46 +1,99 @@
-<tc-page-heading
-  title="Recibos RFID en Core"
-  section="SOPORTE"
-  description="Recibos persistidos y resolución. El seguimiento de entregas permanece en RFID."
-/>
+<tc-list-container tableLabel="Recibos RFID en Core">
+  <tc-page-heading
+    listHeader
+    title="Recibos RFID en Core"
+    section="SOPORTE"
+    description="Recibos persistidos y resolución. El seguimiento de entregas permanece en RFID."
+  >
+    <tc-support-section-nav nav />
+  </tc-page-heading>
 
-<nav class="tabs" aria-label="Soporte">
-  @if (access.audit()) {
-    <a routerLink="/soporte/auditoria">Auditoría</a>
-  }
-  @if (session.can('SUPPORT_READ') && access.any('RFID_READ') && access.any('QUERY_READ')) {
-    <a routerLink="/soporte/recibos-rfid">Recibos RFID</a>
-  }
-</nav>
-
-<tc-search-toolbar
-  label="Buscar recibos RFID"
-  placeholder="Buscar por código de resultado…"
-  [value]="form.controls.status.value"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <div toolbarContext class="field toolbar-yard">
-    <label for="supp-rec-yard" class="sr-only">Patio</label>
-    <select
-      id="supp-rec-yard"
-      [value]="form.controls.yardUuid.value"
-      (change)="onYardChange($any($event.target).value)"
-    >
-      <option value="">Alcance global COMPANY</option>
-      @for (y of session.context()?.yards; track y.uuid) {
-        @if (access.receipt(y.uuid)) {
-          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar recibos RFID"
+    placeholder="Buscar por código de resultado…"
+    [value]="form.controls.status.value"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <div toolbarContext class="field toolbar-yard">
+      <label for="supp-rec-yard" class="sr-only">Patio</label>
+      <select
+        id="supp-rec-yard"
+        [value]="form.controls.yardUuid.value"
+        (change)="onYardChange($any($event.target).value)"
+      >
+        <option value="">Alcance global COMPANY</option>
+        @for (y of session.context()?.yards; track y.uuid) {
+          @if (access.receipt(y.uuid)) {
+            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+          }
         }
-      }
-    </select>
+      </select>
+    </div>
+  </tc-search-toolbar>
+
+  <ng-container listFeedback>
+    @if (error()) {
+      <tc-feedback [message]="error()" />
+    }
+    @if (loading()) {
+      <p role="status">Consultando soporte…</p>
+    }
+  </ng-container>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de registros; desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Recibo</th>
+          <th>Resultado</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track $index) {
+          <tr>
+            <td>{{ time(row['receivedAt']) }}</td>
+            <td>
+              {{ row['eventUuid'] }}<small>{{ row['assetUuid'] }}</small>
+            </td>
+            <td>{{ row['status'] }}</td>
+            <td>
+              <button class="btn secondary" (click)="selected.set(row)">Consultar detalle</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (!loading() && !error() && !rows().length) {
+      <p>Sin registros autorizados para estos filtros.</p>
+    }
   </div>
-</tc-search-toolbar>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="loading()"
+    (move)="move($event)"
+    (resize)="resize($event)"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm" class="flex flex-col gap-5">
@@ -76,57 +129,6 @@
   </form>
 </ng-template>
 
-@if (error()) {
-  <tc-feedback [message]="error()" />
-}
-@if (loading()) {
-  <p role="status">Consultando soporte…</p>
-}
-<section class="panel table-panel">
-  <div
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Recibo</th>
-          <th>Resultado</th>
-          <th>Detalle</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track $index) {
-          <tr>
-            <td>{{ time(row['receivedAt']) }}</td>
-            <td>
-              {{ row['eventUuid'] }}<small>{{ row['assetUuid'] }}</small>
-            </td>
-            <td>{{ row['status'] }}</td>
-            <td>
-              <button class="btn secondary" (click)="selected.set(row)">Consultar detalle</button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  @if (!loading() && !error() && !rows().length) {
-    <p>Sin registros autorizados para estos filtros.</p>
-  }
-  <tc-pagination
-    [offset]="offset"
-    [limit]="limit"
-    [count]="rows().length"
-    [hasMore]="hasMore()"
-    [busy]="loading()"
-    (move)="move($event)"
-    (resize)="resize($event)"
-  />
-</section>
 @if (selected(); as row) {
   <section class="panel">
     <h2>Detalle de solo lectura</h2>

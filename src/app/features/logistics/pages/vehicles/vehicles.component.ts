@@ -5,6 +5,7 @@ import { LogisticsPage } from '../../page';
 import { Entity, Row } from '../../models';
 import {
   PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -28,6 +29,7 @@ import { VehicleComponent } from '../../editors/vehicle/vehicle.component';
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RecordsComponent,

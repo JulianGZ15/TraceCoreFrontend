@@ -1,1 +1,28 @@
-<section class="panel identity"><a routerLink="/equipos">← Volver al directorio de equipos</a><p class="eyebrow">Pieza individual · {{profile().category.name}}</p><div class="panel-heading"><h1>{{profile().asset.internalCode}}</h1><tc-status [active]="profile().asset.lifecycle==='REGISTERED'" /><span class="badge">{{label(profile().asset.lifecycle)}}</span></div><p>{{profile().model.code}} · Serial {{profile().asset.serialNumber??'no declarado'}}</p><p class="mono">{{profile().asset.uuid}}</p><div class="badges"><span class="badge neutral">Condición: {{label(profile().condition.condition)}}</span><span class="badge neutral">Ficha {{profile().technicalSheet.revision}} · {{label(profile().technicalSheet.state)}}</span></div></section>
+<section class="panel identity">
+  <div class="identity-top">
+    <a routerLink="/equipos" class="back-link">← Volver al directorio de equipos</a>
+    <span class="eyebrow">Pieza individual · {{ profile().category.name }}</span>
+  </div>
+  <div class="panel-heading">
+    <div class="title-with-status">
+      <h1>{{ profile().asset.internalCode }}</h1>
+      <tc-status [active]="profile().asset.lifecycle === 'REGISTERED'" />
+      <span class="badge">{{ label(profile().asset.lifecycle) }}</span>
+    </div>
+    <div class="header-actions">
+      <ng-content select="[headerAction], a, button" />
+    </div>
+  </div>
+  <div class="meta-row">
+    <span>{{ profile().model.code }} · Serial {{ profile().asset.serialNumber ?? 'no declarado' }}</span>
+    <span aria-hidden="true">·</span>
+    <span class="mono">{{ profile().asset.uuid }}</span>
+  </div>
+  <div class="badges">
+    <span class="badge neutral">Condición: {{ label(profile().condition.condition) }}</span>
+    <span class="badge neutral">Ficha {{ profile().technicalSheet.revision }} · {{ label(profile().technicalSheet.state) }}</span>
+  </div>
+  <div class="identity-nav-slot">
+    <ng-content select="tc-equipment-section-navigation, tc-page-nav, nav, [pageNav]" />
+  </div>
+</section>

@@ -1,11 +1,19 @@
 <div class="breadcrumb">
   <a routerLink="/inicio">Inicio</a><span aria-hidden="true">/</span><span>{{ section() }}</span>
 </div>
-<div class="page-heading">
-  <div>
-    <p class="eyebrow">{{ section() }}</p>
+<div class="page-heading-row">
+  <div class="heading-titles">
     <h1 tabindex="-1">{{ title() }}</h1>
-    <p class="page-description">{{ description() }}</p>
+    @if (description()) {
+      <p class="page-description">{{ description() }}</p>
+    }
   </div>
-  <div class="page-actions"><ng-content /></div>
+  <div class="page-actions">
+    <ng-content />
+  </div>
+</div>
+<div class="heading-nav-slot">
+  <ng-content
+    select="[pageNav], [nav], tc-page-nav, tc-rfid-nav, tc-inventory-nav, tc-quality-nav, tc-commerce-section-nav, tc-logistics-section-nav, tc-finance-section-nav, tc-queries-section-nav, tc-support-section-nav, tc-section-navigation, tc-party-sections, nav"
+  />
 </div>

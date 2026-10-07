@@ -2,7 +2,11 @@
   section="Calidad y mantenimiento"
   title="Resultados de inspección"
   description="Registra el dictamen manual y cada criterio congelado. El servidor determina el resultado de las mediciones."
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+>
+  <tc-quality-nav />
+</tc-page-heading>
+<tc-feedback [message]="error()" />
+<tc-feedback
   [message]="success()"
   kind="success"
 />

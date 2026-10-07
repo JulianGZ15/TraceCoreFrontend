@@ -1,52 +1,58 @@
-<tc-page-heading
-  section="Calidad y mantenimiento"
-  title="Agenda de inspecciones"
-  description=""
-/>
-<tc-quality-nav />
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+<tc-list-container tableLabel="Agenda de inspecciones">
+  <tc-page-heading
+    listHeader
+    section="Calidad y mantenimiento"
+    title="Agenda de inspecciones"
+    description=""
+  >
+    <tc-quality-nav />
+  </tc-page-heading>
 
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-@if (conflict()) {
-  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
-}
-<tc-quality-pending />
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+    @if (conflict()) {
+      <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+    }
+    <tc-quality-pending />
+  </ng-container>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  label="Filtros de inspecciones"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <div toolbarContext class="field toolbar-yard">
-    <label for="inspections-yard" class="sr-only">Patio</label>
-    <select
-      id="inspections-yard"
-      [ngModel]="yard()"
-      (ngModelChange)="filter({ yardUuid: $event || null, offset: '0' })"
-    >
-      <option value="">Alcances autorizados</option>
-      @for (y of session.context()?.yards; track y.uuid) {
-        @if (access.can('QUALITY_READ', y.uuid)) {
-          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    label="Filtros de inspecciones"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <div toolbarContext class="field toolbar-yard">
+      <label for="inspections-yard" class="sr-only">Patio</label>
+      <select
+        id="inspections-yard"
+        [ngModel]="yard()"
+        (ngModelChange)="filter({ yardUuid: $event || null, offset: '0' })"
+      >
+        <option value="">Alcances autorizados</option>
+        @for (y of session.context()?.yards; track y.uuid) {
+          @if (access.can('QUALITY_READ', y.uuid)) {
+            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+          }
         }
-      }
-    </select>
-  </div>
+      </select>
+    </div>
 
-  @if (access.any('INSPECTION_MANAGE')) {
-    <a toolbarAction class="btn primary" routerLink="/calidad/inspecciones/nueva">
-      Programar inspección
-    </a>
-  }
-</tc-search-toolbar>
+    @if (access.any('INSPECTION_MANAGE')) {
+      <a toolbarAction class="btn primary" routerLink="/calidad/inspecciones/nueva">
+        Programar inspección
+      </a>
+    }
+  </tc-search-toolbar>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -130,46 +136,55 @@
   </form>
 </ng-template>
 
-<div class="panel table-wrap" tabindex="0">
-  <table>
-    <thead>
-      <tr>
-        <th>Pieza</th>
-        <th>Programación</th>
-        <th>Estado</th>
-        <th>Responsable</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.record.uuid) {
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
         <tr>
-          <td>
-            {{ row.assetCode }}
-            <p>{{ row.serialNumber || 'Sin serial' }}</p>
-          </td>
-          <td>{{ date(row.record.scheduledAt) }}</td>
-          <td>{{ label(row.record.state) }}</td>
-          <td class="mono">{{ row.record.inspectorUuid }}</td>
-          <td>
-            <a class="btn secondary" [routerLink]="['/calidad/inspecciones', row.record.uuid]">
-              Abrir
-            </a>
-          </td>
+          <th>Pieza</th>
+          <th>Programación</th>
+          <th>Estado</th>
+          <th>Responsable</th>
+          <th>Acción</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="5" class="empty">Sin registros.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.record.uuid) {
+          <tr>
+            <td>
+              {{ row.assetCode }}
+              <p>{{ row.serialNumber || 'Sin serial' }}</p>
+            </td>
+            <td>{{ date(row.record.scheduledAt) }}</td>
+            <td>{{ label(row.record.state) }}</td>
+            <td class="mono">{{ row.record.inspectorUuid }}</td>
+            <td>
+              <a class="btn secondary" [routerLink]="['/calidad/inspecciones', row.record.uuid]">
+                Abrir
+              </a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty">Sin registros.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>

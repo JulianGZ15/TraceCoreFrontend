@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReadPage } from '../../../../shared/ui/read-page';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, Pagination, PageNav, PageNavItem } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { Page } from '../../../../core/http/workspace-api';
 import { Summary, Section, equipmentSections, partySections } from '../../models';
@@ -9,7 +9,7 @@ import { QueryAccess } from '../../access';
 import { CsvDownload } from '../../csv';
 @Component({
   selector: 'tc-query-dossier',
-  imports: [RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent],
+  imports: [RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent, PageNav],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
 })
@@ -31,6 +31,13 @@ export class DossierComponent extends ReadPage {
     return this.entries(this.sections()).filter(
       ([key, s]) => key === 'resumen' || this.summary()?.sections[s.backend],
     );
+  }
+  navItems(): PageNavItem[] {
+    const kind = this.equipment ? 'equipos' : 'terceros';
+    return this.visible().map(([key, s]) => ({
+      label: s.label,
+      route: `/consultas/${kind}/${this.uuid}/${key}`,
+    }));
   }
   collections() {
     return this.entries(this.sections()[this.selected]?.collections ?? {});

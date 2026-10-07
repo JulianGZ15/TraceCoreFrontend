@@ -1,42 +1,138 @@
-<tc-page-heading
-  title="Consulta de inventario"
-  section="CONSULTAS"
-  description="Filtros autorizados y resultados paginados. Los campos monetarios y magnitudes conservan precisión exacta."
-/>
+<tc-list-container tableLabel="Consulta de inventario">
+  <tc-page-heading
+    listHeader
+    title="Consulta de inventario"
+    section="CONSULTAS"
+    description="Filtros autorizados y resultados paginados. Los campos monetarios y magnitudes conservan precisión exacta."
+  >
+    <tc-queries-section-nav nav />
+  </tc-page-heading>
 
-<nav class="tabs" aria-label="Consultas">
-  <a routerLink="/consultas/panel">Panel operativo</a>
-  <a routerLink="/consultas/ordenes">Órdenes</a>
-</nav>
-
-<tc-search-toolbar
-  label="Buscar inventario"
-  placeholder="Buscar código interno o serial…"
-  [value]="form.controls.search.value"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <div toolbarContext class="field toolbar-yard">
-    <label for="query-inv-yard" class="sr-only">Patio</label>
-    <select
-      id="query-inv-yard"
-      [value]="form.controls.yardUuid.value"
-      (change)="onYardChange($any($event.target).value)"
-    >
-      <option value="">Alcance global COMPANY</option>
-      @for (y of session.context()?.yards; track y.uuid) {
-        @if (access.inventory(y.uuid)) {
-          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar inventario"
+    placeholder="Buscar código interno o serial…"
+    [value]="form.controls.search.value"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <div toolbarContext class="field toolbar-yard">
+      <label for="query-inv-yard" class="sr-only">Patio</label>
+      <select
+        id="query-inv-yard"
+        [value]="form.controls.yardUuid.value"
+        (change)="onYardChange($any($event.target).value)"
+      >
+        <option value="">Alcance global COMPANY</option>
+        @for (y of session.context()?.yards; track y.uuid) {
+          @if (access.inventory(y.uuid)) {
+            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+          }
+        }
+      </select>
+    </div>
+    <div toolbarActions class="actions">
+      @if (canExport()) {
+        <button
+          class="btn secondary"
+          [disabled]="csv.busy() || loading()"
+          (click)="export()"
+        >
+          Exportar CSV
+        </button>
+        @if (csv.next() !== null) {
+          <button
+            class="btn secondary"
+            [disabled]="csv.busy()"
+            (click)="export(true)"
+          >
+            CSV ({{ csv.next() }})
+          </button>
         }
       }
-    </select>
+    </div>
+  </tc-search-toolbar>
+
+  <ng-container listFeedback>
+    @if (error()) {
+      <tc-feedback [message]="error()" />
+    }
+    @if (csv.error()) {
+      <tc-feedback [message]="csv.error()" />
+    }
+    @if (loading()) {
+      <p role="status">Consultando resultados…</p>
+    }
+    @if (csv.at()) {
+      <p class="small-muted">Última exportación generada {{ csv.at() }}</p>
+    }
+  </ng-container>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de registros; desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Equipo</th>
+          <th>Modelo</th>
+          <th>Ciclo de vida</th>
+          <th>Ubicación</th>
+          <th>Peso bruto (kg)</th>
+          <th>Expediente</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.assetUuid) {
+          <tr>
+            <td>
+              {{ row.internalCode }}<small>{{ row.serialNumber ?? 'Sin serial' }}</small>
+            </td>
+            <td>{{ row.modelCode }}</td>
+            <td>{{ row.lifecycle }}</td>
+            <td>
+              {{ row.locationUuid ?? row.siteUuid ?? 'Sin ubicación' }}
+              <small>Raíz {{ row.rootAssetUuid ?? row.assetUuid }}</small>
+            </td>
+            <td>
+              {{
+                row.grossWeightKgExact === undefined
+                  ? 'API incompatible: falta valor exacto'
+                  : (row.grossWeightKgExact ?? 'Desconocido')
+              }}
+            </td>
+            <td>
+              <a [routerLink]="['/consultas/equipos', row.assetUuid]">Abrir expediente integral</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (!loading() && !error() && !rows().length) {
+      <p>Sin resultados para estos filtros.</p>
+    }
   </div>
-</tc-search-toolbar>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="loading()"
+    (move)="move($event)"
+    (resize)="resize($event)"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm" class="flex flex-col gap-5">
@@ -115,93 +211,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-@if (error()) {
-  <tc-feedback [message]="error()" />
-}
-@if (loading()) {
-  <p role="status">Consultando resultados…</p>
-}
-<section class="panel">
-  <div
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
-    <table>
-      <thead>
-        <tr>
-          <th>Equipo</th>
-          <th>Modelo</th>
-          <th>Ciclo de vida</th>
-          <th>Ubicación</th>
-          <th>Peso bruto (kg)</th>
-          <th>Expediente</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.assetUuid) {
-          <tr>
-            <td>
-              {{ row.internalCode }}<small>{{ row.serialNumber ?? 'Sin serial' }}</small>
-            </td>
-            <td>{{ row.modelCode }}</td>
-            <td>{{ row.lifecycle }}</td>
-            <td>
-              {{ row.locationUuid ?? row.siteUuid ?? 'Sin ubicación' }}
-              <small>Raíz {{ row.rootAssetUuid ?? row.assetUuid }}</small>
-            </td>
-            <td>
-              {{
-                row.grossWeightKgExact === undefined
-                  ? 'API incompatible: falta valor exacto'
-                  : (row.grossWeightKgExact ?? 'Desconocido')
-              }}
-            </td>
-            <td>
-              <a [routerLink]="['/consultas/equipos', row.assetUuid]">Abrir expediente integral</a>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  @if (!loading() && !error() && !rows().length) {
-    <p>Sin resultados para estos filtros.</p>
-  }
-  <tc-pagination
-    [offset]="offset"
-    [limit]="limit"
-    [count]="rows().length"
-    [hasMore]="hasMore()"
-    [busy]="loading()"
-    (move)="move($event)"
-    (resize)="resize($event)"
-  />
-</section>
-@if (canExport()) {
-  <section class="panel">
-    <h2>Exportación CSV</h2>
-    <p>
-      Cada archivo contiene hasta 500 filas y corresponde a su propia instantánea. Los filtros
-      aplicados se conservan; descarga la siguiente página explícitamente.
-    </p>
-    <div class="actions">
-      <button class="btn secondary" [disabled]="csv.busy() || loading()" (click)="export()">
-        Descargar primera página
-      </button>
-      @if (csv.next() !== null) {
-        <button class="btn secondary" [disabled]="csv.busy()" (click)="export(true)">
-          Descargar siguiente página ({{ csv.next() }})
-        </button>
-      }
-    </div>
-    @if (csv.at()) {
-      <p class="small-muted">Última página generada {{ csv.at() }}</p>
-    }
-    @if (csv.error()) {
-      <tc-feedback [message]="csv.error()" />
-    }
-  </section>
-}

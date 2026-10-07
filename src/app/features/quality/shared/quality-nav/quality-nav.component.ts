@@ -1,13 +1,26 @@
-import { Component, inject, input, signal, effect } from '@angular/core';
-import { ReactiveFormsModule, FormsModule, FormControl, AbstractControl } from '@angular/forms';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { Component, computed } from '@angular/core';
 import { QualityPage } from '../../page-base';
-import * as M from '../../models';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { PageNav, PageNavItem } from '../../../../shared/ui/page-nav/page-nav.component';
+
 @Component({
   selector: 'tc-quality-nav',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [PageNav],
   templateUrl: './quality-nav.component.html',
   styleUrl: './quality-nav.component.scss',
 })
-export class QualityNavComponent extends QualityPage {}
+export class QualityNavComponent extends QualityPage {
+  readonly items = computed<PageNavItem[]>(() => {
+    const hasRead = this.access.global('QUALITY_READ');
+
+    return [
+      { label: 'Equipos', route: '/calidad/equipos' },
+      { label: 'Inspecciones', route: '/calidad/inspecciones' },
+      { label: 'Mantenimiento', route: '/calidad/mantenimiento' },
+      { label: 'Estándares', route: '/calidad/estandares', visible: hasRead },
+      { label: 'Requisitos', route: '/calidad/requisitos', visible: hasRead },
+      { label: 'Políticas', route: '/calidad/politicas', visible: hasRead },
+      { label: 'MTR', route: '/calidad/mtrs', visible: hasRead },
+      { label: 'Evidencias', route: '/calidad/evidencias', visible: hasRead },
+    ];
+  });
+}

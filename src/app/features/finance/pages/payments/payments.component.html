@@ -1,31 +1,30 @@
-<tc-page-heading
-  [title]="title"
-  section="ADMINISTRACIÓN FINANCIERA"
-  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
-/>
-<nav class="actions" aria-label="Finanzas">
-  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a>
-  <a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a>
-  <a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a>
-  <a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a>
-  <a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a>
-  <a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a>
-  <a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
-</nav>
-<tc-finance-pending-requests />
-@if (sections.length) {
-  <tc-finance-section-nav
-    [base]="navBase"
-    [sections]="sections"
-    [currency]="mode === 'party' ? currency : ''"
-  />
-}
-@if (error()) {
-  <tc-feedback [message]="error()" />
-}
+<tc-list-container tableLabel="Pagos y anticipos">
+  <tc-page-heading
+    listHeader
+    [title]="title"
+    section="ADMINISTRACIÓN FINANCIERA"
+    description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+  >
+    <tc-finance-section-nav
+      [base]="navBase"
+      [sections]="sections"
+      [currency]="mode === 'party' ? currency : ''"
+    />
+  </tc-page-heading>
 
-<tc-search-toolbar
-  label="Buscar pagos por referencia de operación"
+  <ng-container listFeedback>
+    <tc-finance-pending-requests />
+    @if (error()) {
+      <tc-feedback [message]="error()" />
+    }
+    @if (loading()) {
+      <p role="status">Consultando…</p>
+    }
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar pagos por referencia de operación"
   placeholder="Referencia de operación…"
   [value]="filters['search']"
   [chips]="chips()"
@@ -113,16 +112,17 @@
   </form>
 </ng-template>
 
-@if (loading()) {
-  <p role="status">Consultando…</p>
-}
-
-<section class="panel">
-  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" />
+  <tc-finance-records
+    listTable
+    [rows]="rows()"
+    [columns]="columns"
+    (selected)="open($event)"
+  />
   <tc-pagination
+    listPagination
     [offset]="offset"
     [limit]="limit"
     [count]="rows().length"
     (move)="move($event)"
   />
-</section>
+</tc-list-container>

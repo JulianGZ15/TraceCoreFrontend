@@ -1,134 +1,152 @@
-<section class="panel">
-  <div class="panel-heading">
-    <h1>Directorio de equipos</h1>
+<tc-list-container tableLabel="Directorio de equipos">
+  <tc-page-heading
+    listHeader
+    section="Equipos y catálogo"
+    title="Directorio de equipos"
+    description="Identidad técnica y trazabilidad administrativa."
+  >
     @if (session.can('EQUIPMENT_MANAGE') && session.can('OWNERSHIP_MANAGE')) {
       <a class="btn primary" routerLink="/equipos/nuevo">Registrar pieza</a>
     }
-  </div>
-  <p>Identidad técnica y trazabilidad administrativa.</p>
-</section>
+  </tc-page-heading>
 
-<tc-search-toolbar
-  label="Buscar equipos"
-  placeholder="Marcación o serial"
-  [value]="filters.controls.search.value"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
-/>
-
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Clasificación técnica">
-      <div class="field">
-        <tc-equipment-lookup
-          kind="category"
-          label="Categoría"
-          formControlName="categoryUuid"
-          (picked)="onLookupPicked('categoryUuid', $event)"
-        />
-      </div>
-      <div class="field">
-        <tc-equipment-lookup
-          kind="model"
-          label="Modelo"
-          [filters]="drawerModelFilters()"
-          formControlName="modelUuid"
-          (picked)="onLookupPicked('modelUuid', $event)"
-        />
-      </div>
-    </tc-filter-section>
-
-    <tc-filter-section title="Ciclo de vida">
-      <div class="field">
-        <label>Ciclo de vida</label>
-        <div class="pill-group" role="radiogroup" aria-label="Ciclo de vida">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.lifecycle.value === ''"
-            (click)="drawerForm.controls.lifecycle.setValue('')"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.lifecycle.value === 'REGISTERED'"
-            (click)="drawerForm.controls.lifecycle.setValue('REGISTERED')"
-          >
-            {{ label('REGISTERED') }}
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.lifecycle.value === 'RETIRED'"
-            (click)="drawerForm.controls.lifecycle.setValue('RETIRED')"
-          >
-            {{ label('RETIRED') }}
-          </button>
-        </div>
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
-
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
-
-<section class="panel table-panel" [attr.aria-busy]="busy()">
-  <div class="panel-heading">
-    <h2>Registros</h2>
-    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
     @if (busy()) {
       <span role="status">Cargando…</span>
     }
-  </div>
-  <div class="table-scroll" tabindex="0" aria-label="Directorio de equipos">
-    <table>
-      <caption class="sr-only">
-        Directorio de equipos
-      </caption>
-      <thead>
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar equipos"
+    placeholder="Marcación o serial"
+    [value]="filters.controls.search.value"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <button toolbarAction class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+  </tc-search-toolbar>
+
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Clasificación técnica">
+        <div class="field">
+          <tc-equipment-lookup
+            kind="category"
+            label="Categoría"
+            formControlName="categoryUuid"
+            (picked)="onLookupPicked('categoryUuid', $event)"
+          />
+        </div>
+        <div class="field">
+          <tc-equipment-lookup
+            kind="model"
+            label="Modelo"
+            [filters]="drawerModelFilters()"
+            formControlName="modelUuid"
+            (picked)="onLookupPicked('modelUuid', $event)"
+          />
+        </div>
+      </tc-filter-section>
+
+      <tc-filter-section title="Ciclo de vida">
+        <div class="field">
+          <label>Ciclo de vida</label>
+          <div class="pill-group" role="radiogroup" aria-label="Ciclo de vida">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.lifecycle.value === ''"
+              (click)="drawerForm.controls.lifecycle.setValue('')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.lifecycle.value === 'REGISTERED'"
+              (click)="drawerForm.controls.lifecycle.setValue('REGISTERED')"
+            >
+              Registrados
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.lifecycle.value === 'IN_USE'"
+              (click)="drawerForm.controls.lifecycle.setValue('IN_USE')"
+            >
+              En uso
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.lifecycle.value === 'MAINTENANCE'"
+              (click)="drawerForm.controls.lifecycle.setValue('MAINTENANCE')"
+            >
+              Mantenimiento
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.lifecycle.value === 'RETIRED'"
+              (click)="drawerForm.controls.lifecycle.setValue('RETIRED')"
+            >
+              Retirados
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
+
+  <table listTable>
+    <caption class="sr-only">
+      Directorio de equipos
+    </caption>
+    <thead>
+      <tr>
+        @for (col of columns; track col.key) {
+          <th>{{ col.label }}</th>
+        }
+        <th>UUID / acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.uuid) {
         <tr>
           @for (col of columns; track col.key) {
-            <th>{{ col.label }}</th>
+            <td>{{ value(row, col.key) }}</td>
           }
-          <th>UUID / acciones</th>
+          <td>
+            <small class="mono">{{ row.uuid }}</small>
+            <div class="row-actions">
+              <a class="btn secondary" [routerLink]="'/equipos/' + row.uuid + '/general'"
+                >Abrir expediente</a
+              >
+            </div>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.uuid) {
+      } @empty {
+        @if (!busy() && !error()) {
           <tr>
-            @for (col of columns; track col.key) {
-              <td>{{ value(row, col.key) }}</td>
-            }
-            <td>
-              <small class="mono">{{ row.uuid }}</small>
-              <div class="row-actions">
-                <a class="btn secondary" [routerLink]="'/equipos/' + row.uuid + '/general'"
-                  >Abrir expediente</a
-                >
-              </div>
+            <td [attr.colspan]="columns.length + 1" class="empty-state">
+              No hay registros para estos criterios.
             </td>
           </tr>
-        } @empty {
-          @if (!busy() && !error()) {
-            <tr>
-              <td [attr.colspan]="columns.length + 1" class="empty-state">
-                No hay registros para estos criterios.
-              </td>
-            </tr>
-          }
         }
-      </tbody>
-    </table>
-  </div>
+      }
+    </tbody>
+  </table>
+
   <tc-pagination
+    listPagination
     [offset]="offset()"
     [limit]="limit()"
     [count]="rows().length"
@@ -136,4 +154,4 @@
     (move)="apply($event)"
     (resize)="resize($event)"
   />
-</section>
+</tc-list-container>

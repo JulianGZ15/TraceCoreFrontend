@@ -1,8 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { ReadPage } from '../../../../shared/ui/read-page';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, Pagination, PageNav, PageNavItem } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { Page } from '../../../../core/http/workspace-api';
 import { Summary, VersionView, Linked } from '../../models';
@@ -15,7 +15,7 @@ import {
 } from '../../editors/decision-editor/decision-editor.component';
 @Component({
   selector: 'tc-document-dossier',
-  imports: [RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent],
+  imports: [RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent, PageNav],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
 })
@@ -28,6 +28,14 @@ export class DossierComponent extends ReadPage {
   readonly linkState = linkState;
   id = '';
   section = 'resumen';
+  readonly navItems = computed<PageNavItem[]>(() => {
+    const uuid = this.summary()?.document?.uuid || this.id;
+    return [
+      { label: 'Resumen', route: `/documentos/${uuid}/resumen` },
+      { label: 'Versiones', route: `/documentos/${uuid}/versiones` },
+      { label: 'Vínculos', route: `/documentos/${uuid}/vinculos` },
+    ];
+  });
   override async load() {
     this.id = this.route.snapshot.paramMap.get('uuid') ?? '';
     this.section = this.route.snapshot.paramMap.get('seccion') ?? 'resumen';

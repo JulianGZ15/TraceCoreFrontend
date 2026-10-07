@@ -1,63 +1,74 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Propuestas y conciliación"
-/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
-/>
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-<div class="toolbar">
-  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
-  @if (access.can('INVENTORY_OBSERVE', yard())) {
-    <a
-      class="btn primary"
-      routerLink="/inventario/propuestas/nueva"
-      [queryParams]="{ yardUuid: yard() }"
-      >Captura manual</a
-    >
-  }
-</div>
-<p>Una propuesta conserva observaciones y no ejecuta movimientos.</p>
-<div
-  class="table-scroll"
-  tabindex="0"
-  role="region"
-  aria-label="Tabla con desplazamiento horizontal"
->
-  <table>
-    <thead>
-      <tr>
-        <th>Referencia / tipo</th>
-        <th>Estado</th>
-        <th>Captura</th>
-        <th>Expiración</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.uuid) {
+<tc-list-container tableLabel="Propuestas y conciliación">
+  <tc-page-heading
+    listHeader
+    section="Inventario y patios"
+    title="Propuestas y conciliación"
+  >
+    <tc-inventory-inventory-nav />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+  </ng-container>
+
+  <div listToolbar class="toolbar">
+    <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
+    @if (access.can('INVENTORY_OBSERVE', yard())) {
+      <a
+        class="btn primary"
+        routerLink="/inventario/propuestas/nueva"
+        [queryParams]="{ yardUuid: yard() }"
+        >Captura manual</a
+      >
+    }
+  </div>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
         <tr>
-          <td>{{ r.sourceReference }} · {{ label(r.type) }}</td>
-          <td>{{ label(r.state) }}</td>
-          <td>{{ date(r.proposedAt) }}</td>
-          <td>{{ date(r.expiresAt) }}</td>
-          <td><a [routerLink]="'/inventario/propuestas/' + r.uuid">Conciliar</a></td>
+          <th>Referencia / tipo</th>
+          <th>Estado</th>
+          <th>Captura</th>
+          <th>Expiración</th>
+          <th>Acción</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="5">Sin propuestas en esta página.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="query({ limit: $event, offset: 0 })"
-/>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>{{ r.sourceReference }} · {{ label(r.type) }}</td>
+            <td>{{ label(r.state) }}</td>
+            <td>{{ date(r.proposedAt) }}</td>
+            <td>{{ date(r.expiresAt) }}</td>
+            <td><a [routerLink]="'/inventario/propuestas/' + r.uuid">Conciliar</a></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">Sin propuestas en esta página.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="query({ limit: $event, offset: 0 })"
+  />
+</tc-list-container>

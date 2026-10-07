@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { Feedback, Pagination, PageHeading, Status } from '../../../../shared/ui/page';
+import { Feedback, Pagination, PageHeading, Status, ListContainer } from '../../../../shared/ui/page';
 
 import { EquipmentApi } from '../../equipment-api';
 
@@ -36,7 +36,7 @@ import { SectionNavigationComponent } from '../../components/section-navigation/
 
 
 
-@Component({selector:"tc-equipment-categories",imports:[Feedback,Pagination,ReactiveFormsModule,SectionNavigationComponent],templateUrl:"./categories.component.html",styleUrl:"./categories.component.scss"})
+@Component({selector:"tc-equipment-categories",imports:[Feedback,Pagination,ReactiveFormsModule,SectionNavigationComponent,PageHeading,ListContainer],templateUrl:"./categories.component.html",styleUrl:"./categories.component.scss"})
 
 export class CategoriesComponent extends EquipmentPage {
 

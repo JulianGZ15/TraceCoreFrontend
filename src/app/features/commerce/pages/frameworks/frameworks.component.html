@@ -1,31 +1,47 @@
-<tc-page-heading
-  section="Centro comercial"
-  [title]="title"
-  description="Documentos administrativos, cumplimiento y trazabilidad por patio."
-/><tc-commerce-section-nav
-  [base]="navBase"
-  [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
-<div class="toolbar">
-  @if (session.can('CONTRACT_MANAGE')) {
-    <button class="btn primary" (click)="edit(editor)">Nuevo marco</button>
-  }
-  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
-</div>
-@if (loading()) {
-  <p role="status">Cargando…</p>
-}
-<tc-commerce-records
-  [rows]="rows()"
-  [columns]="columns"
-  (selected)="selected.set($event)"
-/><tc-pagination
-  [offset]="offset"
-  [limit]="limit"
-  [count]="rows().length"
-  [busy]="loading()"
-  (move)="move($event)"
-/>
+<tc-list-container tableLabel="Contratos marco">
+  <tc-page-heading
+    listHeader
+    section="Centro comercial"
+    [title]="title"
+    description="Documentos administrativos, cumplimiento y trazabilidad por patio."
+  >
+    <tc-commerce-section-nav
+      [base]="navBase"
+      [sections]="sections"
+    />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-commerce-pending-requests />
+    <tc-feedback [message]="error()" />
+    @if (loading()) {
+      <p role="status">Cargando…</p>
+    }
+  </ng-container>
+
+  <div listToolbar class="toolbar">
+    @if (session.can('CONTRACT_MANAGE')) {
+      <button class="btn primary" (click)="edit(editor)">Nuevo marco</button>
+    }
+    <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
+  </div>
+
+  <tc-commerce-records
+    listTable
+    [rows]="rows()"
+    [columns]="columns"
+    (selected)="selected.set($event)"
+  />
+
+  <tc-pagination
+    listPagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [busy]="loading()"
+    (move)="move($event)"
+  />
+</tc-list-container>
 @if (selected(); as row) {
   <section class="selection">
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>

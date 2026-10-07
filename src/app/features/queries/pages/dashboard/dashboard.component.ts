@@ -1,21 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ReadPage } from '../../../../shared/ui/read-page';
 import { PageHeading, Feedback, SearchToolbar } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { SubjectPickerComponent } from '../../../documents/shared/subject-picker/subject-picker.component';
 import { QueryAccess } from '../../access';
 import { Dashboard } from '../../models';
+import { SectionNavComponent } from '../../components/section-nav/section-nav.component';
 
 @Component({
   selector: 'tc-query-dashboard',
   imports: [
-    RouterLink,
     PageHeading,
     Feedback,
     RecordValuesComponent,
     SubjectPickerComponent,
     SearchToolbar,
+    SectionNavComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

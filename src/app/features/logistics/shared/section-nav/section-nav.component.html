@@ -1,10 +1,4 @@
-<nav aria-label="Secciones de logística">
-  @for (s of sections(); track s.key) {
-    <a [routerLink]="base() + '/' + s.key" routerLinkActive="active">{{ s.label }}</a>
-  }
-  <a routerLink="/logistica/manifiestos">Manifiestos</a>
-  @if (session.can('LOGISTICS_READ')) {
-    <a routerLink="/logistica/vehiculos">Vehículos</a
-    ><a routerLink="/logistica/choferes">Choferes</a>
-  }
-</nav>
+<tc-page-nav [items]="moduleItems()" ariaLabel="Navegación de logística" />
+@if (sectionItems().length > 0) {
+  <tc-page-nav [items]="sectionItems()" ariaLabel="Secciones del expediente logístico" />
+}

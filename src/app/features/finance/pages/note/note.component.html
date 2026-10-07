@@ -1,25 +1,14 @@
 <tc-page-heading
   [title]="title"
   section="ADMINISTRACIÓN FINANCIERA"
-  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
-/>
-<nav class="actions" aria-label="Finanzas">
-  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
-  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
-  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
-  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
-  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
-  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
-  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
-</nav>
-<tc-finance-pending-requests />
-@if (sections.length) {
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos.">
   <tc-finance-section-nav
     [base]="navBase"
     [sections]="sections"
     [currency]="mode === 'party' ? currency : ''"
   />
-}
+</tc-page-heading>
+<tc-finance-pending-requests />
 @if (error()) {
   <tc-feedback [message]="error()" />
 }

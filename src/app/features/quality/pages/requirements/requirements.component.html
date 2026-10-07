@@ -1,106 +1,121 @@
-<tc-page-heading
-  section="Calidad y mantenimiento"
-  title="Requisitos de ficha"
-  description=""
-/>
-<tc-quality-nav />
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+<tc-list-container tableLabel="Requisitos de ficha">
+  <tc-page-heading
+    listHeader
+    section="Calidad y mantenimiento"
+    title="Requisitos de ficha"
+    description=""
+  >
+    <tc-quality-nav />
+  </tc-page-heading>
 
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-@if (conflict()) {
-  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
-}
-<tc-quality-pending />
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+    @if (conflict()) {
+      <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+    }
+    <tc-quality-pending />
+  </ng-container>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  [showFilters]="false"
-  label="Filtro de requisitos por ficha"
-  [busy]="busy()"
->
-  <div toolbarEntity class="toolbar-entity-picker">
-    <tc-quality-option [control]="sheet" title="Ficha aprobada" kind="SHEET" />
-    <button
-      type="button"
-      [disabled]="busy()"
-      class="btn secondary"
-      (click)="filter({ sheetUuid: sheet.value })"
-    >
-      Consultar ficha
-    </button>
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    [showFilters]="false"
+    label="Filtro de requisitos por ficha"
+    [busy]="busy()"
+  >
+    <div toolbarEntity class="toolbar-entity-picker">
+      <tc-quality-option [control]="sheet" title="Ficha aprobada" kind="SHEET" />
+      <button
+        type="button"
+        [disabled]="busy()"
+        class="btn secondary"
+        (click)="filter({ sheetUuid: sheet.value })"
+      >
+        Consultar ficha
+      </button>
+    </div>
+
+    @if (access.global('QUALITY_MANAGE')) {
+      <button toolbarAction [disabled]="busy()" class="btn primary" (click)="create()">
+        Nuevo requisito
+      </button>
+    }
+  </tc-search-toolbar>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Ficha / norma</th>
+          <th>Requisitos</th>
+          <th>Revisión</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
+          <tr>
+            <td class="mono">{{ row.sheetUuid }}<br />{{ row.standardUuid }}</td>
+            <td>
+              {{ row.scope }}
+              <p>{{ row.requirements }}</p>
+              <small
+                >MTR: {{ row.requireMtr ? 'Exigido' : 'No exigido' }} · Certificación:
+                {{ row.requireCertification ? 'Exigida' : 'No exigida' }}</small
+              >
+            </td>
+            <td>{{ row.revokedAt ? 'Revocado' : row.approvedAt ? 'Aprobado' : 'Pendiente' }}</td>
+            <td>
+              @if (access.global('QUALITY_APPROVE')) {
+                @if (!row.approvedAt && !row.revokedAt) {
+                  <button
+                    [disabled]="busy()"
+                    class="btn secondary"
+                    (click)="transition('/requirements/' + row.uuid + '/approve', row.version)"
+                  >
+                    Aprobar
+                  </button>
+                }
+              }
+              @if (access.global('QUALITY_MANAGE')) {
+                @if (!row.revokedAt) {
+                  <button
+                    [disabled]="busy()"
+                    class="btn secondary"
+                    (click)="transition('/requirements/' + row.uuid + '/revoke', row.version)"
+                  >
+                    Revocar
+                  </button>
+                }
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty">Selecciona una ficha para consultar requisitos.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </div>
 
-  @if (access.global('QUALITY_MANAGE')) {
-    <button toolbarAction [disabled]="busy()" class="btn primary" (click)="create()">
-      Nuevo requisito
-    </button>
-  }
-</tc-search-toolbar>
-
-<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
-  <table>
-    <thead>
-      <tr>
-        <th>Ficha / norma</th>
-        <th>Requisitos</th>
-        <th>Revisión</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.uuid) {
-        <tr>
-          <td class="mono">{{ row.sheetUuid }}<br />{{ row.standardUuid }}</td>
-          <td>
-            {{ row.scope }}
-            <p>{{ row.requirements }}</p>
-            <small
-              >MTR: {{ row.requireMtr ? 'Exigido' : 'No exigido' }} · Certificación:
-              {{ row.requireCertification ? 'Exigida' : 'No exigida' }}</small
-            >
-          </td>
-          <td>{{ row.revokedAt ? 'Revocado' : row.approvedAt ? 'Aprobado' : 'Pendiente' }}</td>
-          <td>
-            @if (access.global('QUALITY_APPROVE')) {
-              @if (!row.approvedAt && !row.revokedAt) {
-                <button
-                  [disabled]="busy()"
-                  class="btn secondary"
-                  (click)="transition('/requirements/' + row.uuid + '/approve', row.version)"
-                >
-                  Aprobar
-                </button>
-              }
-            }
-            @if (access.global('QUALITY_MANAGE')) {
-              @if (!row.revokedAt) {
-                <button
-                  [disabled]="busy()"
-                  class="btn secondary"
-                  (click)="transition('/requirements/' + row.uuid + '/revoke', row.version)"
-                >
-                  Revocar
-                </button>
-              }
-            }
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="4" class="empty">Selecciona una ficha para consultar requisitos.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>

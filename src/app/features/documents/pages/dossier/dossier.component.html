@@ -2,16 +2,14 @@
   [title]="summary()?.document?.title ?? 'Documento'"
   section="EXPEDIENTE DOCUMENTAL"
   description="Documento lógico, número de archivo y versiones de concurrencia se mantienen separados."
-/>
-<nav class="actions">
-  <a class="btn secondary" routerLink="/documentos">Biblioteca</a>
-  @for (s of ['resumen', 'versiones', 'vinculos']; track s) {
-    <a class="btn secondary" [routerLink]="['/documentos', id, s]">{{
-      s === 'resumen' ? 'Resumen' : s === 'versiones' ? 'Versiones' : 'Vínculos'
-    }}</a>
-  }
-  <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
-</nav>
+>
+  <button actions class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+  <tc-page-nav
+    nav
+    ariaLabel="Secciones del expediente documental"
+    [items]="navItems()"
+  />
+</tc-page-heading>
 @if (error()) {
   <tc-feedback [message]="error()" />
 }

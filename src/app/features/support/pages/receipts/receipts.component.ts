@@ -1,5 +1,4 @@
 import { Component, inject, signal, computed, TemplateRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
 import { ReadPage } from '../../../../shared/ui/read-page';
@@ -7,6 +6,7 @@ import {
   PageHeading,
   Feedback,
   Pagination,
+  ListContainer,
   SearchToolbar,
   FilterSection,
   openFilterDrawer,
@@ -19,18 +19,20 @@ import { RecordValuesComponent } from '../../../../shared/ui/record-values/recor
 import { Page } from '../../../../core/http/workspace-api';
 import { QueryAccess } from '../../../queries/access';
 import { validateFilters } from '../../../queries/filters';
+import { SectionNavComponent } from '../../components/section-nav/section-nav.component';
 
 @Component({
   selector: 'tc-support-receipts',
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     PageHeading,
     Feedback,
     Pagination,
+    ListContainer,
     RecordValuesComponent,
     SearchToolbar,
     FilterSection,
+    SectionNavComponent,
   ],
   templateUrl: './receipts.component.html',
   styleUrl: './receipts.component.scss',

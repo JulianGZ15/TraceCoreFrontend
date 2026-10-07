@@ -1,44 +1,54 @@
-<tc-page-heading
-  [description]="'Zona de presentación: ' + zone"
-  section="Logística y despacho"
-  [title]="title"
-/>
-<tc-logistics-section-nav
-  [base]="navBase"
-  [sections]="mode === 'manifest' ? sections : []"
-/>
-<tc-logistics-pending-requests />
-<tc-feedback [message]="error()" />
-
-<tc-search-toolbar
-  [showSearch]="false"
-  label="Filtros de vehículos"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <div toolbarEntity class="toolbar-lookup">
-    <tc-logistics-lookup
-      title="Transportista"
-      resource="party-options"
-      [yard]="yard"
-      [value]="filters['carrierUuid']"
-      (selectedChange)="onCarrierChanged($event)"
+<tc-list-container tableLabel="Vehículos y remolques">
+  <tc-page-heading
+    listHeader
+    [description]="'Zona de presentación: ' + zone"
+    section="Logística y despacho"
+    [title]="title"
+  >
+    <tc-logistics-section-nav
+      [base]="navBase"
+      [sections]="mode === 'manifest' ? sections : []"
     />
-  </div>
+  </tc-page-heading>
 
-  @if (session.can('LOGISTICS_MANAGE')) {
-    <button toolbarAction class="btn primary" [disabled]="loading()" (click)="add()">
-      Nuevo vehículo
+  <ng-container listFeedback>
+    <tc-logistics-pending-requests />
+    <tc-feedback [message]="error()" />
+    @if (loading()) {
+      <p role="status">Cargando…</p>
+    }
+  </ng-container>
+
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    label="Filtros de vehículos"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <div toolbarEntity class="toolbar-lookup">
+      <tc-logistics-lookup
+        title="Transportista"
+        resource="party-options"
+        [yard]="yard"
+        [value]="filters['carrierUuid']"
+        (selectedChange)="onCarrierChanged($event)"
+      />
+    </div>
+
+    @if (session.can('LOGISTICS_MANAGE')) {
+      <button toolbarAction class="btn primary" [disabled]="loading()" (click)="add()">
+        Nuevo vehículo
+      </button>
+    }
+    <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+      Recargar
     </button>
-  }
-  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
-    Recargar
-  </button>
-</tc-search-toolbar>
+  </tc-search-toolbar>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -56,23 +66,22 @@
   </form>
 </ng-template>
 
-@if (loading()) {
-  <p role="status">Cargando…</p>
-}
-
-<tc-logistics-records
-  [zone]="zone"
-  [rows]="rows()"
-  [columns]="columns"
-  (selected)="open($event)"
-/>
-<tc-pagination
-  [offset]="offset"
-  [limit]="limit"
-  [count]="rows().length"
-  [busy]="loading()"
-  (move)="move($event)"
-/>
+  <tc-logistics-records
+    listTable
+    [zone]="zone"
+    [rows]="rows()"
+    [columns]="columns"
+    (selected)="open($event)"
+  />
+  <tc-pagination
+    listPagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [busy]="loading()"
+    (move)="move($event)"
+  />
+</tc-list-container>
 @if (selected(); as r) {
   <a class="btn secondary" [routerLink]="['/logistica/vehiculos', r.uuid]">Abrir ficha</a>
 }

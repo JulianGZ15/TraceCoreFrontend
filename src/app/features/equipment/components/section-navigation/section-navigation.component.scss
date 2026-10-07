@@ -1,1 +1,4 @@
-:host{display:block;min-width:0} .panel+.panel{margin-top:24px} .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end} .toolbar>div{flex:1;min-width:180px} .row-actions{display:flex;flex-wrap:wrap;gap:8px} .mono{overflow-wrap:anywhere} small{display:block} .section-links{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px} .section-links a{padding:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface)} .section-links a.active{background:var(--gold-tint);color:var(--on-gold);border-color:var(--gold)}
+:host {
+  display: block;
+  min-width: 0;
+}

@@ -1,7 +1,9 @@
-<tc-page-heading section="Centro comercial" [title]="title" /><tc-commerce-section-nav
-  [base]="navBase"
-  [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+<tc-page-heading section="Centro comercial" [title]="title">
+  <tc-commerce-section-nav
+    [base]="navBase"
+    [sections]="sections"
+  />
+</tc-page-heading><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
 <p>
   Este documento registra piezas que ya llegaron físicamente. No mueve inventario, cambia propiedad
   ni libera calidad. Cada recepción puede cubrir una partida de compra; repite para otras partidas.

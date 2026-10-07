@@ -1,8 +1,1 @@
-<nav class="inventory-tabs" aria-label="Secciones de inventario">
-  @for (l of links; track l[0]) {
-    <a [routerLink]="'/inventario/' + l[0]" routerLinkActive="active">{{ l[1] }}</a>
-  }
-  @if (access.global('INVENTORY_READ')) {
-    <a routerLink="/inventario/sitios" routerLinkActive="active">Sitios externos</a>
-  }
-</nav>
+<tc-page-nav [items]="items()" ariaLabel="Secciones de inventario" />

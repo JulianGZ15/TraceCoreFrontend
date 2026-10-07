@@ -2,7 +2,11 @@
   section="Calidad y mantenimiento"
   title="Inspección"
   description=""
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
+>
+  <tc-quality-nav />
+</tc-page-heading>
+<tc-feedback [message]="error()" />
+<tc-feedback
   [message]="success()"
   kind="success"
 />

@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { CommercePage } from '../../page';
 import {
   PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -26,6 +27,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RecordsComponent,

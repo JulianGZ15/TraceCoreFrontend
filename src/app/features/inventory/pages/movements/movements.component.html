@@ -1,34 +1,90 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Movimientos de inventario"
-/>
-<tc-inventory-inventory-nav />
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+<tc-list-container tableLabel="Movimientos de inventario">
+  <tc-page-heading
+    listHeader
+    section="Inventario y patios"
+    title="Movimientos de inventario"
+  >
+    <tc-inventory-inventory-nav />
+  </tc-page-heading>
 
-<tc-search-toolbar
-  [showSearch]="false"
-  label="Filtros de movimientos"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+  </ng-container>
 
-  @if (access.any('MOVEMENT_MANAGE') || access.any('INVENTORY_ADJUST')) {
-    <a
-      toolbarAction
-      class="btn primary"
-      routerLink="/inventario/movimientos/nuevo"
-      [queryParams]="{ yardUuid: yard() }"
-    >
-      Preparar movimiento
-    </a>
-  }
-</tc-search-toolbar>
+  <tc-search-toolbar
+    listToolbar
+    [showSearch]="false"
+    label="Filtros de movimientos"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
+
+    @if (access.any('MOVEMENT_MANAGE') || access.any('INVENTORY_ADJUST')) {
+      <a
+        toolbarAction
+        class="btn primary"
+        routerLink="/inventario/movimientos/nuevo"
+        [queryParams]="{ yardUuid: yard() }"
+      >
+        Preparar movimiento
+      </a>
+    }
+  </tc-search-toolbar>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Folio / tipo</th>
+          <th>Estado</th>
+          <th>Origen / destino</th>
+          <th>Fecha</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td>{{ r.folio }}<br />{{ label(r.type) }}</td>
+            <td>{{ label(r.state) }}</td>
+            <td class="long">
+              {{ r.sourceYardUuid ?? r.sourceSiteUuid ?? 'Sin ubicación' }} →
+              {{ r.destinationYardUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
+            </td>
+            <td>{{ date(r.createdOn) }}</td>
+            <td><a [routerLink]="'/inventario/movimientos/' + r.uuid">Abrir</a></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">Sin movimientos en esta página.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="query({ limit: $event, offset: 0 })"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -78,48 +134,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-<div
-  class="table-scroll"
-  tabindex="0"
-  role="region"
-  aria-label="Tabla con desplazamiento horizontal"
->
-  <table>
-    <thead>
-      <tr>
-        <th>Folio / tipo</th>
-        <th>Estado</th>
-        <th>Origen / destino</th>
-        <th>Fecha</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.uuid) {
-        <tr>
-          <td>{{ r.folio }}<br />{{ label(r.type) }}</td>
-          <td>{{ label(r.state) }}</td>
-          <td class="long">
-            {{ r.sourceYardUuid ?? r.sourceSiteUuid ?? 'Sin ubicación' }} →
-            {{ r.destinationYardUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
-          </td>
-          <td>{{ date(r.createdOn) }}</td>
-          <td><a [routerLink]="'/inventario/movimientos/' + r.uuid">Abrir</a></td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="5">Sin movimientos en esta página.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="query({ limit: $event, offset: 0 })"
-/>

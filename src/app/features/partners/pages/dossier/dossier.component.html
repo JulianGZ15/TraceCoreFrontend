@@ -3,9 +3,10 @@
   <button class="btn secondary" (click)="load()">Reintentar consulta</button>
 }
 @if (ready() && store.party(); as party) {
-  <tc-party-header [party]="party" [roles]="store.roles()" /><tc-party-sections
-    [uuid]="party.uuid"
-  /><router-outlet />
+  <tc-party-header [party]="party" [roles]="store.roles()">
+    <tc-party-sections [uuid]="party.uuid" />
+  </tc-party-header>
+  <router-outlet />
 } @else {
   @if (!error()) {
     <p role="status">Cargando expediente…</p>

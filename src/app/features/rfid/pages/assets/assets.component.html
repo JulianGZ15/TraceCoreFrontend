@@ -1,40 +1,90 @@
-<tc-page-heading
-  section="RFID e integración"
-  title="Equipos RFID"
-  description="Identidad física y vínculos; las lecturas no certifican ni mueven equipos."
-/>
+<tc-list-container tableLabel="Equipos RFID">
+  <tc-page-heading
+    listHeader
+    section="RFID e integración"
+    title="Equipos RFID"
+    description="Identidad física y vínculos; las lecturas no certifican ni mueven equipos."
+  >
+    <tc-rfid-nav />
+  </tc-page-heading>
 
-<tc-rfid-nav />
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
 
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Consultando…</p>
+    }
 
-@if (busy()) {
-  <p role="status">Consultando…</p>
-}
+    <tc-rfid-pending />
+  </ng-container>
 
-<tc-rfid-pending />
+  <tc-search-toolbar
+    listToolbar
+    placeholder="Buscar por código interno o serial…"
+    [value]="search()"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <label toolbarContext class="field">
+      <span>Patio</span>
+      <select [ngModel]="yard()" (ngModelChange)="filter({ yardUuid: $event })">
+        <option value="">Todos los patios autorizados</option>
+        @for (y of session.context()?.yards ?? []; track y.uuid) {
+          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+        }
+      </select>
+    </label>
+  </tc-search-toolbar>
 
-<tc-search-toolbar
-  placeholder="Buscar por código interno o serial…"
-  [value]="search()"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <label toolbarContext class="field">
-    <span>Patio</span>
-    <select [ngModel]="yard()" (ngModelChange)="filter({ yardUuid: $event })">
-      <option value="">Todos los patios autorizados</option>
-      @for (y of session.context()?.yards ?? []; track y.uuid) {
-        <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
-      }
-    </select>
-  </label>
-</tc-search-toolbar>
+  <div listTable class="table-wrap" tabindex="0" aria-label="Equipos RFID">
+    <table>
+      <thead>
+        <tr>
+          <th>Equipo</th>
+          <th>Serial</th>
+          <th>Ciclo de vida</th>
+          <th>Chip vigente</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.identity.uuid) {
+          <tr>
+            <td>
+              {{ r.identity.internalCode }}
+              <div class="mono">{{ r.identity.uuid }}</div>
+            </td>
+            <td>{{ r.identity.serialNumber ?? 'Sin serial' }}</td>
+            <td>{{ label(r.identity.lifecycle) }}</td>
+            <td class="mono">{{ r.binding?.tagUuid ?? 'Sin vínculo' }}</td>
+            <td>
+              <a class="btn" [routerLink]="['/rfid/equipos', r.identity.uuid]">Expediente</a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty">Sin equipos para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm" class="flex flex-col gap-5">
@@ -68,46 +118,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-<div class="panel table-wrap" tabindex="0" aria-label="Equipos RFID">
-  <table>
-    <thead>
-      <tr>
-        <th>Equipo</th>
-        <th>Serial</th>
-        <th>Ciclo de vida</th>
-        <th>Chip vigente</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.identity.uuid) {
-        <tr>
-          <td>
-            {{ r.identity.internalCode }}
-            <div class="mono">{{ r.identity.uuid }}</div>
-          </td>
-          <td>{{ r.identity.serialNumber ?? 'Sin serial' }}</td>
-          <td>{{ label(r.identity.lifecycle) }}</td>
-          <td class="mono">{{ r.binding?.tagUuid ?? 'Sin vínculo' }}</td>
-          <td>
-            <a class="btn" [routerLink]="['/rfid/equipos', r.identity.uuid]">Expediente</a>
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="5" class="empty">Sin equipos para esta consulta.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>

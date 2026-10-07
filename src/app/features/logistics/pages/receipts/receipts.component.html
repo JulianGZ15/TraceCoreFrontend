@@ -2,10 +2,13 @@
   [description]="'Zona de presentación: ' + zone"
   section="Logística y despacho"
   [title]="title"
-/><tc-logistics-section-nav
-  [base]="navBase"
-  [sections]="mode === 'manifest' ? sections : []"
-/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+>
+  <tc-logistics-section-nav
+    [base]="navBase"
+    [sections]="mode === 'manifest' ? sections : []"
+  />
+</tc-page-heading>
+<tc-logistics-pending-requests /><tc-feedback [message]="error()" />
 @if (loading()) {
   <p role="status">Cargando…</p>
 }

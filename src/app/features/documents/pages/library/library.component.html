@@ -1,28 +1,110 @@
-<tc-page-heading
-  title="Biblioteca documental"
-  section="DOCUMENTOS"
-  description="Versiones, decisiones y vínculos autorizados. La clasificación no modifica los permisos de las evidencias originales."
-/>
+<tc-list-container tableLabel="Biblioteca documental">
+  <tc-page-heading
+    listHeader
+    title="Biblioteca documental"
+    section="DOCUMENTOS"
+    description="Versiones, decisiones y vínculos autorizados. La clasificación no modifica los permisos de las evidencias originales."
+  />
 
-<tc-search-toolbar
-  label="Buscar documentos"
-  placeholder="Buscar por título del documento…"
-  [value]="form.controls.search.value"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  @if (session.can('DOCUMENT_MANAGE')) {
-    <button toolbarAction class="btn primary" (click)="create()">Nuevo documento</button>
-  }
-  <button toolbarAction class="btn secondary" (click)="load()" [disabled]="loading()">
-    Actualizar
-  </button>
-</tc-search-toolbar>
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar documentos"
+    placeholder="Buscar por título del documento…"
+    [value]="form.controls.search.value"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    @if (session.can('DOCUMENT_MANAGE')) {
+      <button toolbarAction class="btn primary" (click)="create()">Nuevo documento</button>
+    }
+    <button toolbarAction class="btn secondary" (click)="load()" [disabled]="loading()">
+      Actualizar
+    </button>
+  </tc-search-toolbar>
+
+  <ng-container listFeedback>
+    @if (error()) {
+      <tc-feedback [message]="error()" />
+    }
+    @if (notice()) {
+      <tc-feedback [message]="notice()" kind="success" />
+    }
+    @if (pending.own().length) {
+      <section class="panel">
+        <h2>Solicitudes pendientes de conciliación</h2>
+        <p>Consulta antes de repetir. Los archivos no se guardan en el navegador.</p>
+        @for (p of pending.own(); track p.key) {
+          <div class="actions">
+            <span>{{ p.operation }} · {{ p.key }}</span>
+            <button class="btn secondary" (click)="recover(p)">Consultar resultado</button>
+            <button class="btn secondary" (click)="repeat(p)">
+              {{
+                p.operation === 'UPLOAD' ? 'Seleccionar archivo original' : 'Repetir misma solicitud'
+              }}
+            </button>
+          </div>
+        }
+      </section>
+    }
+    @if (loading()) {
+      <p role="status">Consultando biblioteca…</p>
+    }
+  </ng-container>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de registros; desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Propietario</th>
+          <th>Clasificación</th>
+          <th>Estado</th>
+          <th>Expediente</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.document.uuid) {
+          <tr>
+            <td>
+              {{ row.document.title }}<small>{{ row.document.uuid }}</small>
+            </td>
+            <td>{{ row.ownerLabel }}</td>
+            <td>
+              {{ row.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }}
+            </td>
+            <td>{{ row.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}</td>
+            <td><a [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (!loading() && !error() && !rows().length) {
+      <p>Sin documentos autorizados para estos filtros.</p>
+    }
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="loading()"
+    (move)="move($event)"
+    (resize)="resize($event)"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm" class="flex flex-col gap-5">
@@ -125,77 +207,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-@if (error()) {
-  <tc-feedback [message]="error()" />
-}
-@if (notice()) {
-  <tc-feedback [message]="notice()" kind="success" />
-}
-@if (pending.own().length) {
-  <section class="panel">
-    <h2>Solicitudes pendientes de conciliación</h2>
-    <p>Consulta antes de repetir. Los archivos no se guardan en el navegador.</p>
-    @for (p of pending.own(); track p.key) {
-      <div class="actions">
-        <span>{{ p.operation }} · {{ p.key }}</span>
-        <button class="btn secondary" (click)="recover(p)">Consultar resultado</button>
-        <button class="btn secondary" (click)="repeat(p)">
-          {{
-            p.operation === 'UPLOAD' ? 'Seleccionar archivo original' : 'Repetir misma solicitud'
-          }}
-        </button>
-      </div>
-    }
-  </section>
-}
-@if (loading()) {
-  <p role="status">Consultando biblioteca…</p>
-}
-<section class="panel table-panel">
-  <div
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
-    <table>
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Propietario</th>
-          <th>Clasificación</th>
-          <th>Estado</th>
-          <th>Expediente</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.document.uuid) {
-          <tr>
-            <td>
-              {{ row.document.title }}<small>{{ row.document.uuid }}</small>
-            </td>
-            <td>{{ row.ownerLabel }}</td>
-            <td>
-              {{ row.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }}
-            </td>
-            <td>{{ row.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}</td>
-            <td><a [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  @if (!loading() && !error() && !rows().length) {
-    <p>Sin documentos autorizados para estos filtros.</p>
-  }
-  <tc-pagination
-    [offset]="offset"
-    [limit]="limit"
-    [count]="rows().length"
-    [hasMore]="hasMore()"
-    [busy]="loading()"
-    (move)="move($event)"
-    (resize)="resize($event)"
-  />
-</section>

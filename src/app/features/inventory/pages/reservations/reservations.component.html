@@ -1,57 +1,69 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Reservas de conjuntos"
-/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
-/>
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-<div class="toolbar">
-  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
-  @if (access.can('RESERVATION_MANAGE', yard())) {
-    <button class="btn primary" (click)="create()">Reservar conjunto</button>
-  }
-</div>
-<div
-  class="table-scroll"
-  tabindex="0"
-  role="region"
-  aria-label="Tabla con desplazamiento horizontal"
->
-  <table>
-    <thead>
-      <tr>
-        <th>Raíz</th>
-        <th>Estado</th>
-        <th>Inicio / fin exclusivo</th>
-        <th>Expiración del apartado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of rows(); track r.uuid) {
+<tc-list-container tableLabel="Reservas de conjuntos">
+  <tc-page-heading
+    listHeader
+    section="Inventario y patios"
+    title="Reservas de conjuntos"
+  >
+    <tc-inventory-inventory-nav />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+  </ng-container>
+
+  <div listToolbar class="toolbar">
+    <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
+    @if (access.can('RESERVATION_MANAGE', yard())) {
+      <button class="btn primary" (click)="create()">Reservar conjunto</button>
+    }
+  </div>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
         <tr>
-          <td class="mono long">{{ r.rootAssetUuid }}</td>
-          <td>{{ label(r.state) }}</td>
-          <td>{{ date(r.validFrom) }}<br />{{ date(r.validTo) }}</td>
-          <td>{{ date(r.expiresAt) }}</td>
-          <td><a [routerLink]="'/inventario/reservas/' + r.uuid">Ver grupo</a></td>
+          <th>Raíz</th>
+          <th>Estado</th>
+          <th>Inicio / fin exclusivo</th>
+          <th>Expiración del apartado</th>
+          <th>Acción</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="5">Sin reservas en esta página.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="query({ limit: $event, offset: 0 })"
-/>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.uuid) {
+          <tr>
+            <td class="mono long">{{ r.rootAssetUuid }}</td>
+            <td>{{ label(r.state) }}</td>
+            <td>{{ date(r.validFrom) }}<br />{{ date(r.validTo) }}</td>
+            <td>{{ date(r.expiresAt) }}</td>
+            <td><a [routerLink]="'/inventario/reservas/' + r.uuid">Ver grupo</a></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">Sin reservas en esta página.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="query({ limit: $event, offset: 0 })"
+  />
+</tc-list-container>

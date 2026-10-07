@@ -1,6 +1,6 @@
 .search-toolbar {
-  padding: 16px 20px;
-  margin-bottom: 20px;
+  padding: 12px;
+  margin-bottom: 14px;
   background: var(--tc-panel);
   border: 1px solid var(--tc-border);
   border-radius: var(--tc-radius-panel, 8px);
@@ -131,8 +131,8 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 14px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid var(--tc-border);
 }
 

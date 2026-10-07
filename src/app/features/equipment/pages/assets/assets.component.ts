@@ -12,6 +12,8 @@ import {
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -30,6 +32,8 @@ import { LookupComponent } from '../../components/lookup/lookup.component';
 @Component({
   selector: 'tc-equipment-assets',
   imports: [
+    PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RouterLink,

@@ -1,78 +1,95 @@
-<tc-page-heading
-  section="Calidad y mantenimiento"
-  title="Biblioteca de evidencias"
-  description="Biblioteca centralizada de empresa. El SHA-256 identifica el contenido; no constituye una firma."
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
-/>
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-@if (conflict()) {
-  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
-}
-<tc-quality-pending />
-@if (access.global('QUALITY_MANAGE')) {
-  <section class="panel record">
-    <label
-      >Archivo PDF, PNG o JPEG · máximo 10 MiB<input
-        #uploadInput
-        type="file"
-        accept=".pdf,.png,.jpg,.jpeg"
-        [disabled]="busy()"
-        (change)="select($event)"
-    /></label>
-    <p>{{ file()?.name || 'Sin archivo seleccionado' }}</p>
-    <button
-      class="btn primary"
-      [disabled]="busy() || !file()"
-      (click)="upload(); uploadInput.value = ''"
-    >
-      Cargar evidencia
-    </button>
-  </section>
-}
-<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
-  <table>
-    <thead>
-      <tr>
-        <th>Archivo</th>
-        <th>Tamaño / tipo</th>
-        <th>Huella SHA-256</th>
-        <th>Carga</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.uuid) {
+<tc-list-container tableLabel="Biblioteca de evidencias">
+  <tc-page-heading
+    listHeader
+    section="Calidad y mantenimiento"
+    title="Biblioteca de evidencias"
+    description="Biblioteca centralizada de empresa. El SHA-256 identifica el contenido; no constituye una firma."
+  >
+    <tc-quality-nav />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+    @if (conflict()) {
+      <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+    }
+    <tc-quality-pending />
+  </ng-container>
+
+  @if (access.global('QUALITY_MANAGE')) {
+    <section listToolbar class="panel record">
+      <label
+        >Archivo PDF, PNG o JPEG · máximo 10 MiB<input
+          #uploadInput
+          type="file"
+          accept=".pdf,.png,.jpg,.jpeg"
+          [disabled]="busy()"
+          (change)="select($event)"
+      /></label>
+      <p>{{ file()?.name || 'Sin archivo seleccionado' }}</p>
+      <button
+        class="btn primary"
+        [disabled]="busy() || !file()"
+        (click)="upload(); uploadInput.value = ''"
+      >
+        Cargar evidencia
+      </button>
+    </section>
+  }
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
         <tr>
-          <td>
-            {{ row.fileName }}
-            <p class="mono">{{ row.uuid }}</p>
-          </td>
-          <td>{{ row.size }} bytes<br />{{ row.mediaType }}</td>
-          <td class="mono">{{ row.sha256 }}</td>
-          <td>{{ date(row.uploadedAt) }}</td>
-          <td>
-            <button class="btn secondary" [disabled]="busy()" (click)="download(row)">
-              Descargar
-            </button>
-          </td>
+          <th>Archivo</th>
+          <th>Tamaño / tipo</th>
+          <th>Huella SHA-256</th>
+          <th>Carga</th>
+          <th>Acción</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="5" class="empty">Sin registros para esta consulta.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
+          <tr>
+            <td>
+              {{ row.fileName }}
+              <p class="mono">{{ row.uuid }}</p>
+            </td>
+            <td>{{ row.size }} bytes<br />{{ row.mediaType }}</td>
+            <td class="mono">{{ row.sha256 }}</td>
+            <td>{{ date(row.uploadedAt) }}</td>
+            <td>
+              <button class="btn secondary" [disabled]="busy()" (click)="download(row)">
+                Descargar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty">Sin registros para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>

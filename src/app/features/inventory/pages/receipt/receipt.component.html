@@ -1,7 +1,11 @@
 <tc-page-heading
   section="Inventario y patios"
   title="Recepción del movimiento completo"
-/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
+>
+  <tc-inventory-inventory-nav />
+</tc-page-heading>
+<tc-feedback [message]="error()" />
+<tc-feedback
   [message]="success()"
   kind="success"
 />

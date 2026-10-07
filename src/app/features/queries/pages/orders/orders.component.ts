@@ -7,6 +7,7 @@ import {
   PageHeading,
   Feedback,
   Pagination,
+  ListContainer,
   SearchToolbar,
   FilterSection,
   openFilterDrawer,
@@ -21,6 +22,7 @@ import { QueryAccess } from '../../access';
 import { CsvDownload } from '../../csv';
 import { validateFilters } from '../../filters';
 import { FilterPickerComponent } from '../../shared/filter-picker/filter-picker.component';
+import { SectionNavComponent } from '../../components/section-nav/section-nav.component';
 
 @Component({
   selector: 'tc-query-orders',
@@ -30,10 +32,12 @@ import { FilterPickerComponent } from '../../shared/filter-picker/filter-picker.
     PageHeading,
     Feedback,
     Pagination,
+    ListContainer,
     RecordValuesComponent,
     FilterPickerComponent,
     SearchToolbar,
     FilterSection,
+    SectionNavComponent,
   ],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss',

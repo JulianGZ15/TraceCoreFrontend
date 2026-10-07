@@ -1,0 +1,21 @@
+<nav class="page-nav" [attr.aria-label]="ariaLabel()" #navContainer>
+  @for (item of items(); track trackItem($index, item)) {
+    @if (item.visible !== false) {
+      <a
+        [routerLink]="item.route"
+        [queryParams]="item.queryParams ?? null"
+        [queryParamsHandling]="item.queryParamsHandling || ''"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        ariaCurrentWhenActive="page"
+        [attr.aria-label]="item.ariaLabel ?? null"
+        class="nav-tab"
+      >
+        <span class="tab-label">{{ item.label }}</span>
+        @if (item.badge !== undefined && item.badge !== null && item.badge !== '') {
+          <span class="tab-badge">{{ item.badge }}</span>
+        }
+      </a>
+    }
+  }
+</nav>

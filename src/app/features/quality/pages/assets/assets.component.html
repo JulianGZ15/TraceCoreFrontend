@@ -1,50 +1,110 @@
-<tc-page-heading
-  section="Calidad y mantenimiento"
-  title="Equipos · calidad"
-  description="Condición declarada, controles técnicos y liberaciones se consultan por separado."
-/>
-<tc-quality-nav />
-<tc-feedback [message]="error()" />
-<tc-feedback [message]="success()" kind="success" />
+<tc-list-container tableLabel="Equipos · calidad">
+  <tc-page-heading
+    listHeader
+    section="Calidad y mantenimiento"
+    title="Equipos · calidad"
+    description="Condición declarada, controles técnicos y liberaciones se consultan por separado."
+  >
+    <tc-quality-nav />
+  </tc-page-heading>
 
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-@if (conflict()) {
-  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
-}
-<tc-quality-pending />
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+    @if (conflict()) {
+      <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+    }
+    <tc-quality-pending />
+  </ng-container>
 
-<tc-search-toolbar
-  label="Buscar equipos por código o serial"
-  placeholder="Código o número de serial…"
-  [value]="search"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="busy()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  <div toolbarContext class="field toolbar-yard">
-    <label for="quality-yard" class="sr-only">Patio</label>
-    <select
-      id="quality-yard"
-      [ngModel]="yard()"
-      (ngModelChange)="filter({ yardUuid: $event || null, offset: '0' })"
-    >
-      @if (access.global('QUALITY_READ')) {
-        <option value="">Todos los alcances autorizados</option>
-      }
-      @for (y of session.context()?.yards; track y.uuid) {
-        @if (access.can('QUALITY_READ', y.uuid)) {
-          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+  <tc-search-toolbar
+    listToolbar
+    label="Buscar equipos por código o serial"
+    placeholder="Código o número de serial…"
+    [value]="search"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="busy()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    <div toolbarContext class="field toolbar-yard">
+      <label for="quality-yard" class="sr-only">Patio</label>
+      <select
+        id="quality-yard"
+        [ngModel]="yard()"
+        (ngModelChange)="filter({ yardUuid: $event || null, offset: '0' })"
+      >
+        @if (access.global('QUALITY_READ')) {
+          <option value="">Todos los alcances autorizados</option>
         }
-      }
-    </select>
+        @for (y of session.context()?.yards; track y.uuid) {
+          @if (access.can('QUALITY_READ', y.uuid)) {
+            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+          }
+        }
+      </select>
+    </div>
+  </tc-search-toolbar>
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Identidad</th>
+          <th>Ficha</th>
+          <th>Condición declarada</th>
+          <th>Ciclo de vida</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
+          <tr>
+            <td>
+              <strong>{{ row.internalCode }}</strong>
+              <p>{{ row.serialNumber || 'Sin serial' }}</p>
+              <span class="mono">{{ row.uuid }}</span>
+            </td>
+            <td>{{ row.modelCode }} · {{ row.sheetRevision }}</td>
+            <td>{{ label(row.condition) }}</td>
+            <td>{{ label(row.lifecycle) }}</td>
+            <td>
+              <a class="btn secondary" [routerLink]="['/calidad/equipos', row.uuid, 'resumen']">
+                Abrir expediente
+              </a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty">Sin registros para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </div>
-</tc-search-toolbar>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm">
@@ -78,48 +138,3 @@
     </tc-filter-section>
   </form>
 </ng-template>
-
-<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
-  <table>
-    <thead>
-      <tr>
-        <th>Identidad</th>
-        <th>Ficha</th>
-        <th>Condición declarada</th>
-        <th>Ciclo de vida</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.uuid) {
-        <tr>
-          <td>
-            <strong>{{ row.internalCode }}</strong>
-            <p>{{ row.serialNumber || 'Sin serial' }}</p>
-            <span class="mono">{{ row.uuid }}</span>
-          </td>
-          <td>{{ row.modelCode }} · {{ row.sheetRevision }}</td>
-          <td>{{ label(row.condition) }}</td>
-          <td>{{ label(row.lifecycle) }}</td>
-          <td>
-            <a class="btn secondary" [routerLink]="['/calidad/equipos', row.uuid, 'resumen']">
-              Abrir expediente
-            </a>
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="5" class="empty">Sin registros para esta consulta.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>

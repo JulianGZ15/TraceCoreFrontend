@@ -3,6 +3,8 @@ import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -23,6 +25,8 @@ import { CatalogEditorComponent } from '../../editors/catalog-editor/catalog-edi
 @Component({
   selector: 'tc-equipment-models',
   imports: [
+    PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RouterLink,

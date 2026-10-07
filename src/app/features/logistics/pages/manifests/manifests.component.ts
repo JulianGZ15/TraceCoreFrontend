@@ -5,6 +5,7 @@ import { LogisticsPage } from '../../page';
 import { Entity, Row } from '../../models';
 import {
   PageHeading,
+  ListContainer,
   Feedback,
   Pagination,
   SearchToolbar,
@@ -25,6 +26,7 @@ import { PendingRequestsComponent } from '../../shared/pending-requests/pending-
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     RecordsComponent,

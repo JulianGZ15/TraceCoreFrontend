@@ -2,10 +2,13 @@
   section="Centro comercial"
   [title]="title"
   description="Documentos administrativos, cumplimiento y trazabilidad por patio."
-/><tc-commerce-section-nav
-  [base]="navBase"
-  [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
+>
+  <tc-commerce-section-nav
+    [base]="navBase"
+    [sections]="sections"
+  />
+</tc-page-heading>
+<tc-commerce-pending-requests /><tc-feedback [message]="error()" />
 <div class="toolbar">
   @if (can('CONTRACT_MANAGE')) {
     <button class="btn secondary" (click)="edit(editor)">Registrar garantía</button>

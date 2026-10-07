@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { PageHeading, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -13,6 +13,7 @@ import { RequirementComponent } from '../../editors/requirement/requirement.comp
   imports: [
     ReactiveFormsModule,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     QualityNavComponent,

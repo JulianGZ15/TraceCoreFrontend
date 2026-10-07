@@ -1,65 +1,82 @@
-<tc-page-heading
-  section="Calidad y mantenimiento"
-  title="Políticas de inspección"
-  description=""
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
-/>
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-@if (conflict()) {
-  <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
-}
-<tc-quality-pending />
-@if (access.global('QUALITY_MANAGE')) {
-  <div class="actions">
-    <a class="btn primary" routerLink="/calidad/politicas/nueva">Nueva política</a>
+<tc-list-container tableLabel="Políticas de inspección">
+  <tc-page-heading
+    listHeader
+    section="Calidad y mantenimiento"
+    title="Políticas de inspección"
+    description=""
+  >
+    <tc-quality-nav />
+  </tc-page-heading>
+
+  <ng-container listFeedback>
+    <tc-feedback [message]="error()" />
+    <tc-feedback [message]="success()" kind="success" />
+    @if (busy()) {
+      <p role="status">Cargando…</p>
+    }
+    @if (conflict()) {
+      <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
+    }
+    <tc-quality-pending />
+  </ng-container>
+
+  @if (access.global('QUALITY_MANAGE')) {
+    <div listToolbar class="actions">
+      <a class="btn primary" routerLink="/calidad/politicas/nueva">Nueva política</a>
+    </div>
+  }
+
+  <div
+    listTable
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla con desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Método / revisión</th>
+          <th>Destino</th>
+          <th>Intervalos</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
+          <tr>
+            <td>{{ row.method }} · {{ row.revision }}</td>
+            <td class="mono">{{ row.modelUuid || row.categoryUuid }}</td>
+            <td>
+              {{ row.calendarDays ?? 'Sin intervalo' }} días<br />{{
+                decimalDisplay(row.hourInterval, row.hourIntervalExact, 'Sin intervalo')
+              }}
+              horas
+            </td>
+            <td>{{ label(row.state) }}</td>
+            <td>
+              <a class="btn secondary" [routerLink]="['/calidad/politicas', row.uuid]"
+                >Abrir política</a
+              >
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty">Sin registros para esta consulta.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </div>
-}
-<div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
-  <table>
-    <thead>
-      <tr>
-        <th>Método / revisión</th>
-        <th>Destino</th>
-        <th>Intervalos</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.uuid) {
-        <tr>
-          <td>{{ row.method }} · {{ row.revision }}</td>
-          <td class="mono">{{ row.modelUuid || row.categoryUuid }}</td>
-          <td>
-            {{ row.calendarDays ?? 'Sin intervalo' }} días<br />{{
-              decimalDisplay(row.hourInterval, row.hourIntervalExact, 'Sin intervalo')
-            }}
-            horas
-          </td>
-          <td>{{ label(row.state) }}</td>
-          <td>
-            <a class="btn secondary" [routerLink]="['/calidad/politicas', row.uuid]"
-              >Abrir política</a
-            >
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="5" class="empty">Sin registros para esta consulta.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-<tc-pagination
-  [offset]="offset()"
-  [limit]="limit()"
-  [count]="rows().length"
-  [busy]="busy()"
-  (move)="page($event)"
-  (resize)="filter({ limit: $event.toString() })"
-/>
+
+  <tc-pagination
+    listPagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="page($event)"
+    (resize)="filter({ limit: $event.toString() })"
+  />
+</tc-list-container>

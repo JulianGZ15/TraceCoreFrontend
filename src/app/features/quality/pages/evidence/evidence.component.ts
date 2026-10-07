@@ -9,7 +9,7 @@ import {
   Validators,
   FormBuilder,
 } from '@angular/forms';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -20,7 +20,14 @@ import { signedValidator, optionalExact, toInstant } from '../../rules';
 import * as M from '../../models';
 @Component({
   selector: 'tc-quality-evidence',
-  imports: [PageHeading, Feedback, Pagination, QualityNavComponent, PendingRequestsComponent],
+  imports: [
+    PageHeading,
+    ListContainer,
+    Feedback,
+    Pagination,
+    QualityNavComponent,
+    PendingRequestsComponent,
+  ],
   templateUrl: './evidence.component.html',
   styleUrl: './evidence.component.scss',
 })

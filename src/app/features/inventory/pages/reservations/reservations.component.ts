@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
 import { InventoryPage } from '../../page-base';
 
 import * as M from '../../models';
@@ -15,6 +15,7 @@ import { ReservationEditorComponent } from '../../editors/reservation-editor/res
   imports: [
     RouterLink,
     PageHeading,
+    ListContainer,
     Feedback,
     Pagination,
     YardPickerComponent,
