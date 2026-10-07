@@ -9,10 +9,13 @@ test('directory filters use only supported fields, no N+1; initial creation open
   await page.goto('/terceros');
   await expect(page.getByText('Tercero de prueba', { exact: true })).toBeVisible();
   expect(state.requests.some((r) => r.path.includes(partyId))).toBe(false);
-  await page.getByLabel('Razón social o nombre comercial').fill('Comercial');
-  await page.getByLabel('Rol vigente').selectOption('SUPPLIER');
-  await page.getByLabel('Estado', { exact: true }).selectOption('true');
-  await page.getByRole('button', { name: 'Aplicar filtros' }).click();
+  await page.getByRole('searchbox', { name: 'Buscar terceros' }).fill('Comercial');
+  await page.getByRole('searchbox', { name: 'Buscar terceros' }).press('Enter');
+  await page.getByRole('button', { name: 'Filtros' }).click();
+  const filterDrawer = page.getByRole('dialog', { name: 'Filtros de terceros' });
+  await filterDrawer.getByLabel('Rol vigente').selectOption('SUPPLIER');
+  await filterDrawer.getByRole('button', { name: 'Activos', exact: true }).click();
+  await filterDrawer.getByRole('button', { name: 'Aplicar filtros' }).click();
   await expect(page).toHaveURL(/role=SUPPLIER/);
   await page.getByRole('button', { name: '+ Nuevo tercero' }).click();
   const dialog = page.getByRole('dialog');

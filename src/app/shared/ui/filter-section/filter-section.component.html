@@ -1,0 +1,9 @@
+<fieldset class="filter-section">
+  <legend class="section-title">{{ title() }}</legend>
+  @if (description()) {
+    <p class="section-description">{{ description() }}</p>
+  }
+  <div class="section-content">
+    <ng-content />
+  </div>
+</fieldset>

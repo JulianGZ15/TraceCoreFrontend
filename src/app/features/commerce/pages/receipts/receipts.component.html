@@ -2,45 +2,78 @@
   section="Centro comercial"
   [title]="title"
   description="Documentos administrativos, cumplimiento y trazabilidad por patio."
-/><tc-commerce-section-nav
+/>
+<tc-commerce-section-nav
   [base]="navBase"
   [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
-<div class="toolbar">
-  <label
-    >Patio<select #y [value]="yard" (change)="update('yardUuid', y.value)">
+/>
+<tc-commerce-pending-requests />
+<tc-feedback [message]="error()" />
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de recepciones"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="receipt-yard-select" class="sr-only">Patio</label>
+    <select id="receipt-yard-select" #y [value]="yard" (change)="update('yardUuid', y.value)">
       @for (item of yards; track item.uuid) {
         <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
       }
-    </select></label
-  >
+    </select>
+  </div>
+
   @if (can('COMMERCIAL_FULFILL')) {
-    <a routerLink="/comercial/recepciones/nueva" [queryParams]="{ yardUuid: yard }"
-      >Nueva recepción</a
+    <a
+      toolbarAction
+      class="btn primary"
+      routerLink="/comercial/recepciones/nueva"
+      [queryParams]="{ yardUuid: yard }"
     >
+      Nueva recepción
+    </a>
   }
-  <div class="directory-filter">
-    <tc-commerce-lookup
-      resource="party-options"
-      [yard]="yard"
-      [params]="{ purpose: 'ORIGIN' }"
-      title="Origen"
-      [value]="filters['originPartyUuid'] ?? ''"
-      (selectedChange)="update('originPartyUuid', $event)"
-    />
-  </div>
-  <div class="directory-filter">
-    <tc-commerce-lookup
-      resource="orders/directory"
-      [yard]="yard"
-      [params]="{ purpose: 'CONTRACTOR' }"
-      title="Orden"
-      [value]="filters['orderUuid'] ?? ''"
-      (selectedChange)="update('orderUuid', $event)"
-    />
-  </div>
-  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
-</div>
+  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+    Recargar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Origen del material">
+      <div class="field">
+        <tc-commerce-lookup
+          resource="party-options"
+          [yard]="yard"
+          [params]="{ purpose: 'ORIGIN' }"
+          title="Tercero de origen"
+          [value]="drawerForm.controls.originPartyUuid.value"
+          (selectedChange)="onOriginPicked($event)"
+        />
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Orden vinculada">
+      <div class="field">
+        <tc-commerce-lookup
+          resource="orders/directory"
+          [yard]="yard"
+          [params]="{ purpose: 'CONTRACTOR' }"
+          title="Orden de procedencia"
+          [value]="drawerForm.controls.orderUuid.value"
+          (selectedChange)="onOrderPicked($event)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (loading()) {
   <p role="status">Cargando…</p>
 }
@@ -48,7 +81,8 @@
   [rows]="rows()"
   [columns]="columns"
   (selected)="selected.set($event)"
-/><tc-pagination
+/>
+<tc-pagination
   [offset]="offset"
   [limit]="limit"
   [count]="rows().length"

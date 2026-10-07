@@ -2,10 +2,11 @@
   section="Calidad y mantenimiento"
   title="Equipos · calidad"
   description="Condición declarada, controles técnicos y liberaciones se consultan por separado."
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
 />
+<tc-quality-nav />
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -13,14 +14,26 @@
   <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
 }
 <tc-quality-pending />
-<form
-  class="filters"
-  (ngSubmit)="
-    filter({ search: search || null, lifecycle: lifecycle || null, yardUuid: yard() || null })
-  "
+
+<tc-search-toolbar
+  label="Buscar equipos por código o serial"
+  placeholder="Código o número de serial…"
+  [value]="search"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
 >
-  <label
-    >Patio<select [ngModel]="yard()" (ngModelChange)="yard.set($event)" name="yard">
+  <div toolbarContext class="field toolbar-yard">
+    <label for="quality-yard" class="sr-only">Patio</label>
+    <select
+      id="quality-yard"
+      [ngModel]="yard()"
+      (ngModelChange)="filter({ yardUuid: $event || null, offset: '0' })"
+    >
       @if (access.global('QUALITY_READ')) {
         <option value="">Todos los alcances autorizados</option>
       }
@@ -29,16 +42,43 @@
           <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
         }
       }
-    </select></label
-  ><label>Código o serial<input [(ngModel)]="search" name="search" maxlength="100" /></label
-  ><label
-    >Ciclo de vida<select [(ngModel)]="lifecycle" name="lifecycle">
-      <option value="">Todos</option>
-      <option value="REGISTERED">Registrado</option>
-      <option value="RETIRED">Retirado</option>
-    </select></label
-  ><button class="btn secondary" [disabled]="busy()">Aplicar filtros</button>
-</form>
+    </select>
+  </div>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Ciclo de vida">
+      <div class="pill-group" role="group" aria-label="Ciclo de vida">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.lifecycle.value === ''"
+          (click)="setDraftLifecycle('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.lifecycle.value === 'REGISTERED'"
+          (click)="setDraftLifecycle('REGISTERED')"
+        >
+          Registrado
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.lifecycle.value === 'RETIRED'"
+          (click)="setDraftLifecycle('RETIRED')"
+        >
+          Retirado
+        </button>
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 <div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
   <table>
     <thead>
@@ -62,9 +102,9 @@
           <td>{{ label(row.condition) }}</td>
           <td>{{ label(row.lifecycle) }}</td>
           <td>
-            <a class="btn secondary" [routerLink]="['/calidad/equipos', row.uuid, 'resumen']"
-              >Abrir expediente</a
-            >
+            <a class="btn secondary" [routerLink]="['/calidad/equipos', row.uuid, 'resumen']">
+              Abrir expediente
+            </a>
           </td>
         </tr>
       } @empty {

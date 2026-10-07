@@ -1,1 +1,73 @@
-<tc-page-heading section="RFID e integración" title="Portones" description="Identificación, autorización y ejecución se consultan por separado."/><tc-rfid-nav/><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/>@if(busy()){<p role="status">Consultando…</p>}<tc-rfid-pending/><div class="toolbar"><label class="field"><span>Patio</span><select [ngModel]="yard()" (ngModelChange)="filter({yardUuid:$event})"><option value="">Todos los patios autorizados</option>@for(y of session.context()?.yards??[];track y.uuid){<option [value]="y.uuid">{{y.code}} · {{y.name}}</option>}</select></label></div>@if(access.can('RFID_DEVICE_MANAGE',yard())){<div class="actions"><button class="btn primary" [disabled]="busy()" (click)="create()">Nuevo registro</button></div>}<div class="panel table-wrap" tabindex="0" aria-label="Portones"><table><thead><tr><th>Código</th><th>Nombre</th><th>Patio</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>@for(r of rows();track r.data.uuid){<tr><td>{{r.data.code}}</td><td>{{r.data.name}}</td><td>{{r.data.yardUuid}}</td><td>{{r.data.active?'Activo':'Inactivo'}}</td><td><a class="btn" [routerLink]="['/rfid/portones',r.data.uuid]">Consultar</a></td></tr>}@empty{<tr><td colspan="5" class="empty">Sin registros para esta consulta.</td></tr>}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="page($event)" (resize)="filter({limit:$event.toString()})"/>
+<tc-page-heading
+  section="RFID e integración"
+  title="Portones"
+  description="Identificación, autorización y ejecución se consultan por separado."
+/>
+
+<tc-rfid-nav />
+
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+@if (busy()) {
+  <p role="status">Consultando…</p>
+}
+
+<tc-rfid-pending />
+
+<tc-search-toolbar [showSearch]="false" [showFilters]="false">
+  <label toolbarContext class="field">
+    <span>Patio</span>
+    <select [ngModel]="yard()" (ngModelChange)="filter({ yardUuid: $event })">
+      <option value="">Todos los patios autorizados</option>
+      @for (y of session.context()?.yards ?? []; track y.uuid) {
+        <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+      }
+    </select>
+  </label>
+  @if (access.can('RFID_DEVICE_MANAGE', yard())) {
+    <button toolbarAction class="btn primary" [disabled]="busy()" (click)="create()">
+      Nuevo registro
+    </button>
+  }
+</tc-search-toolbar>
+
+<div class="panel table-wrap" tabindex="0" aria-label="Portones">
+  <table>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Patio</th>
+        <th>Estado</th>
+        <th>Detalle</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.data.uuid) {
+        <tr>
+          <td>{{ r.data.code }}</td>
+          <td>{{ r.data.name }}</td>
+          <td>{{ r.data.yardUuid }}</td>
+          <td>{{ r.data.active ? 'Activo' : 'Inactivo' }}</td>
+          <td>
+            <a class="btn" [routerLink]="['/rfid/portones', r.data.uuid]">Consultar</a>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty">Sin registros para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

@@ -1,0 +1,33 @@
+<div class="filter-drawer-container">
+  <header class="drawer-header">
+    <div class="header-titles">
+      <h2>{{ data.title || 'Filtros' }}</h2>
+      @if (data.subtitle) {
+        <p class="drawer-subtitle">{{ data.subtitle }}</p>
+      }
+    </div>
+    <button
+      type="button"
+      class="drawer-close-btn"
+      (click)="close()"
+      aria-label="Cerrar filtros"
+    >
+      <tc-icon name="close" />
+    </button>
+  </header>
+
+  <div class="drawer-body">
+    @if (data.template) {
+      <ng-container *ngTemplateOutlet="data.template; context: data.context" />
+    }
+  </div>
+
+  <footer class="drawer-footer">
+    <button type="button" class="btn secondary" (click)="clear()">
+      Limpiar
+    </button>
+    <button type="button" class="btn primary" (click)="apply()">
+      {{ data.applyText || 'Aplicar filtros' }}
+    </button>
+  </footer>
+</div>

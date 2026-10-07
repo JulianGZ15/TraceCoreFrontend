@@ -1,33 +1,24 @@
-import { Component, signal, inject, input, effect, viewChild } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormControl,
-  FormArray,
-  FormGroup,
-  Validators,
-  FormBuilder,
-} from '@angular/forms';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { Component, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { PageHeading, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
-import { TransitionComponent } from '../../editors/transition/transition.component';
-import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
-import { signedValidator, optionalExact, toInstant } from '../../rules';
 import * as M from '../../models';
 import { RequirementComponent } from '../../editors/requirement/requirement.component';
+
 @Component({
   selector: 'tc-quality-requirements',
   imports: [
+    ReactiveFormsModule,
     PageHeading,
     Feedback,
     Pagination,
     QualityNavComponent,
     PendingRequestsComponent,
     OptionPickerComponent,
+    SearchToolbar,
   ],
   templateUrl: './requirements.component.html',
   styleUrl: './requirements.component.scss',
@@ -35,12 +26,14 @@ import { RequirementComponent } from '../../editors/requirement/requirement.comp
 export class RequirementsComponent extends QualityPage {
   readonly rows = signal<M.Requirement[]>([]);
   readonly sheet = new FormControl('');
+
   ngOnInit() {
     this.watch(() => {
       this.sheet.setValue(this.route.snapshot.queryParamMap.get('sheetUuid') ?? '');
       return this.load();
     });
   }
+
   async load() {
     if (!this.sheet.value) {
       this.rows.set([]);
@@ -56,15 +49,15 @@ export class RequirementsComponent extends QualityPage {
       (r) => this.rows.set(r),
     );
   }
+
   async create() {
     if (await this.editor(RequirementComponent, {}, 'Nuevo requisito')) await this.load();
   }
-  async transition(path: string, version: number, approved?: boolean, evidenceRequired = false) {
-    const r = await this.editor(
-      TransitionComponent,
-      { path, version, approved, evidenceRequired },
-      'Confirmar operación',
+
+  async transition(path: string, version: number) {
+    await this.mutate(
+      () => this.api.post(path, { version }),
+      () => this.load(),
     );
-    if (r) await this.load();
   }
 }

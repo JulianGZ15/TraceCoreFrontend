@@ -2,56 +2,149 @@
   section="Centro comercial"
   [title]="title"
   description="Documentos administrativos, cumplimiento y trazabilidad por patio."
-/><tc-commerce-section-nav
+/>
+<tc-commerce-section-nav
   [base]="navBase"
   [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
-<div class="toolbar">
-  <label
-    >Patio<select #y [value]="yard" (change)="update('yardUuid', y.value)">
+/>
+<tc-commerce-pending-requests />
+<tc-feedback [message]="error()" />
+
+<tc-search-toolbar
+  label="Buscar órdenes por folio o serie"
+  placeholder="Folio o serie de la orden…"
+  [value]="filters['search']"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="order-yard-select" class="sr-only">Patio</label>
+    <select id="order-yard-select" #y [value]="yard" (change)="update('yardUuid', y.value)">
       @for (item of yards; track item.uuid) {
         <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
       }
-    </select></label
-  ><label
-    >Serie o folio<input
-      #search
-      type="search"
-      [value]="filters['search'] ?? ''"
-      (change)="update('search', search.value)" /></label
-  ><label
-    >Tipo<select #type [value]="filters['type'] ?? ''" (change)="update('type', type.value)">
-      <option value="">Todos</option>
-      <option value="OC">Compra</option>
-      <option value="OV">Venta</option>
-      <option value="OR">Renta</option>
-    </select></label
-  ><label
-    >Estado<select #state [value]="filters['state'] ?? ''" (change)="update('state', state.value)">
-      <option value="">Todos</option>
-      <option value="DRAFT">Borrador</option>
-      <option value="APPROVED">Aprobada</option>
-      <option value="CLOSED">Cerrada</option>
-      <option value="CANCELLED">Cancelada</option>
-    </select></label
-  >
-  @if (can('COMMERCIAL_MANAGE')) {
-    <a class="btn primary" routerLink="/comercial/ordenes/nueva" [queryParams]="{ yardUuid: yard }"
-      >Nueva orden</a
-    >
-  }
-  <div class="directory-filter">
-    <tc-commerce-lookup
-      resource="party-options"
-      [yard]="yard"
-      [params]="{ purpose: 'CONTRACTOR' }"
-      title="Contraparte"
-      [value]="filters['partyUuid'] ?? ''"
-      (selectedChange)="update('partyUuid', $event)"
-    />
+    </select>
   </div>
-  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
-</div>
+
+  @if (can('COMMERCIAL_MANAGE')) {
+    <a
+      toolbarAction
+      class="btn primary"
+      routerLink="/comercial/ordenes/nueva"
+      [queryParams]="{ yardUuid: yard }"
+    >
+      Nueva orden
+    </a>
+  }
+  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+    Recargar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Tipo de orden">
+      <div class="pill-group" role="group" aria-label="Tipo de orden">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === ''"
+          (click)="setDraftType('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === 'OC'"
+          (click)="setDraftType('OC')"
+        >
+          Compra
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === 'OV'"
+          (click)="setDraftType('OV')"
+        >
+          Venta
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === 'OR'"
+          (click)="setDraftType('OR')"
+        >
+          Renta
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Estado de la orden">
+      <div class="pill-group" role="group" aria-label="Estado de la orden">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'DRAFT'"
+          (click)="setDraftState('DRAFT')"
+        >
+          Borrador
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'APPROVED'"
+          (click)="setDraftState('APPROVED')"
+        >
+          Aprobada
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CLOSED'"
+          (click)="setDraftState('CLOSED')"
+        >
+          Cerrada
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+          (click)="setDraftState('CANCELLED')"
+        >
+          Cancelada
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Contraparte">
+      <div class="field">
+        <tc-commerce-lookup
+          resource="party-options"
+          [yard]="yard"
+          [params]="{ purpose: 'CONTRACTOR' }"
+          title="Contraparte"
+          [value]="drawerForm.controls.partyUuid.value"
+          (selectedChange)="onPartyPicked($event)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (loading()) {
   <p role="status">Cargando…</p>
 }
@@ -59,7 +152,8 @@
   [rows]="rows()"
   [columns]="columns"
   (selected)="selected.set($event)"
-/><tc-pagination
+/>
+<tc-pagination
   [offset]="offset"
   [limit]="limit"
   [count]="rows().length"

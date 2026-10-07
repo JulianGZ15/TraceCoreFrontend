@@ -1,37 +1,84 @@
 <tc-page-heading
   section="Inventario y patios"
   title="Movimientos de inventario"
-/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
 />
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-<div class="toolbar">
-  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
-  <div class="field">
-    <label for="movement-state">Estado</label
-    ><select
-      id="movement-state"
-      [(ngModel)]="state"
-      (ngModelChange)="query({ state: $event || null, offset: 0 })"
-    >
-      <option value="">Todos</option>
-      @for (s of ['DRAFT', 'IN_TRANSIT', 'COMPLETED', 'CANCELLED']; track s) {
-        <option [value]="s">{{ label(s) }}</option>
-      }
-    </select>
-  </div>
+<tc-inventory-inventory-nav />
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de movimientos"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
+
   @if (access.any('MOVEMENT_MANAGE') || access.any('INVENTORY_ADJUST')) {
     <a
+      toolbarAction
       class="btn primary"
       routerLink="/inventario/movimientos/nuevo"
       [queryParams]="{ yardUuid: yard() }"
-      >Preparar movimiento</a
     >
+      Preparar movimiento
+    </a>
   }
-</div>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Estado del movimiento">
+      <div class="pill-group" role="group" aria-label="Estado del movimiento">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'DRAFT'"
+          (click)="setDraftState('DRAFT')"
+        >
+          Borrador
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'IN_TRANSIT'"
+          (click)="setDraftState('IN_TRANSIT')"
+        >
+          En tránsito
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'COMPLETED'"
+          (click)="setDraftState('COMPLETED')"
+        >
+          Completado
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+          (click)="setDraftState('CANCELLED')"
+        >
+          Cancelado
+        </button>
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 <div
   class="table-scroll"
   tabindex="0"

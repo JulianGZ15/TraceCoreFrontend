@@ -1,0 +1,33 @@
+.filter-section {
+  border: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tc-text);
+  padding: 0;
+  margin-bottom: 8px;
+  width: 100%;
+  border-bottom: 1px solid var(--tc-border);
+  padding-bottom: 6px;
+}
+
+.section-description {
+  font-size: 12px;
+  color: var(--tc-text-muted);
+  margin: 0 0 12px 0;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}

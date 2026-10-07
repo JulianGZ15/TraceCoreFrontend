@@ -2,10 +2,11 @@
   section="Calidad y mantenimiento"
   title="Agenda de inspecciones"
   description=""
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
 />
+<tc-quality-nav />
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -13,36 +14,122 @@
   <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
 }
 <tc-quality-pending />
-@if (access.any('INSPECTION_MANAGE')) {
-  <div class="actions">
-    <a class="btn primary" routerLink="/calidad/inspecciones/nueva">Programar inspección</a>
-  </div>
-}
-<form class="filters" (ngSubmit)="apply()">
-  <label
-    >Patio<select [ngModel]="yard()" (ngModelChange)="yard.set($event)" name="yard">
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de inspecciones"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="inspections-yard" class="sr-only">Patio</label>
+    <select
+      id="inspections-yard"
+      [ngModel]="yard()"
+      (ngModelChange)="filter({ yardUuid: $event || null, offset: '0' })"
+    >
       <option value="">Alcances autorizados</option>
       @for (y of session.context()?.yards; track y.uuid) {
         @if (access.can('QUALITY_READ', y.uuid)) {
           <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
         }
       }
-    </select></label
-  ><label>Pieza (UUID)<input [(ngModel)]="assetUuid" name="asset" /></label
-  ><label
-    >Estado<select [(ngModel)]="state" name="state">
-      <option value="">Todos</option>
-      <option value="PLANNED">{{ label('PLANNED') }}</option>
-      <option value="RECORDED">{{ label('RECORDED') }}</option>
-      <option value="APPROVED">{{ label('APPROVED') }}</option>
-      <option value="REJECTED">{{ label('REJECTED') }}</option>
-      <option value="CANCELLED">{{ label('CANCELLED') }}</option>
-    </select></label
-  ><label>Responsable (UUID)<input [(ngModel)]="responsible" name="responsible" /></label
-  ><label>Desde (con desplazamiento UTC)<input [(ngModel)]="from" name="from" /></label
-  ><label>Hasta excluyente (con desplazamiento UTC)<input [(ngModel)]="to" name="to" /></label
-  ><button class="btn secondary" [disabled]="busy()">Aplicar filtros</button>
-</form>
+    </select>
+  </div>
+
+  @if (access.any('INSPECTION_MANAGE')) {
+    <a toolbarAction class="btn primary" routerLink="/calidad/inspecciones/nueva">
+      Programar inspección
+    </a>
+  }
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Pieza y responsable">
+      <div class="field">
+        <label for="insp-asset">Pieza (UUID)</label>
+        <input id="insp-asset" type="text" formControlName="assetUuid" placeholder="UUID de la pieza…" />
+      </div>
+
+      <div class="field">
+        <label for="insp-resp">Responsable (UUID)</label>
+        <input id="insp-resp" type="text" formControlName="responsibleUuid" placeholder="UUID del responsable…" />
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Estado">
+      <div class="pill-group" role="group" aria-label="Estado de la inspección">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'PLANNED'"
+          (click)="setDraftState('PLANNED')"
+        >
+          {{ label('PLANNED') }}
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'RECORDED'"
+          (click)="setDraftState('RECORDED')"
+        >
+          {{ label('RECORDED') }}
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'APPROVED'"
+          (click)="setDraftState('APPROVED')"
+        >
+          {{ label('APPROVED') }}
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'REJECTED'"
+          (click)="setDraftState('REJECTED')"
+        >
+          {{ label('REJECTED') }}
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+          (click)="setDraftState('CANCELLED')"
+        >
+          {{ label('CANCELLED') }}
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Periodo de programación">
+      <div class="field">
+        <tc-date-range
+          label="Programación"
+          fromLabel="Desde"
+          toLabel="Hasta (excluyente)"
+          [from]="drawerForm.controls.scheduledFrom.value"
+          [to]="drawerForm.controls.scheduledTo.value"
+          (rangeChange)="drawerForm.controls.scheduledFrom.setValue($event.from); drawerForm.controls.scheduledTo.setValue($event.to)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 <div class="panel table-wrap" tabindex="0">
   <table>
     <thead>
@@ -65,9 +152,9 @@
           <td>{{ label(row.record.state) }}</td>
           <td class="mono">{{ row.record.inspectorUuid }}</td>
           <td>
-            <a class="btn secondary" [routerLink]="['/calidad/inspecciones', row.record.uuid]"
-              >Abrir</a
-            >
+            <a class="btn secondary" [routerLink]="['/calidad/inspecciones', row.record.uuid]">
+              Abrir
+            </a>
           </td>
         </tr>
       } @empty {

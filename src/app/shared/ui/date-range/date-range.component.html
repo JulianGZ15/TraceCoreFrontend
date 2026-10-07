@@ -1,0 +1,30 @@
+<div class="date-range-container">
+  <div class="date-fields">
+    <div class="field">
+      <label [for]="'date-range-from'">{{ fromLabel() }}</label>
+      <input
+        id="date-range-from"
+        type="datetime-local"
+        [ngModel]="localFrom()"
+        (ngModelChange)="onFromChange($event)"
+      />
+    </div>
+
+    <div class="field">
+      <label [for]="'date-range-to'">{{ toLabel() }}</label>
+      <input
+        id="date-range-to"
+        type="datetime-local"
+        [ngModel]="localTo()"
+        (ngModelChange)="onToChange($event)"
+      />
+    </div>
+  </div>
+
+  <div class="date-range-meta">
+    <small class="tz-label">Zona horaria: {{ activeTimeZone }}</small>
+    @if (error()) {
+      <small class="field-error" role="alert">{{ error() }}</small>
+    }
+  </div>
+</div>

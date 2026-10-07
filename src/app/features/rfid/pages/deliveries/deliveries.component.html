@@ -1,1 +1,126 @@
-<tc-page-heading section="RFID e integración" title="Entregas" description="Configuración y entregas del servicio RFID."/><tc-rfid-nav/><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/>@if(busy()){<p role="status">Consultando…</p>}<tc-rfid-pending/>@if(!available()){<tc-feedback message="Servicio RFID no disponible. Su situación es desconocida."/>}<button class="btn" [disabled]="busy()" (click)="load()">Actualizar</button><label class="field"><span>Estado de entrega</span><select [ngModel]="route.snapshot.queryParamMap.get('state')??''" (ngModelChange)="filter({state:$event})"><option value="">Todos</option><option value="FAILED">Fallida</option><option value="PENDING">Pendiente</option><option value="IN_FLIGHT">En curso</option><option value="DELIVERED">Entregada</option></select></label><div class="panel table-wrap" tabindex="0" aria-label="Entregas"><table><thead><tr><th>UUID</th><th>Estado</th><th>Intentos</th><th>Próximo intento</th><th>Error</th><th>Acción</th></tr></thead><tbody>@for(r of rows();track r.uuid){<tr><td>{{r.uuid}}</td><td>{{label(r.state)}}</td><td>{{r.attempts}}</td><td>{{date(r.nextAttemptAt)}}</td><td>{{r.errorCode??'Sin error'}}</td><td>@if(r.state==='FAILED'){<button class="btn" [disabled]="busy()" (click)="requeue(r)">Reencolar</button>}</td></tr>}@empty{<tr><td colspan="6" class="empty">Sin datos disponibles para esta consulta.</td></tr>}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="page($event)" (resize)="filter({limit:$event.toString()})"/>
+<tc-page-heading
+  section="RFID e integración"
+  title="Entregas"
+  description="Configuración y entregas del servicio RFID."
+/>
+
+<tc-rfid-nav />
+
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+@if (busy()) {
+  <p role="status">Consultando…</p>
+}
+
+<tc-rfid-pending />
+
+@if (!available()) {
+  <tc-feedback message="Servicio RFID no disponible. Su situación es desconocida." />
+}
+
+<tc-search-toolbar
+  [showSearch]="false"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <button toolbarAction type="button" class="btn" [disabled]="busy()" (click)="load()">
+    Actualizar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm" class="flex flex-col gap-5">
+    <tc-filter-section title="Estado de entrega" description="Filtrar entregas según su progreso">
+      <div class="pill-group">
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === 'PENDING'"
+          (click)="setDraftState('PENDING')"
+        >
+          Pendiente
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === 'IN_FLIGHT'"
+          (click)="setDraftState('IN_FLIGHT')"
+        >
+          En curso
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === 'DELIVERED'"
+          (click)="setDraftState('DELIVERED')"
+        >
+          Entregada
+        </button>
+        <button
+          type="button"
+          class="pill"
+          [class.active]="drawerForm.controls.state.value === 'FAILED'"
+          (click)="setDraftState('FAILED')"
+        >
+          Fallida
+        </button>
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
+<div class="panel table-wrap" tabindex="0" aria-label="Entregas">
+  <table>
+    <thead>
+      <tr>
+        <th>UUID</th>
+        <th>Estado</th>
+        <th>Intentos</th>
+        <th>Próximo intento</th>
+        <th>Error</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.uuid) {
+        <tr>
+          <td>{{ r.uuid }}</td>
+          <td>{{ label(r.state) }}</td>
+          <td>{{ r.attempts }}</td>
+          <td>{{ date(r.nextAttemptAt) }}</td>
+          <td>{{ r.errorCode ?? 'Sin error' }}</td>
+          <td>
+            @if (r.state === 'FAILED') {
+              <button class="btn" [disabled]="busy()" (click)="requeue(r)">Reencolar</button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="empty">Sin datos disponibles para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

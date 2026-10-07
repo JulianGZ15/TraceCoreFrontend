@@ -7,33 +7,70 @@
     <button class="btn primary" (click)="create()">+ Nuevo tercero</button>
   }
 </tc-page-heading>
-<form class="panel form-grid" [formGroup]="form" (ngSubmit)="apply()">
-  <div class="field">
-    <label for="party-search">Razón social o nombre comercial</label
-    ><input id="party-search" formControlName="search" maxlength="150" />
-  </div>
-  <div class="field">
-    <label for="party-role">Rol vigente</label
-    ><select id="party-role" formControlName="role">
-      <option value="">Todos los roles</option>
-      @for (role of roles; track role) {
-        <option [value]="role">{{ label(role) }}</option>
-      }
-    </select>
-  </div>
-  <div class="field">
-    <label for="party-active">Estado</label
-    ><select id="party-active" formControlName="active">
-      <option value="">Todos</option>
-      <option value="true">Activos</option>
-      <option value="false">Inactivos</option>
-    </select>
-  </div>
-  <div class="page-actions">
-    <button class="btn secondary" [disabled]="busy()">Aplicar filtros</button>
-  </div>
-</form>
+
+<tc-search-toolbar
+  label="Buscar terceros"
+  placeholder="Razón social o nombre comercial"
+  [value]="form.controls.search.value"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+/>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Clasificación">
+      <div class="field">
+        <label for="party-role">Rol vigente</label>
+        <select id="party-role" formControlName="role">
+          <option value="">Todos los roles</option>
+          @for (role of roles; track role) {
+            <option [value]="role">{{ label(role) }}</option>
+          }
+        </select>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Estado">
+      <div class="field">
+        <label>Estado del tercero</label>
+        <div class="pill-group" role="radiogroup" aria-label="Estado del tercero">
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.active.value === ''"
+            (click)="drawerForm.controls.active.setValue('')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.active.value === 'true'"
+            (click)="drawerForm.controls.active.setValue('true')"
+          >
+            Activos
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.active.value === 'false'"
+            (click)="drawerForm.controls.active.setValue('false')"
+          >
+            Inactivos
+          </button>
+        </div>
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 <tc-feedback [message]="error()" />
+
 <section class="panel table-panel" [attr.aria-busy]="busy()">
   <div class="panel-heading">
     <h2>Terceros registrados</h2>

@@ -2,10 +2,11 @@
   section="Calidad y mantenimiento"
   title="Requisitos de ficha"
   description=""
-/><tc-quality-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
 />
+<tc-quality-nav />
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -13,18 +14,32 @@
   <p>Conservamos tus datos. Comprueba el estado antes de confirmar de nuevo.</p>
 }
 <tc-quality-pending />
-<div class="filters">
-  <tc-quality-option [control]="sheet" title="Ficha aprobada" kind="SHEET" /><button
-    [disabled]="busy()"
-    class="btn secondary"
-    (click)="filter({ sheetUuid: sheet.value })"
-  >
-    Consultar ficha
-  </button>
+
+<tc-search-toolbar
+  [showSearch]="false"
+  [showFilters]="false"
+  label="Filtro de requisitos por ficha"
+  [busy]="busy()"
+>
+  <div toolbarEntity class="toolbar-entity-picker">
+    <tc-quality-option [control]="sheet" title="Ficha aprobada" kind="SHEET" />
+    <button
+      type="button"
+      [disabled]="busy()"
+      class="btn secondary"
+      (click)="filter({ sheetUuid: sheet.value })"
+    >
+      Consultar ficha
+    </button>
+  </div>
+
   @if (access.global('QUALITY_MANAGE')) {
-    <button [disabled]="busy()" class="btn primary" (click)="create()">Nuevo requisito</button>
+    <button toolbarAction [disabled]="busy()" class="btn primary" (click)="create()">
+      Nuevo requisito
+    </button>
   }
-</div>
+</tc-search-toolbar>
+
 <div class="panel table-wrap" tabindex="0" aria-label="Listado desplazable">
   <table>
     <thead>
@@ -59,7 +74,9 @@
                   Aprobar
                 </button>
               }
-              @if (row.approvedAt && !row.revokedAt) {
+            }
+            @if (access.global('QUALITY_MANAGE')) {
+              @if (!row.revokedAt) {
                 <button
                   [disabled]="busy()"
                   class="btn secondary"
@@ -73,7 +90,7 @@
         </tr>
       } @empty {
         <tr>
-          <td colspan="4" class="empty">Sin registros para esta consulta.</td>
+          <td colspan="4" class="empty">Selecciona una ficha para consultar requisitos.</td>
         </tr>
       }
     </tbody>

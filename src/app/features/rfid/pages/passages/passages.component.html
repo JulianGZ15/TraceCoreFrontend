@@ -1,1 +1,68 @@
-<tc-page-heading section="RFID e integración" title="Pasos de portón" description="Identificación, autorización y ejecución se consultan por separado."/><tc-rfid-nav/><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/>@if(busy()){<p role="status">Consultando…</p>}<tc-rfid-pending/><div class="toolbar"><label class="field"><span>Patio</span><select [ngModel]="yard()" (ngModelChange)="filter({yardUuid:$event})"><option value="">Todos los patios autorizados</option>@for(y of session.context()?.yards??[];track y.uuid){<option [value]="y.uuid">{{y.code}} · {{y.name}}</option>}</select></label></div><div class="panel table-wrap" tabindex="0" aria-label="Pasos de portón"><table><thead><tr><th>UUID</th><th>Sesión</th><th>Dirección</th><th>Propuesta</th><th>Detalle</th></tr></thead><tbody>@for(r of rows();track r.data.uuid){<tr><td>{{r.data.uuid}}</td><td>{{r.data.sessionUuid}}</td><td>{{label(r.data.direction)}}</td><td>{{r.data.proposalUuid??'Sin propuesta'}}</td><td><a class="btn" [routerLink]="['/rfid/pasos',r.data.uuid]">Consultar</a></td></tr>}@empty{<tr><td colspan="5" class="empty">Sin registros para esta consulta.</td></tr>}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="page($event)" (resize)="filter({limit:$event.toString()})"/>
+<tc-page-heading
+  section="RFID e integración"
+  title="Pasos de portón"
+  description="Identificación, autorización y ejecución se consultan por separado."
+/>
+
+<tc-rfid-nav />
+
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+@if (busy()) {
+  <p role="status">Consultando…</p>
+}
+
+<tc-rfid-pending />
+
+<tc-search-toolbar [showSearch]="false" [showFilters]="false">
+  <label toolbarContext class="field">
+    <span>Patio</span>
+    <select [ngModel]="yard()" (ngModelChange)="filter({ yardUuid: $event })">
+      <option value="">Todos los patios autorizados</option>
+      @for (y of session.context()?.yards ?? []; track y.uuid) {
+        <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+      }
+    </select>
+  </label>
+</tc-search-toolbar>
+
+<div class="panel table-wrap" tabindex="0" aria-label="Pasos de portón">
+  <table>
+    <thead>
+      <tr>
+        <th>UUID</th>
+        <th>Sesión</th>
+        <th>Dirección</th>
+        <th>Propuesta</th>
+        <th>Detalle</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.data.uuid) {
+        <tr>
+          <td>{{ r.data.uuid }}</td>
+          <td>{{ r.data.sessionUuid }}</td>
+          <td>{{ label(r.data.direction) }}</td>
+          <td>{{ r.data.proposalUuid ?? 'Sin propuesta' }}</td>
+          <td>
+            <a class="btn" [routerLink]="['/rfid/pasos', r.data.uuid]">Consultar</a>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty">Sin registros para esta consulta.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<tc-pagination
+  [offset]="offset()"
+  [limit]="limit()"
+  [count]="rows().length"
+  [busy]="busy()"
+  (move)="page($event)"
+  (resize)="filter({ limit: $event.toString() })"
+/>

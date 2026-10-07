@@ -1,32 +1,82 @@
 <tc-page-heading
   section="Inventario y patios"
   title="Situación física de equipos"
-/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
 />
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-<div class="toolbar">
-  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
-  <div class="field">
-    <label for="asset-search">Código o serial</label
-    ><input id="asset-search" [(ngModel)]="search" maxlength="100" />
-  </div>
-  <div class="field">
-    <label for="placement">Situación</label
-    ><select id="placement" [(ngModel)]="placement">
-      <option value="">Todas</option>
-      <option value="YARD">En patio</option>
-      <option value="UNLOCATED">Sin ubicación</option>
-      <option value="IN_TRANSIT">En tránsito</option>
-      <option value="EXTERNAL_SITE">Sitio externo</option>
-    </select>
-  </div>
-  <label><input type="checkbox" [(ngModel)]="rootsOnly" /> Solo raíces</label
-  ><button class="btn primary" (click)="filter()">Aplicar</button>
-</div>
+<tc-inventory-inventory-nav />
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+<tc-search-toolbar
+  label="Buscar por código o número de serie"
+  placeholder="Código interno o número de serie…"
+  [value]="search"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (search)="onSearchChange($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Situación física">
+      <div class="pill-group" role="group" aria-label="Situación física">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.placementState.value === ''"
+          (click)="setDraftPlacement('')"
+        >
+          Todas
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.placementState.value === 'YARD'"
+          (click)="setDraftPlacement('YARD')"
+        >
+          En patio
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.placementState.value === 'UNLOCATED'"
+          (click)="setDraftPlacement('UNLOCATED')"
+        >
+          Sin ubicación
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.placementState.value === 'IN_TRANSIT'"
+          (click)="setDraftPlacement('IN_TRANSIT')"
+        >
+          En tránsito
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.placementState.value === 'EXTERNAL_SITE'"
+          (click)="setDraftPlacement('EXTERNAL_SITE')"
+        >
+          Sitio externo
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Jerarquía de equipos">
+      <label class="drawer-checkbox-label">
+        <input type="checkbox" formControlName="rootsOnly" />
+        <span>Solo equipos raíz</span>
+      </label>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 <div
   class="table-scroll"
   tabindex="0"

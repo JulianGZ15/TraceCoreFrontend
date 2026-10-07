@@ -1,33 +1,36 @@
-import { Component, signal, inject, input, effect, viewChild } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, signal, computed, TemplateRef } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormControl,
-  FormArray,
-  FormGroup,
-  Validators,
-  FormBuilder,
-} from '@angular/forms';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+  PageHeading,
+  Feedback,
+  Pagination,
+  SearchToolbar,
+  FilterSection,
+  openFilterDrawer,
+  FilterDef,
+  FilterChip,
+  chipsFor,
+  activeCount,
+} from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
-import { TransitionComponent } from '../../editors/transition/transition.component';
-import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
-import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
-import { signedValidator, optionalExact, toInstant } from '../../rules';
 import * as M from '../../models';
+
 @Component({
   selector: 'tc-quality-assets',
   imports: [
     RouterLink,
     FormsModule,
+    ReactiveFormsModule,
     PageHeading,
     Feedback,
     Pagination,
     QualityNavComponent,
     PendingRequestsComponent,
+    SearchToolbar,
+    FilterSection,
   ],
   templateUrl: './assets.component.html',
   styleUrl: './assets.component.scss',
@@ -36,14 +39,33 @@ export class AssetsComponent extends QualityPage {
   readonly rows = signal<M.Asset[]>([]);
   search = '';
   lifecycle = '';
+
+  readonly drawerForm = new FormGroup({
+    lifecycle: new FormControl('', { nonNullable: true }),
+  });
+
+  readonly filterDefs: FilterDef[] = [
+    { key: 'lifecycle', label: 'Ciclo de vida', format: (v) => this.label(v) },
+  ];
+
+  readonly currentValues = signal<Record<string, string>>({});
+  readonly chips = computed(() => chipsFor(this.filterDefs, this.currentValues()));
+  readonly activeFilterCount = computed(() => activeCount(this.filterDefs, this.currentValues()));
+
   ngOnInit() {
     this.watch(() => {
       const q = this.route.snapshot.queryParamMap;
       this.search = q.get('search') ?? '';
       this.lifecycle = q.get('lifecycle') ?? '';
+
+      const cur: Record<string, string> = {};
+      if (this.lifecycle) cur['lifecycle'] = this.lifecycle;
+      this.currentValues.set(cur);
+
       return this.load();
     });
   }
+
   async load() {
     await this.request(
       () =>
@@ -56,5 +78,49 @@ export class AssetsComponent extends QualityPage {
         }),
       (r) => this.rows.set(r),
     );
+  }
+
+  onSearch(term: string) {
+    this.filter({ search: term.trim() || null, offset: '0' });
+  }
+
+  onRemoveChip(chip: FilterChip) {
+    const patch: Record<string, string | null> = { offset: '0' };
+    for (const k of chip.keys) {
+      patch[k] = null;
+    }
+    this.filter(patch);
+  }
+
+  onClearAll() {
+    this.filter({
+      search: null,
+      lifecycle: null,
+      offset: '0',
+    });
+  }
+
+  async openFilters(template: TemplateRef<unknown>) {
+    this.drawerForm.reset({ lifecycle: this.lifecycle });
+
+    await openFilterDrawer(this.dialog, {
+      title: 'Filtros de equipos (calidad)',
+      subtitle: 'Ciclo de vida y estado técnico',
+      template,
+      onApply: () => {
+        const draft = this.drawerForm.getRawValue();
+        this.filter({
+          lifecycle: draft.lifecycle || null,
+          offset: '0',
+        });
+      },
+      onClear: () => {
+        this.drawerForm.reset({ lifecycle: '' });
+      },
+    });
+  }
+
+  setDraftLifecycle(val: string) {
+    this.drawerForm.controls.lifecycle.setValue(val);
   }
 }

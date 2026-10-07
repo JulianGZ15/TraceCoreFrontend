@@ -1,0 +1,139 @@
+.entity-search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--tc-text-muted);
+    pointer-events: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  input {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 32px 8px 36px;
+    background: var(--tc-panel);
+    border: 1px solid var(--tc-control-border);
+    border-radius: var(--tc-radius-control, 4px);
+    color: var(--tc-text);
+    font-size: 14px;
+
+    &:focus {
+      outline: 2px solid var(--tc-focus);
+      outline-offset: 1px;
+    }
+  }
+
+  .loading-dot {
+    position: absolute;
+    right: 12px;
+    color: var(--tc-action-text);
+    font-weight: 700;
+  }
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--tc-panel);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-control, 4px);
+  box-shadow: 0 8px 24px rgba(11, 12, 14, 0.12);
+  list-style: none;
+  padding: 4px 0;
+  margin: 0;
+
+  li {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--tc-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .option-label {
+      color: var(--tc-text);
+      font-weight: 500;
+    }
+
+    .option-meta {
+      color: var(--tc-text-muted);
+      font-size: 12px;
+    }
+
+    &:hover,
+    &.active {
+      background: var(--tc-selection);
+    }
+  }
+
+  .no-options {
+    padding: 14px;
+    text-align: center;
+    color: var(--tc-text-muted);
+    font-size: 13px;
+    cursor: default;
+  }
+}
+
+.selected-entity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--tc-selection);
+  border: 1px solid var(--tc-action);
+  border-radius: 9999px;
+  font-size: 13px;
+  min-height: 40px;
+
+  .entity-title {
+    color: var(--tc-text-muted);
+    font-weight: 500;
+  }
+
+  .entity-name {
+    color: var(--tc-text);
+    font-weight: 600;
+  }
+
+  .chip-clear-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 2px;
+    color: var(--tc-text-muted);
+    cursor: pointer;
+    border-radius: 2px;
+
+    &:hover {
+      color: var(--tc-danger);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--tc-focus);
+    }
+  }
+}

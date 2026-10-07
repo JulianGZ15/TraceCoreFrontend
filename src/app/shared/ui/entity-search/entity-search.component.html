@@ -1,0 +1,56 @@
+<div #container class="entity-search-container">
+  @if (value() && currentLabel()) {
+    <div class="selected-entity-chip">
+      <span class="entity-title">{{ label() }}:</span>
+      <strong class="entity-name">{{ currentLabel() }}</strong>
+      <button
+        type="button"
+        class="chip-clear-btn"
+        (click)="clearSelection()"
+        [disabled]="disabled()"
+        [attr.aria-label]="'Quitar selección ' + currentLabel()"
+      >
+        <tc-icon name="close" />
+      </button>
+    </div>
+  } @else {
+    <div class="search-box">
+      <tc-icon name="search" class="search-icon" />
+      <input
+        type="text"
+        [placeholder]="placeholder()"
+        [disabled]="disabled()"
+        [ngModel]="query()"
+        (ngModelChange)="onInput($event)"
+        (keydown)="onKeydown($event)"
+        autocomplete="off"
+        role="combobox"
+        [attr.aria-expanded]="open()"
+        aria-autocomplete="list"
+      />
+      @if (busy()) {
+        <span class="loading-dot" aria-hidden="true">…</span>
+      }
+    </div>
+
+    @if (open()) {
+      <ul class="dropdown-list" role="listbox">
+        @for (opt of options(); track opt.value; let i = $index) {
+          <li
+            role="option"
+            [class.active]="i === activeIndex()"
+            [attr.aria-selected]="i === activeIndex()"
+            (click)="selectOption(opt)"
+          >
+            <span class="option-label">{{ opt.label }}</span>
+            @if (opt.meta) {
+              <small class="option-meta">{{ opt.meta }}</small>
+            }
+          </li>
+        } @empty {
+          <li class="no-options">No se encontraron resultados</li>
+        }
+      </ul>
+    }
+  }
+</div>

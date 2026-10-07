@@ -2,77 +2,167 @@
   [description]="'Zona de presentación: ' + zone"
   section="Logística y despacho"
   [title]="title"
-/><tc-logistics-section-nav
+/>
+<tc-logistics-section-nav
   [base]="navBase"
   [sections]="mode === 'manifest' ? sections : []"
-/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
-@if (loading()) {
-  <p role="status">Cargando…</p>
-}
-<section class="panel">
-  <div class="form-grid">
-    <div class="field">
-      <label for="logistics-yard">Patio</label
-      ><select
-        id="logistics-yard"
-        [value]="yard"
-        (change)="update('yardUuid', $any($event.target).value)"
-      >
-        @for (y of yards; track y.uuid) {
-          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
-        }
-      </select>
-    </div>
-    <div class="field">
-      <label for="mf-search">Folio</label
-      ><input
-        id="mf-search"
-        [value]="filters['search']"
-        (change)="update('search', $any($event.target).value)"
-      />
-    </div>
-    <div class="field">
-      <label for="mf-state">Estado</label
-      ><select
-        id="mf-state"
-        [value]="filters['state']"
-        (change)="update('state', $any($event.target).value)"
-      >
-        <option value="">Todos</option>
-        @for (v of states; track v) {
-          <option [value]="v">{{ label(v) }}</option>
-        }
-      </select>
-    </div>
-    <div class="field">
-      <label for="mf-type">Tipo</label
-      ><select
-        id="mf-type"
-        [value]="filters['type']"
-        (change)="update('type', $any($event.target).value)"
-      >
-        <option value="">Todos</option>
-        @for (v of types; track v) {
-          <option [value]="v">{{ label(v) }}</option>
-        }
-      </select>
-    </div>
+/>
+<tc-logistics-pending-requests />
+<tc-feedback [message]="error()" />
+
+<tc-search-toolbar
+  label="Buscar manifiestos por folio"
+  placeholder="Folio de manifiesto…"
+  [value]="filters['search']"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="logistics-yard" class="sr-only">Patio</label>
+    <select
+      id="logistics-yard"
+      [value]="yard"
+      (change)="update('yardUuid', $any($event.target).value)"
+    >
+      @for (y of yards; track y.uuid) {
+        <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+      }
+    </select>
   </div>
+
   @if (can('LOGISTICS_MANAGE')) {
     <a
+      toolbarAction
       class="btn primary"
       routerLink="/logistica/manifiestos/nuevo"
       [queryParams]="{ yardUuid: yard }"
-      >Nuevo manifiesto</a
     >
+      Nuevo manifiesto
+    </a>
   }
-</section>
+  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+    Recargar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Estado del manifiesto">
+      <div class="pill-group" role="group" aria-label="Estado del manifiesto">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'DRAFT'"
+          (click)="setDraftState('DRAFT')"
+        >
+          Borrador
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CHECKED'"
+          (click)="setDraftState('CHECKED')"
+        >
+          Comprobado
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'IN_TRANSIT'"
+          (click)="setDraftState('IN_TRANSIT')"
+        >
+          En tránsito
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'PARTIALLY_DELIVERED'"
+          (click)="setDraftState('PARTIALLY_DELIVERED')"
+        >
+          Entrega parcial
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'DELIVERED'"
+          (click)="setDraftState('DELIVERED')"
+        >
+          Entregado
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+          (click)="setDraftState('CANCELLED')"
+        >
+          Cancelado
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Tipo de manifiesto">
+      <div class="pill-group" role="group" aria-label="Tipo de manifiesto">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === ''"
+          (click)="setDraftType('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === 'OUTBOUND'"
+          (click)="setDraftType('OUTBOUND')"
+        >
+          Salida
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === 'RETURN'"
+          (click)="setDraftType('RETURN')"
+        >
+          Retorno
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.type.value === 'TRANSFER'"
+          (click)="setDraftType('TRANSFER')"
+        >
+          Traslado
+        </button>
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
+@if (loading()) {
+  <p role="status">Cargando…</p>
+}
+
 <tc-logistics-records
   [zone]="zone"
   [rows]="rows()"
   [columns]="columns"
   (selected)="open($event)"
-/><tc-pagination
+/>
+<tc-pagination
   [offset]="offset"
   [limit]="limit"
   [count]="rows().length"

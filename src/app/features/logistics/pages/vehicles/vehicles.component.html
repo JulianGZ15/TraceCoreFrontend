@@ -2,31 +2,71 @@
   [description]="'Zona de presentación: ' + zone"
   section="Logística y despacho"
   [title]="title"
-/><tc-logistics-section-nav
+/>
+<tc-logistics-section-nav
   [base]="navBase"
   [sections]="mode === 'manifest' ? sections : []"
-/><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
+/>
+<tc-logistics-pending-requests />
+<tc-feedback [message]="error()" />
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de vehículos"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarEntity class="toolbar-lookup">
+    <tc-logistics-lookup
+      title="Transportista"
+      resource="party-options"
+      [yard]="yard"
+      [value]="filters['carrierUuid']"
+      (selectedChange)="onCarrierChanged($event)"
+    />
+  </div>
+
+  @if (session.can('LOGISTICS_MANAGE')) {
+    <button toolbarAction class="btn primary" [disabled]="loading()" (click)="add()">
+      Nuevo vehículo
+    </button>
+  }
+  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+    Recargar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Transportista">
+      <div class="field">
+        <tc-logistics-lookup
+          title="Transportista"
+          resource="party-options"
+          [yard]="yard"
+          [value]="drawerForm.controls.carrierUuid.value"
+          (selectedChange)="onDrawerCarrierPicked($event)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (loading()) {
   <p role="status">Cargando…</p>
 }
-<section class="panel">
-  <tc-logistics-lookup
-    title="Transportista"
-    resource="party-options"
-    [yard]="yard"
-    [value]="filters['carrierUuid']"
-    (selectedChange)="update('carrierUuid', $event)"
-  />
-  @if (session.can('LOGISTICS_MANAGE')) {
-    <button class="btn primary" [disabled]="loading()" (click)="add()">Nuevo vehículo</button>
-  }
-</section>
+
 <tc-logistics-records
   [zone]="zone"
   [rows]="rows()"
   [columns]="columns"
   (selected)="open($event)"
-/><tc-pagination
+/>
+<tc-pagination
   [offset]="offset"
   [limit]="limit"
   [count]="rows().length"

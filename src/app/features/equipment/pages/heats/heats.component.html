@@ -1,1 +1,103 @@
-<tc-equipment-section-navigation [catalog]="true"/><section class="panel"><div class="panel-heading"><h1>Coladas</h1>@if(session.can('EQUIPMENT_MANAGE')){<button class="btn primary" [disabled]="busy()" (click)="edit()">Nueva colada</button>}</div><p>Identidad técnica y trazabilidad administrativa.</p></section><form class="panel toolbar" [formGroup]="filters" (ngSubmit)="apply()"><div><tc-equipment-lookup kind="party" label="Molino / fundidor" [purpose]="'MILL'"  formControlName="millUuid"/></div><div><tc-equipment-lookup kind="grade" label="Grado"   formControlName="gradeUuid"/></div><button class="btn secondary" [disabled]="busy()">Aplicar filtros</button></form><tc-feedback [message]="error()"/><tc-feedback [message]="success()" kind="success"/><section class="panel table-panel" [attr.aria-busy]="busy()"><div class="panel-heading"><h2>Registros</h2><button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>@if(busy()){<span role="status">Cargando…</span>}</div><div class="table-scroll" tabindex="0" aria-label="Coladas"><table><caption class="sr-only">Coladas</caption><thead><tr>@for(col of columns;track col.key){<th>{{col.label}}</th>}<th>UUID / acciones</th></tr></thead><tbody>@for(row of rows();track row.uuid){<tr>@for(col of columns;track col.key){<td>{{value(row,col.key)}}</td>}<td><small class="mono">{{row.uuid}}</small><div class="row-actions"></div></td></tr>}@empty{@if(!busy()&&!error()){<tr><td [attr.colspan]="columns.length+1" class="empty-state">No hay registros para estos criterios.</td></tr>}}</tbody></table></div><tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="apply($event)" (resize)="resize($event)"/></section>
+<tc-equipment-section-navigation [catalog]="true" />
+
+<section class="panel">
+  <div class="panel-heading">
+    <h1>Coladas</h1>
+    @if (session.can('EQUIPMENT_MANAGE')) {
+      <button class="btn primary" [disabled]="busy()" (click)="edit()">Nueva colada</button>
+    }
+  </div>
+  <p>Identidad técnica y trazabilidad administrativa.</p>
+</section>
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de coladas"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+/>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Material y procedencia">
+      <div class="field">
+        <tc-equipment-lookup
+          kind="party"
+          label="Molino / fundidor"
+          [purpose]="'MILL'"
+          formControlName="millUuid"
+          (picked)="onLookupPicked('millUuid', $event)"
+        />
+      </div>
+      <div class="field">
+        <tc-equipment-lookup
+          kind="grade"
+          label="Grado"
+          formControlName="gradeUuid"
+          (picked)="onLookupPicked('gradeUuid', $event)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h2>Registros</h2>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
+    @if (busy()) {
+      <span role="status">Cargando…</span>
+    }
+  </div>
+  <div class="table-scroll" tabindex="0" aria-label="Coladas">
+    <table>
+      <caption class="sr-only">
+        Coladas
+      </caption>
+      <thead>
+        <tr>
+          @for (col of columns; track col.key) {
+            <th>{{ col.label }}</th>
+          }
+          <th>UUID / acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
+          <tr>
+            @for (col of columns; track col.key) {
+              <td>{{ value(row, col.key) }}</td>
+            }
+            <td>
+              <small class="mono">{{ row.uuid }}</small>
+              <div class="row-actions"></div>
+            </td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td [attr.colspan]="columns.length + 1" class="empty-state">
+                No hay registros para estos criterios.
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <tc-pagination
+    [offset]="offset()"
+    [limit]="limit()"
+    [count]="rows().length"
+    [busy]="busy()"
+    (move)="apply($event)"
+    (resize)="resize($event)"
+  />
+</section>

@@ -1,0 +1,245 @@
+.search-toolbar {
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: var(--tc-panel);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-panel, 8px);
+  box-shadow: var(--tc-shadow);
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep [toolbarContext] {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep [toolbarEntity] {
+  flex: 1 1 260px;
+}
+
+:host ::ng-deep [toolbarAction],
+:host ::ng-deep [toolbarActions] {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.search-input-wrapper {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.input-with-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  input {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 36px 8px 38px;
+    background: var(--tc-panel);
+    border: 1px solid var(--tc-control-border);
+    border-radius: var(--tc-radius-control, 4px);
+    color: var(--tc-text);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 140ms ease-in-out;
+
+    &:focus {
+      outline: 2px solid var(--tc-focus);
+      outline-offset: 1px;
+      border-color: var(--tc-focus);
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  .search-icon-btn {
+    position: absolute;
+    left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 4px;
+    color: var(--tc-text-muted);
+    cursor: pointer;
+    border-radius: 2px;
+
+    &:hover {
+      color: var(--tc-action-text);
+    }
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 4px;
+    color: var(--tc-text-muted);
+    cursor: pointer;
+    border-radius: 2px;
+
+    &:hover {
+      color: var(--tc-danger);
+    }
+  }
+}
+
+.filter-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  white-space: nowrap;
+  flex: none;
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tc-action);
+    color: var(--tc-on-action);
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9999px;
+  }
+}
+
+.chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--tc-border);
+}
+
+.chips-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--tc-selection);
+  border: 1px solid var(--tc-action);
+  border-radius: 9999px;
+  color: var(--tc-text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 140ms ease;
+
+  .chip-label {
+    color: var(--tc-text-muted);
+    font-weight: 500;
+  }
+
+  .chip-value {
+    color: var(--tc-text);
+    font-weight: 600;
+  }
+
+  .chip-close-icon {
+    display: inline-flex;
+    opacity: 0.7;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--tc-action-hover);
+    color: var(--tc-on-action);
+
+    .chip-label,
+    .chip-value {
+      color: var(--tc-on-action);
+    }
+
+    .chip-close-icon {
+      opacity: 1;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tc-focus);
+    outline-offset: 1px;
+  }
+}
+
+.clear-all-link {
+  background: none;
+  border: none;
+  color: var(--tc-action-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 6px;
+
+  &:hover {
+    color: var(--tc-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tc-focus);
+    outline-offset: 1px;
+  }
+}
+
+@media (max-width: 767px) {
+  .search-toolbar {
+    padding: 12px 14px;
+  }
+
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .search-input-wrapper {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+
+    input {
+      min-height: 44px;
+    }
+  }
+
+  .filter-trigger-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+}

@@ -1,0 +1,90 @@
+<section class="search-toolbar panel" role="search" [attr.aria-label]="label()">
+  <div class="toolbar-row">
+    <ng-content select="[toolbarContext]" />
+    <ng-content select="[toolbarEntity]" />
+
+    @if (showSearch()) {
+      <div class="search-input-wrapper">
+        <label [for]="'tc-search-input'" class="sr-only">{{ label() }}</label>
+        <div class="input-with-actions">
+          <button
+            type="button"
+            class="search-icon-btn"
+            (click)="submitSearch()"
+            [disabled]="busy()"
+            aria-label="Buscar"
+          >
+            <tc-icon name="search" />
+          </button>
+
+          <input
+            id="tc-search-input"
+            type="search"
+            [placeholder]="placeholder()"
+            [maxlength]="maxlength()"
+            [disabled]="busy()"
+            [ngModel]="term()"
+            (ngModelChange)="term.set($event)"
+            (keydown)="onKeydown($event)"
+            autocomplete="off"
+          />
+
+          @if (term()) {
+            <button
+              type="button"
+              class="clear-btn"
+              (click)="clearSearch()"
+              [disabled]="busy()"
+              aria-label="Limpiar búsqueda"
+            >
+              <tc-icon name="close" />
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @if (showFilters()) {
+      <button
+        type="button"
+        class="btn secondary filter-trigger-btn"
+        (click)="openFilters.emit()"
+        [disabled]="busy()"
+        [attr.aria-label]="count() > 0 ? 'Filtros, ' + count() + ' activos' : 'Filtros'"
+      >
+        <tc-icon name="tune" />
+        <span>Filtros</span>
+        @if (count() > 0) {
+          <span class="count-badge" aria-hidden="true">{{ count() }}</span>
+        }
+      </button>
+    }
+
+    <ng-content select="[toolbarAction], [toolbarActions]" />
+  </div>
+
+  @if (chips().length > 0) {
+    <div class="chips-row" aria-live="polite">
+      <ul class="chips-list" aria-label="Filtros activos">
+        @for (chip of chips(); track chip.key + ':' + chip.value) {
+          <li class="chip-item">
+            <button
+              type="button"
+              class="filter-chip"
+              (click)="onRemove(chip)"
+              [attr.aria-label]="'Quitar filtro ' + chip.label + ': ' + chip.value"
+              [title]="chip.title || (chip.label + ': ' + chip.value)"
+            >
+              <span class="chip-label">{{ chip.label }}:</span>
+              <span class="chip-value">{{ chip.value }}</span>
+              <tc-icon name="close" class="chip-close-icon" />
+            </button>
+          </li>
+        }
+      </ul>
+      <button type="button" class="clear-all-link" (click)="onClear()">
+        Limpiar todo
+      </button>
+    </div>
+  }
+</section>

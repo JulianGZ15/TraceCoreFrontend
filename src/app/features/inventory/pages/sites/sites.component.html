@@ -1,30 +1,59 @@
 <tc-page-heading
   section="Inventario y patios"
   title="Sitios operativos externos"
-/><tc-inventory-inventory-nav /><tc-feedback [message]="error()" /><tc-feedback
-  [message]="success()"
-  kind="success"
 />
-@if (busy()) {
-  <p role="status">Cargando…</p>
-}
-<div class="toolbar">
-  <div class="field">
-    <label for="site-active">Estado</label
-    ><select
-      id="site-active"
-      [(ngModel)]="active"
-      (ngModelChange)="query({ active: $event || null, offset: 0 })"
-    >
-      <option value="">Todos</option>
-      <option value="true">Activos</option>
-      <option value="false">Inactivos</option>
-    </select>
-  </div>
+<tc-inventory-inventory-nav />
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de sitios"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="busy()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
   @if (access.global('INVENTORY_MANAGE')) {
-    <button class="btn primary" (click)="create()">Nuevo sitio</button>
+    <button toolbarAction class="btn primary" (click)="create()">Nuevo sitio</button>
   }
-</div>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Estado operativo">
+      <div class="pill-group" role="group" aria-label="Estado operativo">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.active.value === ''"
+          (click)="setDraftActive('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.active.value === 'true'"
+          (click)="setDraftActive('true')"
+        >
+          Activos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.active.value === 'false'"
+          (click)="setDraftActive('false')"
+        >
+          Inactivos
+        </button>
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 <div
   class="table-scroll"
   tabindex="0"

@@ -2,58 +2,122 @@
   section="Centro comercial"
   [title]="title"
   description="Documentos administrativos, cumplimiento y trazabilidad por patio."
-/><tc-commerce-section-nav
+/>
+<tc-commerce-section-nav
   [base]="navBase"
   [sections]="sections"
-/><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
-<div class="toolbar">
-  <label
-    >Estado<select #s [value]="filters['state'] ?? ''" (change)="update('state', s.value)">
-      <option value="">Todos</option>
-      <option value="DRAFT">Borrador</option>
-      <option value="ACTIVE">Activo</option>
-      <option value="CLOSED">Cerrado</option>
-      <option value="CANCELLED">Cancelado</option>
-    </select></label
-  ><label
-    >Patio<select #y [value]="yard" (change)="update('yardUuid', y.value)">
+/>
+<tc-commerce-pending-requests />
+<tc-feedback [message]="error()" />
+
+<tc-search-toolbar
+  [showSearch]="false"
+  label="Filtros de rentas"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  <div toolbarContext class="field toolbar-yard">
+    <label for="rental-yard-select" class="sr-only">Patio</label>
+    <select id="rental-yard-select" #y [value]="yard" (change)="update('yardUuid', y.value)">
       @for (item of yards; track item.uuid) {
         <option [value]="item.uuid">{{ item.code }} · {{ item.name }}</option>
       }
-    </select></label
-  >
-  <div class="directory-filter">
-    <tc-commerce-lookup
-      resource="party-options"
-      [yard]="yard"
-      [params]="{ purpose: 'CONTRACTOR' }"
-      title="Contratante"
-      [value]="filters['partyUuid'] ?? ''"
-      (selectedChange)="update('partyUuid', $event)"
-    />
+    </select>
   </div>
-  <div class="directory-filter">
-    <tc-commerce-lookup
-      resource="party-options"
-      [yard]="yard"
-      [params]="{ purpose: 'DISTRIBUTOR' }"
-      title="Distribuidor"
-      [value]="filters['distributorUuid'] ?? ''"
-      (selectedChange)="update('distributorUuid', $event)"
-    />
-  </div>
-  <div class="directory-filter">
-    <tc-commerce-lookup
-      resource="party-options"
-      [yard]="yard"
-      [params]="{ purpose: 'END_CUSTOMER' }"
-      title="Cliente final"
-      [value]="filters['endCustomerUuid'] ?? ''"
-      (selectedChange)="update('endCustomerUuid', $event)"
-    />
-  </div>
-  <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
-</div>
+
+  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+    Recargar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Estado del contrato">
+      <div class="pill-group" role="group" aria-label="Estado del contrato">
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === ''"
+          (click)="setDraftState('')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'DRAFT'"
+          (click)="setDraftState('DRAFT')"
+        >
+          Borrador
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'ACTIVE'"
+          (click)="setDraftState('ACTIVE')"
+        >
+          Activo
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CLOSED'"
+          (click)="setDraftState('CLOSED')"
+        >
+          Cerrado
+        </button>
+        <button
+          type="button"
+          class="pill-option"
+          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+          (click)="setDraftState('CANCELLED')"
+        >
+          Cancelado
+        </button>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Partes involucradas">
+      <div class="field">
+        <tc-commerce-lookup
+          resource="party-options"
+          [yard]="yard"
+          [params]="{ purpose: 'CONTRACTOR' }"
+          title="Contratante"
+          [value]="drawerForm.controls.partyUuid.value"
+          (selectedChange)="onPartyPicked('partyUuid', $event)"
+        />
+      </div>
+
+      <div class="field">
+        <tc-commerce-lookup
+          resource="party-options"
+          [yard]="yard"
+          [params]="{ purpose: 'DISTRIBUTOR' }"
+          title="Distribuidor"
+          [value]="drawerForm.controls.distributorUuid.value"
+          (selectedChange)="onPartyPicked('distributorUuid', $event)"
+        />
+      </div>
+
+      <div class="field">
+        <tc-commerce-lookup
+          resource="party-options"
+          [yard]="yard"
+          [params]="{ purpose: 'END_CUSTOMER' }"
+          title="Cliente final"
+          [value]="drawerForm.controls.endCustomerUuid.value"
+          (selectedChange)="onPartyPicked('endCustomerUuid', $event)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (loading()) {
   <p role="status">Cargando…</p>
 }
@@ -61,7 +125,8 @@
   [rows]="rows()"
   [columns]="columns"
   (selected)="selected.set($event)"
-/><tc-pagination
+/>
+<tc-pagination
   [offset]="offset"
   [limit]="limit"
   [count]="rows().length"
@@ -73,15 +138,7 @@
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
     <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
     <div class="toolbar">
-      <label
-        >Estado<select #s [value]="filters['state'] ?? ''" (change)="update('state', s.value)">
-          <option value="">Todos</option>
-          <option value="DRAFT">Borrador</option>
-          <option value="ACTIVE">Activo</option>
-          <option value="CLOSED">Cerrado</option>
-          <option value="CANCELLED">Cancelado</option>
-        </select></label
-      ><a [routerLink]="'/comercial/rentas/' + row.uuid + '/general'">Abrir renta</a>
+      <a [routerLink]="'/comercial/rentas/' + row.uuid + '/general'">Abrir renta</a>
     </div>
   </section>
 }

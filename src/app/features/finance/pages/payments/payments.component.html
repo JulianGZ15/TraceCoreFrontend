@@ -4,13 +4,13 @@
   description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
 />
 <nav class="actions" aria-label="Finanzas">
-  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a
-  ><a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a
-  ><a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a
-  ><a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a
-  ><a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a
-  ><a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a
-  ><a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
+  <a class="btn secondary" routerLink="/finanzas/facturas">Facturas</a>
+  <a class="btn secondary" routerLink="/finanzas/pagos">Pagos</a>
+  <a class="btn secondary" routerLink="/finanzas/cargos">Cargos</a>
+  <a class="btn secondary" routerLink="/finanzas/cuentas">Crédito</a>
+  <a class="btn secondary" routerLink="/finanzas/compromisos">Compromisos</a>
+  <a class="btn secondary" routerLink="/finanzas/reversos">Reversos</a>
+  <a class="btn secondary" routerLink="/finanzas/divisas">Divisas</a>
 </nav>
 <tc-finance-pending-requests />
 @if (sections.length) {
@@ -23,54 +23,103 @@
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
+
+<tc-search-toolbar
+  label="Buscar pagos por referencia de operación"
+  placeholder="Referencia de operación…"
+  [value]="filters['search']"
+  [chips]="chips()"
+  [count]="activeFilterCount()"
+  [busy]="loading()"
+  (search)="onSearch($event)"
+  (openFilters)="openFilters(filterDrawerTpl)"
+  (remove)="onRemoveChip($event)"
+  (clear)="onClearAll()"
+>
+  @if (can('FINANCE_APPROVE')) {
+    <button toolbarAction class="btn primary" (click)="action('payment')">
+      Registrar pago
+    </button>
+  }
+  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+    Recargar
+  </button>
+</tc-search-toolbar>
+
+<ng-template #filterDrawerTpl>
+  <form [formGroup]="drawerForm">
+    <tc-filter-section title="Contraparte y moneda">
+      <div class="field">
+        <tc-finance-lookup
+          title="Tercero"
+          [value]="drawerForm.controls.partyUuid.value"
+          (selectedChange)="onPartyPicked($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label for="payment-currency">Divisa</label>
+        <select id="payment-currency" formControlName="currency">
+          <option value="">Todas</option>
+          @for (c of currencies(); track c.uuid) {
+            <option [value]="c.code">{{ c.code }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Dirección</label>
+        <div class="pill-group" role="group" aria-label="Dirección del pago">
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.direction.value === ''"
+            (click)="setDraftDirection('')"
+          >
+            Ambas
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.direction.value === 'RECEIVABLE'"
+            (click)="setDraftDirection('RECEIVABLE')"
+          >
+            Por cobrar
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.direction.value === 'PAYABLE'"
+            (click)="setDraftDirection('PAYABLE')"
+          >
+            Por pagar
+          </button>
+        </div>
+      </div>
+    </tc-filter-section>
+
+    <tc-filter-section title="Periodo de operación">
+      <div class="field">
+        <tc-date-range
+          label="Periodo de operación"
+          fromLabel="Desde"
+          toLabel="Hasta (exclusivo)"
+          [from]="drawerForm.controls.from.value"
+          [to]="drawerForm.controls.to.value"
+          (rangeChange)="drawerForm.controls.from.setValue($event.from); drawerForm.controls.to.setValue($event.to)"
+        />
+      </div>
+    </tc-filter-section>
+  </form>
+</ng-template>
+
 @if (loading()) {
   <p role="status">Consultando…</p>
 }
-<section class="panel filters">
-  <tc-finance-lookup
-    title="Tercero"
-    [value]="filters['partyUuid']"
-    (selectedChange)="update('partyUuid', $event)"
-  /><label
-    >Divisa<select #cur [value]="filters['currency']" (change)="update('currency', cur.value)">
-      <option value="">Todas</option>
-      @for (c of currencies(); track c.uuid) {
-        <option [value]="c.code">{{ c.code }}</option>
-      }
-    </select></label
-  ><label
-    >Dirección<select #dir [value]="filters['direction']" (change)="update('direction', dir.value)">
-      <option value="">Ambas</option>
-      <option value="RECEIVABLE">Por cobrar</option>
-      <option value="PAYABLE">Por pagar</option>
-    </select></label
-  >
-  <label
-    >Desde (con offset)<input
-      #fromDate
-      [value]="filters['from']"
-      (change)="update('from', fromDate.value)"
-      placeholder="2026-01-01T00:00:00-06:00" /></label
-  ><label
-    >Hasta (exclusivo)<input
-      #toDate
-      [value]="filters['to']"
-      (change)="update('to', toDate.value)"
-      placeholder="2026-02-01T00:00:00-06:00"
-  /></label>
-</section>
-<label
-  >Referencia de operación<input
-    type="search"
-    #q
-    [value]="filters['search']"
-    (change)="update('search', q.value)"
-/></label>
-@if (can('FINANCE_APPROVE')) {
-  <button class="btn primary" (click)="action('payment')">Registrar pago</button>
-}
+
 <section class="panel">
-  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" />
+  <tc-pagination
     [offset]="offset"
     [limit]="limit"
     [count]="rows().length"
