@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { Component, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,7 +21,7 @@ import {
 import { form, message, instant, exact } from '../../rules';
 @Component({
   selector: 'tc-commerce-rental-summary',
-  imports: [
+  imports: [ContextualLinksComponent,
     RouterLink,
     ReactiveFormsModule,
     PageHeading,

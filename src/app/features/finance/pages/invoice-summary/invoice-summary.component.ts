@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FinancePage } from '../../page';
@@ -8,7 +9,7 @@ import { PendingRequestsComponent } from '../../shared/pending-requests/pending-
 import { LookupComponent } from '../../shared/lookup/lookup.component';
 @Component({
   selector: 'tc-finance-invoice-summary',
-  imports: [RouterLink, PageHeading, Feedback, SectionNavComponent, PendingRequestsComponent],
+  imports: [ContextualLinksComponent,RouterLink, PageHeading, Feedback, SectionNavComponent, PendingRequestsComponent],
   templateUrl: './invoice-summary.component.html',
   styleUrl: './invoice-summary.component.scss',
 })

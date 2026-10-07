@@ -11,3 +11,5 @@
     <p role="status">Cargando expediente…</p>
   }
 }
+
+@if (store.party()?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="PARTY" [uuid]="documentSubjectUuid"/> }

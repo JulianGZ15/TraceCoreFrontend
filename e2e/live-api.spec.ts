@@ -680,3 +680,6 @@ test('stage eight real API: grouped manifest, trip correction, dispatch and part
 
 import { financeLive } from './finance-live';
 test('stage nine real API: charges, invoice preview, payments, applications, notes, reversals, credit and evidence',async({page})=>{test.skip(!process.env['TRACECORE_E2E_ISOLATED'],'Disposable database only');test.setTimeout(180000);await financeLive(page);});
+
+import {documentsLive} from './documents-live';
+test('stage ten real API: documents, exact versions, legacy imports, contextual links, queries, CSV and support',async({page})=>{test.skip(!process.env['TRACECORE_E2E_ISOLATED'],'Disposable database only');test.setTimeout(180000);await documentsLive(page);});

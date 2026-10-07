@@ -1,0 +1,41 @@
+<section class="dialog">
+  <div class="dialog-header">
+    <h2>{{ data.mode === 'UPLOAD' ? 'Cargar nueva versión' : 'Importar evidencia existente' }}</h2>
+    <button class="btn secondary" (click)="close()">Cerrar</button>
+  </div>
+  <p>{{ summary().document.title }} · revisión {{ summary().document.version }}</p>
+  <p>El nuevo archivo queda en borrador. La versión aprobada anterior permanece vigente.</p>
+  @if (error()) {
+    <tc-feedback [message]="error()" />
+  }
+  @if (data.mode === 'UPLOAD') {
+    <label
+      >Archivo PDF, PNG o JPEG<input
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        (change)="select($event)"
+    /></label>
+    <p>De 1 byte a 10 MiB. El servidor valida contenido, extensión e integridad.</p>
+    @if (file()) {
+      <p>{{ file()?.name }} · {{ file()?.size }} bytes</p>
+    }
+  } @else {
+    <tc-document-evidence-picker
+      [document]="summary().document.uuid"
+      (selected)="evidence.set($event)"
+    />
+  }
+  <div class="dialog-actions">
+    <button class="btn secondary" (click)="reload()" [disabled]="busy()">
+      Consultar datos actuales
+    </button>
+    @if (request) {
+      <button class="btn secondary" (click)="recover()" [disabled]="busy()">
+        Consultar resultado pendiente
+      </button>
+    }
+    <button class="btn primary" (click)="save()" [disabled]="busy()">
+      {{ request ? 'Repetir misma solicitud' : 'Guardar versión DRAFT' }}
+    </button>
+  </div>
+</section>

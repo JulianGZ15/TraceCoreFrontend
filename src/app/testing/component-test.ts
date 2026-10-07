@@ -25,6 +25,11 @@ const user = {
 export async function render<T>(component: Type<T>, inputs: Record<string, unknown> = {}) {
   const session = {
     epoch: signal(0),
+    documentRead: () => false,
+    documentWrite: () => false,
+    queryRead: () => false,
+    queryExport: () => false,
+    supportRead: () => false,
     ended: new Subject<void>(),
     inventoryRead: () => false,
     qualityRead: () => false,

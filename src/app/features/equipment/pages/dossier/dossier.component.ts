@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { confirm } from '../../../../shared/ui/editor';
 
 import {
@@ -102,7 +103,7 @@ import { SectionNavigationComponent } from '../../components/section-navigation/
 @Component({
   selector: 'tc-equipment-dossier',
   providers: [AssetStore],
-  imports: [Feedback, RouterLink, RouterOutlet, AssetHeaderComponent, SectionNavigationComponent],
+  imports: [ContextualLinksComponent,Feedback, RouterLink, RouterOutlet, AssetHeaderComponent, SectionNavigationComponent],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
 })

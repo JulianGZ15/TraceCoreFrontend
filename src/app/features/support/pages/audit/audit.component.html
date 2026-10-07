@@ -1,0 +1,91 @@
+<tc-page-heading
+  title="Auditoría de soporte"
+  section="SOPORTE"
+  description="Metadatos de operaciones, actores y campos intervenidos."
+/>
+<nav class="tabs" aria-label="Soporte">
+  @if (access.audit()) {
+    <a routerLink="/soporte/auditoria">Auditoría</a>
+  }
+  @if (session.can('SUPPORT_READ') && access.any('RFID_READ') && access.any('QUERY_READ')) {
+    <a routerLink="/soporte/recibos-rfid">Recibos RFID</a>
+  }
+</nav>
+<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
+  <div class="form-grid">
+    <label>Tipo del recurso<input formControlName="resourceType" maxlength="100" /></label
+    ><label>UUID del recurso<input formControlName="resourceUuid" /></label
+    ><label>UUID del actor<input formControlName="actorUuid" /></label
+    ><label>UUID de correlación<input formControlName="correlationUuid" /></label
+    ><label
+      >Desde (ISO con offset)<input
+        formControlName="from"
+        placeholder="2026-10-01T00:00:00-06:00" /></label
+    ><label
+      >Hasta, excluido (ISO con offset)<input
+        formControlName="to"
+        placeholder="2026-11-01T00:00:00-06:00"
+    /></label>
+  </div>
+  <button class="btn primary">Aplicar filtros</button>
+</form>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando soporte…</p>
+}
+<section class="panel table-panel">
+  <div
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de registros; desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Recurso</th>
+          <th>Acción</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track $index) {
+          <tr>
+            <td>{{ time(row['occurredAt']) }}</td>
+            <td>
+              {{ row['resourceType'] }}<small>{{ row['resourceUuid'] }}</small>
+            </td>
+            <td>{{ row['action'] }}</td>
+            <td>
+              <button class="btn secondary" (click)="selected.set(row)">Consultar detalle</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (!loading() && !error() && !rows().length) {
+    <p>Sin registros autorizados para estos filtros.</p>
+  }
+  <tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="loading()"
+    (move)="move($event)"
+    (resize)="resize($event)"
+  />
+</section>
+@if (selected(); as row) {
+  <section class="panel">
+    <h2>Detalle de solo lectura</h2>
+    <tc-record-values
+      [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+      [value]="row"
+    /><button class="btn secondary" (click)="selected.set(null)">Cerrar detalle</button>
+  </section>
+}

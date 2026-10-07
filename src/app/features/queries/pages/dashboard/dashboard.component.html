@@ -1,0 +1,106 @@
+<tc-page-heading
+  title="Panel operativo"
+  section="CONSULTAS"
+  description="Situación del patio calculada por el servidor. Cada consulta conserva su fecha de generación."
+/>
+<nav class="tabs" aria-label="Consultas">
+  <a routerLink="/consultas/inventario">Inventario</a><a routerLink="/consultas/ordenes">Órdenes</a>
+</nav>
+<section class="panel context">
+  <label
+    >Patio operativo<select [value]="yard" (change)="choose($any($event.target).value)">
+      <option value="">Selecciona un patio</option>
+      @for (y of session.context()?.yards; track y.uuid) {
+        @if (access.dashboard(y.uuid)) {
+          <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+        }
+      }
+    </select></label
+  ><button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+</section>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando patio…</p>
+}
+@if (!access.dashboard(yard)) {
+  <p class="feedback info">
+    Selecciona un patio con QUERY_READ e INVENTORY_READ. Las capacidades se comprueban de forma
+    independiente.
+  </p>
+}
+@if (data(); as d) {
+  <p class="small-muted">Generado {{ time(d.generatedAt) }}</p>
+  <section class="metrics">
+    <article class="panel">
+      <span>Piezas identificadas</span><strong>{{ d.inventory.identifiedPieces }}</strong>
+    </article>
+    <article class="panel">
+      <span>Posiciones ocupadas</span><strong>{{ d.inventory.positions }}</strong>
+    </article>
+    <article class="panel">
+      <span>Peso conocido (kg)</span
+      ><strong class="exact" tabindex="0" aria-label="Peso conocido en kilogramos">{{
+        d.inventory.knownWeightKgExact ?? 'API incompatible: falta valor exacto'
+      }}</strong>
+    </article>
+    <article class="panel">
+      <span>Grupos con peso desconocido</span><strong>{{ d.inventory.unknownWeightGroups }}</strong>
+    </article>
+    <article class="panel">
+      <span>En tránsito</span><strong>{{ d.inventory.assetsInTransit }}</strong>
+    </article>
+    <article class="panel">
+      <span>Propuestas pendientes</span><strong>{{ d.inventory.pendingProposals }}</strong>
+    </article>
+  </section>
+  @if (d.commercial.authorized) {
+    <section class="panel">
+      <h2>Comercial</h2>
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="d.commercial.data"
+      />
+    </section>
+  }
+  @if (d.logistics.authorized) {
+    <section class="panel">
+      <h2>Logística</h2>
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="d.logistics.data"
+      />
+    </section>
+  }
+  @if (d.qualityHolds.authorized) {
+    <section class="panel">
+      <h2>Retenciones de calidad</h2>
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="d.qualityHolds.data"
+      />
+    </section>
+  }
+}
+<section class="panel">
+  <h2>Expedientes integrales</h2>
+  <p>Consulta por entidad; cada sección conserva sus permisos originales.</p>
+  @if (session.can('EQUIPMENT_READ') && access.any('QUERY_READ')) {
+    <tc-document-subject-picker
+      kind="ASSET"
+      source="QUERIES"
+      [yard]="yard"
+      label="Buscar equipo"
+      (selected)="open('equipos', $event.uuid)"
+    />
+  }
+  @if (session.can('PARTY_READ') && session.can('QUERY_READ')) {
+    <tc-document-subject-picker
+      kind="PARTY"
+      source="QUERIES"
+      label="Buscar tercero"
+      (selected)="open('terceros', $event.uuid)"
+    />
+  }
+</section>

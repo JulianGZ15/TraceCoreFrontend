@@ -10,6 +10,7 @@ export default defineConfig({
           '**/commerce-restart.spec.ts',
           '**/logistics-restart.spec.ts',
           '**/finance-restart.spec.ts',
+          '**/documents-restart.spec.ts',
         ]
       : '**/live-api.spec.ts',
   workers: 1,

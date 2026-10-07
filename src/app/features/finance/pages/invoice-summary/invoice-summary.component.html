@@ -104,3 +104,5 @@
     }
   </div>
 }
+
+@if (invoice()?.invoice?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="INVOICE" [uuid]="documentSubjectUuid"/> }

@@ -15,3 +15,5 @@
 } @else if (!error()) {
   <p role="status">Cargando expediente…</p>
 }
+
+@if (store.profile()?.asset?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="ASSET" [uuid]="documentSubjectUuid"/> }

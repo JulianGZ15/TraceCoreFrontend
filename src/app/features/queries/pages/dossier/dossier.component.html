@@ -1,0 +1,124 @@
+<tc-page-heading
+  title="Expediente integral"
+  section="CONSULTAS"
+  description="Consulta de solo lectura. Cada sección tiene sus permisos, paginación e instantánea independientes."
+/>
+<div class="actions">
+  <a class="btn secondary" routerLink="/consultas">Volver a consultas</a>
+  @if (links()) {
+    <a class="btn secondary" [routerLink]="links()">Abrir módulo de origen</a>
+  }
+  <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+</div>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando expediente…</p>
+}
+@if (summary(); as s) {
+  <header class="panel">
+    <p class="mono">{{ uuid }}</p>
+    <p class="small-muted">Identidad generada {{ time(s.generatedAt) }}</p>
+  </header>
+  <nav class="tabs" aria-label="Secciones del expediente">
+    @for (pair of visible(); track pair[0]) {
+      <a
+        [routerLink]="['/consultas', equipment ? 'equipos' : 'terceros', uuid, pair[0]]"
+        [class.active]="selected === pair[0]"
+        >{{ pair[1].label }}</a
+      >
+    }
+  </nav>
+  @if (selected === 'resumen') {
+    <section class="panel">
+      <h2>Identidad y situación</h2>
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="s.profile"
+      />
+    </section>
+  }
+  @if (section(); as detail) {
+    @if (!detail.authorized) {
+      <p class="feedback info">
+        Esta sección requiere capacidades adicionales. No se muestran datos ni cantidades.
+      </p>
+    } @else {
+      <section class="panel">
+        <h2>{{ sections()[selected].label }}</h2>
+        <p class="small-muted">
+          Sección generada {{ time(detail.generatedAt) }}. No comparte una instantánea con las demás
+          secciones.
+        </p>
+        @if (collections().length) {
+          <div class="actions">
+            <button
+              class="btn secondary"
+              [class.active]="!collection"
+              (click)="selectCollection('')"
+            >
+              Datos actuales
+            </button>
+            @for (c of collections(); track c[0]) {
+              <button
+                class="btn secondary"
+                [class.active]="collection === c[0]"
+                (click)="selectCollection(c[0])"
+              >
+                {{ c[1] }}
+              </button>
+            }
+          </div>
+        }
+        @if (page(); as p) {
+          @for (row of p.items; track $index) {
+            <article class="record">
+              <tc-record-values
+                [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+                [value]="row"
+              />
+            </article>
+          }
+          @if (!p.items.length) {
+            <p>Sin registros autorizados para esta colección.</p>
+          }
+          <tc-pagination
+            [offset]="offset"
+            [limit]="limit"
+            [count]="p.items.length"
+            [hasMore]="p.hasMore"
+            [busy]="loading()"
+            (move)="move($event)"
+            (resize)="resize($event)"
+          />
+        } @else {
+          <tc-record-values
+            [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+            [value]="detail.data"
+          />
+        }
+        @if (
+          !equipment &&
+          selected === 'finanzas' &&
+          session.can('QUERY_EXPORT') &&
+          session.can('FINANCE_READ')
+        ) {
+          <p>Los saldos se consultan y exportan por divisa, sin sumarlos.</p>
+          @for (balance of balances(); track balance.currency) {
+            <button
+              class="btn secondary"
+              [disabled]="csv.busy()"
+              (click)="exportBalance(balance.currency)"
+            >
+              Exportar saldo {{ balance.currency }}
+            </button>
+          }
+        }
+        @if (csv.error()) {
+          <tc-feedback [message]="csv.error()" />
+        }
+      </section>
+    }
+  }
+}

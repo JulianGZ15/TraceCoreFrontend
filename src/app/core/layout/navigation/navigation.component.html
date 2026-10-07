@@ -9,6 +9,9 @@
   /></a>
   <div class="nav-label">Espacio de trabajo</div>
   <nav aria-label="Principal">
+    @if (session.documentRead()) { <a routerLink="/documentos" routerLinkActive="active" (click)="close()"><tc-icon name="domain" />Biblioteca documental</a> }
+    @if (session.queryRead()) { <a routerLink="/consultas" routerLinkActive="active" (click)="close()"><tc-icon name="home" />Consultas operativas</a> }
+    @if (session.supportRead()) { <a routerLink="/soporte" routerLinkActive="active" (click)="close()"><tc-icon name="history" />Soporte y trazabilidad</a> }
     @if (session.financeRead()) {
       <a routerLink="/finanzas" routerLinkActive="active" (click)="close()"
         ><tc-icon name="domain" />Finanzas</a

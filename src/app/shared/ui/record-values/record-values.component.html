@@ -1,0 +1,8 @@
+<dl class="record-values">
+  @for (field of fields(); track $index) {
+    <div>
+      <dt>{{ field.label }}</dt>
+      <dd>{{ field.value }}</dd>
+    </div>
+  }
+</dl>

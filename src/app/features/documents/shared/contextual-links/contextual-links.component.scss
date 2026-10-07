@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+article {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--tc-border);
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

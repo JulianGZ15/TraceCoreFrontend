@@ -29,6 +29,11 @@
   </p>
 }
 <div class="access-cards">
+  @if (session.documentRead()) { <a class="access-card" routerLink="/documentos"><h3>Biblioteca documental</h3><p>Versiones, decisiones y vínculos con sus permisos de origen.</p><span class="card-link">Abrir documentos ↗</span></a> }
+  @if (session.queryRead()) { <a class="access-card" routerLink="/consultas"><h3>Consultas operativas</h3><p>Panel por patio, expedientes integrales y exportaciones por página.</p><span class="card-link">Abrir consultas ↗</span></a> }
+  @if (session.supportRead()) { <a class="access-card" routerLink="/soporte"><h3>Soporte y trazabilidad</h3><p>Recibos persistidos y auditoría de metadatos.</p><span class="card-link">Abrir soporte ↗</span></a> }
+  @if (session.documentWrite() && !session.documentRead()) { <p class="feedback info">Tienes capacidades documentales; necesitas DOCUMENT_READ COMPANY y lectura del propietario para consultar la biblioteca.</p> }
+  @if (session.queryExport() && !session.queryRead()) { <p class="feedback info">QUERY_EXPORT no concede lectura. Necesitas QUERY_READ y las capacidades del módulo consultado.</p> }
   @if (session.logisticsRead()) {
     <a class="access-card" routerLink="/logistica"
       ><h3>Logística y despacho</h3>

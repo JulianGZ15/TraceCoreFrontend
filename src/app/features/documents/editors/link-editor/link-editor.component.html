@@ -1,0 +1,67 @@
+<section class="dialog">
+  <div class="dialog-header">
+    <h2>Vincular versión aprobada</h2>
+    <button class="btn secondary" (click)="close()">Cerrar</button>
+  </div>
+  <p>El vínculo apunta a un archivo concreto; una aprobación posterior no lo actualizará.</p>
+  @if (error()) {
+    <tc-feedback [message]="error()" />
+  }
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <label
+      >Versión aprobada<select formControlName="versionUuid" (change)="preserveVersion()">
+        @if (data.current) {
+          <option [value]="data.current.metadata.uuid">
+            Versión {{ data.current.metadata.number }} · vigente
+          </option>
+        }
+        @if (pinnedVersion(); as pinned) {
+          <option [value]="pinned.metadata.uuid">
+            Versión {{ pinned.metadata.number }} · selección conservada
+          </option>
+        }
+        @for (v of versions(); track v.metadata.uuid) {
+          @if (v.metadata.uuid !== data.current?.metadata?.uuid) {
+            <option [value]="v.metadata.uuid">
+              Versión {{ v.metadata.number }} · histórica, no efectiva
+            </option>
+          }
+        }
+      </select></label
+    ><tc-pagination
+      [offset]="offset"
+      [count]="versions().length"
+      [hasMore]="hasMore()"
+      (move)="move($event)"
+    /><label
+      >Tipo de destino<select
+        formControlName="subjectKind"
+        (change)="form.controls.subjectUuid.setValue('')"
+      >
+        @for (k of kinds; track k) {
+          <option [value]="k">{{ names[k] }}</option>
+        }
+      </select></label
+    ><tc-document-subject-picker
+      [kind]="form.controls.subjectKind.value"
+      purpose="MANAGE"
+      label="Seleccionar destino"
+      (selected)="select($event)"
+    />
+    <div class="form-grid">
+      <label>UUID del destino<input formControlName="subjectUuid" /></label
+      ><label>Rol del vínculo<input formControlName="role" /></label
+      ><label>Inicio de vigencia<input type="datetime-local" formControlName="validFrom" /></label
+      ><label
+        >Fin de vigencia · opcional<input type="datetime-local" formControlName="validTo" /></label
+      ><label>Desplazamiento UTC<input formControlName="offset" placeholder="+00:00" /></label>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="btn secondary" (click)="recover()">
+        Consultar solicitud pendiente</button
+      ><button type="button" class="btn secondary" (click)="repeat()" [disabled]="busy()">
+        Repetir misma solicitud</button
+      ><button class="btn primary" [disabled]="busy()">Crear vínculo</button>
+    </div>
+  </form>
+</section>

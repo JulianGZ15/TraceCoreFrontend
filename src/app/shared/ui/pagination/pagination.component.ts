@@ -10,6 +10,7 @@ export class Pagination {
   readonly limit = input(25);
   readonly count = input(0);
   readonly busy = input(false);
+  readonly hasMore = input<boolean | undefined>(undefined);
   readonly move = output<number>();
   readonly resize = output<number>();
 }

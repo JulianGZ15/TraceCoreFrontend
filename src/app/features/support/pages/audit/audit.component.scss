@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.panel {
+  margin-block: 16px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+.tabs {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+td,
+th {
+  white-space: nowrap;
+}

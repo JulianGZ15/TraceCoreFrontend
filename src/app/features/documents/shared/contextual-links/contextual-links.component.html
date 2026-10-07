@@ -1,0 +1,55 @@
+@if (api.session.can('DOCUMENT_READ')) {
+  <section class="panel">
+    <h2>Documentos vinculados</h2>
+    <p>
+      Una evidencia del módulo y un documento aprobado son registros independientes. Los vínculos
+      conservan la versión documental exacta.
+    </p>
+    <div class="actions">
+      <button class="btn secondary" [disabled]="busy()" (click)="load()">
+        Consultar documentos</button
+      ><a
+        class="btn secondary"
+        routerLink="/documentos"
+        [queryParams]="{ ownerKind: kind(), ownerUuid: uuid() }"
+        >Biblioteca del propietario</a
+      >
+      @if (api.session.can('DOCUMENT_MANAGE')) {
+        <button class="btn secondary" (click)="create()">Nuevo documento</button>
+      }
+    </div>
+    @if (error()) {
+      <tc-feedback [message]="error()" />
+    }
+    @if (opened()) {
+      @for (row of rows(); track row.view.link.uuid) {
+        <article>
+          <a
+            [routerLink]="[
+              '/documentos',
+              row.view.document.uuid,
+              'versiones',
+              row.view.file.metadata.uuid,
+            ]"
+            >{{ row.view.document.title }} · versión {{ row.view.file.metadata.number }}</a
+          >
+          <p>
+            {{ linkState(row) }} · {{ row.view.link.role }} · {{ row.view.link.validFrom }} →
+            {{ row.view.link.validTo ?? 'Sin fin' }}
+          </p>
+        </article>
+      }
+      @if (!busy() && !error() && !rows().length) {
+        <p>Sin vínculos autorizados.</p>
+      }
+      <tc-pagination
+        [offset]="offset"
+        [limit]="25"
+        [count]="rows().length"
+        [hasMore]="hasMore()"
+        [busy]="busy()"
+        (move)="move($event)"
+      />
+    }
+  </section>
+}

@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.panel {
+  margin-block: 16px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 16px;
+}
+.metrics strong {
+  display: block;
+  font: 600 28px var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.metrics .exact {
+  font-size: 18px;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-wrap: normal;
+  max-width: 100%;
+}
+.context {
+  display: grid;
+  gap: 12px;
+}
+.context button {
+  justify-self: start;
+}
+.metrics span {
+  color: var(--tc-text-muted);
+}
+select {
+  max-width: 100%;
+}
+.tabs {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}

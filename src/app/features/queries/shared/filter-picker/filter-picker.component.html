@@ -1,0 +1,26 @@
+<fieldset>
+  <legend>{{ label() }}</legend>
+  <label>Buscar por etiqueta<input [formControl]="search" maxlength="100" /></label
+  ><button type="button" class="btn secondary" (click)="apply()" [disabled]="busy()">
+    Consultar opciones
+  </button>
+  @if (chosen(); as c) {
+    <p>Seleccionado: {{ c.label }} · {{ c.uuid }}</p>
+  }
+  @if (error()) {
+    <tc-feedback [message]="error()" />
+  }
+  <div class="options">
+    @for (row of rows(); track row.uuid) {
+      <button type="button" class="btn secondary" (click)="choose(row)">{{ row.label }}</button>
+    }
+  </div>
+  <tc-pagination
+    [offset]="offset"
+    [limit]="25"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="busy()"
+    (move)="move($event)"
+  />
+</fieldset>

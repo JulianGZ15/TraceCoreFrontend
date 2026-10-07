@@ -1,0 +1,34 @@
+small {
+  display: block;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+}
+.table-scroll {
+  overflow: auto;
+}
+td {
+  vertical-align: top;
+}
+.actions {
+  flex-wrap: wrap;
+}
+form .btn {
+  margin-top: 16px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}
+table {
+  min-width: 720px;
+}
+td:first-child {
+  min-width: 240px;
+}

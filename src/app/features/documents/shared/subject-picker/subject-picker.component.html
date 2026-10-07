@@ -1,0 +1,37 @@
+<section class="picker" [attr.aria-label]="label()">
+  <label
+    >{{ label() }} · búsqueda<input
+      [formControl]="search"
+      (keydown.enter)="$event.preventDefault(); apply()"
+      placeholder="Nombre, código o folio" /></label
+  ><button type="button" class="btn secondary" (click)="apply()" [disabled]="busy()">Buscar</button>
+  @if (chosen()) {
+    <p role="status">Seleccionado: {{ chosen()?.label }} · {{ chosen()?.uuid }}</p>
+  }
+  @if (error()) {
+    <tc-feedback [message]="error()" />
+  }
+  @if (busy()) {
+    <p role="status">Consultando opciones…</p>
+  }
+  <ul>
+    @for (row of rows(); track row.uuid) {
+      <li>
+        <button type="button" class="btn secondary" (click)="choose(row)">
+          {{ row.label }}<small>{{ row.uuid }}</small>
+        </button>
+      </li>
+    }
+  </ul>
+  @if (!busy() && !error() && !rows().length) {
+    <p>Sin opciones autorizadas.</p>
+  }
+  <tc-pagination
+    [offset]="offset"
+    [limit]="25"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="busy()"
+    (move)="move($event)"
+  />
+</section>

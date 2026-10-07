@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { Component, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +23,7 @@ import { FrameworkComponent as FrameworkEditorComponent } from '../../editors/fr
 import { TransitionComponent } from '../../editors/transition/transition.component';
 @Component({
   selector: 'tc-commerce-framework',
-  imports: [
+  imports: [ContextualLinksComponent,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

@@ -1,0 +1,23 @@
+<section class="dialog">
+  <div class="dialog-header">
+    <h2>{{ data.title }}</h2>
+    <button class="btn secondary" (click)="close()">Cerrar</button>
+  </div>
+  <p>
+    Acción {{ data.action }} · versión esperada {{ version }}. Esta operación conserva el historial.
+  </p>
+  @if (error()) {
+    <tc-feedback [message]="error()" />
+  }
+  <label>Motivo<textarea [formControl]="reason" maxlength="500" rows="4"></textarea></label>
+  @if (reason.touched && reason.invalid) {
+    <p role="alert">El motivo es obligatorio y admite hasta 500 caracteres.</p>
+  }
+  <div class="dialog-actions">
+    <button class="btn secondary" (click)="consult()" [disabled]="busy()">
+      Consultar estado actual</button
+    ><button class="btn primary" (click)="save()" [disabled]="busy() || !reviewed()">
+      Confirmar {{ data.title.toLowerCase() }}
+    </button>
+  </div>
+</section>

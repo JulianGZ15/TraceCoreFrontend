@@ -121,3 +121,5 @@
     <tc-commerce-order-editor [context]="context()" (saved)="done()" />
   }
 }
+
+@if (summary()?.order?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="ORDER" [uuid]="documentSubjectUuid"/> }

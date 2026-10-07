@@ -1,0 +1,26 @@
+.dialog {
+  max-height: 90dvh;
+  overflow: auto;
+}
+textarea {
+  width: 100%;
+  font: inherit;
+  border: 1px solid var(--tc-control-border);
+  border-radius: 4px;
+  padding: 12px;
+  resize: vertical;
+}
+.dialog p {
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

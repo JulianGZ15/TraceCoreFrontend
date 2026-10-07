@@ -15,6 +15,9 @@ export function safeReturn(value: string | null): string {
   )
     return value;
   const id = '[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}';
+  if (new RegExp('^/documentos(?:/' + id + '(?:/(?:resumen|versiones(?:/' + id + ')?|vinculos))?)?$').test(path)) return value;
+  if (new RegExp('^/consultas(?:/(?:panel|inventario|ordenes|equipos/' + id + '(?:/(?:resumen|tecnica|composicion|inventario|calidad|rfid|comercial|documentos))?|terceros/' + id + '(?:/(?:resumen|contactos|avl|comercial|finanzas|evidencias|documentos))?))?$').test(path)) return value;
+  if (/^\/soporte(?:\/(?:recibos-rfid|auditoria))?$/.test(path)) return value;
   if (
     new RegExp(
       '^/finanzas(?:/(?:facturas(?:/nueva|/' +
@@ -241,12 +244,18 @@ export class Session implements OnDestroy {
         this.can(p) || !!this.context()?.yards.some((y) => y.active && y.permissions.includes(p)),
     ),
   );
+  readonly documentRead = computed(() => this.can('DOCUMENT_READ'));
+  readonly documentWrite = computed(() => ['DOCUMENT_MANAGE','DOCUMENT_APPROVE','DOCUMENT_CONFIDENTIAL'].some(p=>this.can(p)));
+  readonly queryRead = computed(() => this.can('QUERY_READ') || !!this.context()?.yards.some(y=>y.active&&y.permissions.includes('QUERY_READ')));
+  readonly queryExport = computed(() => this.can('QUERY_EXPORT') || !!this.context()?.yards.some(y=>y.active&&y.permissions.includes('QUERY_EXPORT')));
+  readonly supportRead = computed(() => this.can('SUPPORT_READ') && (this.can('QUERY_READ')&&this.can('AUDIT_READ') || this.can('QUERY_READ')&&this.can('RFID_READ') || this.context()?.yards.some(y=>y.active&&(this.can('QUERY_READ')||y.permissions.includes('QUERY_READ'))&&(this.can('RFID_READ')||y.permissions.includes('RFID_READ')))));
   readonly hasAccess = computed(() => {
     const c = this.context();
     return (
       !!c &&
       (c.companyPermissions.some((p) =>
         [
+          'DOCUMENT_READ','DOCUMENT_MANAGE','DOCUMENT_APPROVE','DOCUMENT_CONFIDENTIAL','QUERY_READ','QUERY_EXPORT','SUPPORT_READ',
           'FINANCE_READ',
           'FINANCE_MANAGE',
           'FINANCE_APPROVE',
@@ -394,6 +403,7 @@ export class Session implements OnDestroy {
     });
   }
   private clear() {
+    sessionStorage.removeItem('tracecore.documents.pending');
     sessionStorage.removeItem('tracecore.logistics.pending');
     sessionStorage.removeItem('tracecore.logistics.draft');
     sessionStorage.removeItem('tracecore.quality.pending');

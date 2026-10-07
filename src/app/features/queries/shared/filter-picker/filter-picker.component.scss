@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+fieldset {
+  border: 1px solid var(--tc-border);
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 0;
+}
+.options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+p {
+  overflow-wrap: anywhere;
+}

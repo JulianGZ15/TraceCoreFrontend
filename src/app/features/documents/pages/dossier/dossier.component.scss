@@ -1,0 +1,27 @@
+.actions {
+  flex-wrap: wrap;
+}
+.panel p {
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow: auto;
+}
+article {
+  border-bottom: 1px solid var(--tc-border);
+  padding: 16px 0;
+}
+article .btn {
+  margin-top: 12px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

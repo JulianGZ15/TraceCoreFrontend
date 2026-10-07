@@ -1,0 +1,119 @@
+<tc-page-heading
+  title="Consulta de órdenes"
+  section="CONSULTAS"
+  description="Filtros autorizados y resultados paginados. Los campos monetarios y magnitudes conservan precisión exacta."
+/>
+<nav class="tabs" aria-label="Consultas">
+  <a routerLink="/consultas/panel">Panel operativo</a
+  ><a routerLink="/consultas/inventario">Inventario</a>
+</nav>
+<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
+  <div class="form-grid">
+    <label
+      >Patio<select formControlName="yardUuid">
+        <option value="">Alcance global COMPANY</option>
+        @for (y of session.context()?.yards; track y.uuid) {
+          @if (access.orders(y.uuid)) {
+            <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
+          }
+        }
+      </select></label
+    ><label
+      >Tipo<select formControlName="type">
+        <option value="">Todos</option>
+        <option value="OC">OC · Compra</option>
+        <option value="OV">OV · Venta</option>
+        <option value="OR">OR · Renta</option>
+      </select></label
+    ><label
+      >Estado<select formControlName="state">
+        <option value="">Todos</option>
+        <option value="DRAFT">Borrador</option>
+        <option value="APPROVED">Aprobada</option>
+        <option value="CLOSED">Cerrada</option>
+        <option value="CANCELLED">Cancelada</option>
+      </select></label
+    ><label>Divisa<input formControlName="currency" maxlength="3" /></label
+    ><label>UUID de tercero<input formControlName="partyUuid" /></label
+    ><label>UUID de equipo<input formControlName="assetUuid" /></label
+    ><label
+      >Desde (ISO con offset)<input
+        formControlName="from"
+        placeholder="2026-10-01T00:00:00-06:00" /></label
+    ><label
+      >Hasta, excluido (ISO con offset)<input
+        formControlName="to"
+        placeholder="2026-11-01T00:00:00-06:00"
+    /></label>
+  </div>
+  <details>
+    <summary>Buscar referencias por nombre</summary>
+    <tc-query-filter-picker
+      query="ORDERS"
+      kind="PARTY"
+      [yard]="form.controls.yardUuid.value"
+      label="Seleccionar tercero"
+      (selected)="form.controls.partyUuid.setValue($event.uuid)"
+    /><tc-query-filter-picker
+      query="ORDERS"
+      kind="ASSET"
+      [yard]="form.controls.yardUuid.value"
+      label="Seleccionar equipo"
+      (selected)="form.controls.assetUuid.setValue($event.uuid)"
+    />
+  </details>
+  <button class="btn primary">Aplicar filtros</button>
+</form>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando resultados…</p>
+}
+<section class="panel">
+  @for (row of rows(); track row['uuid']) {
+    <article class="panel">
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="row"
+      /><a [routerLink]="['/comercial/ordenes', row['uuid']]">Abrir orden comercial</a>
+    </article>
+  }
+  @if (!loading() && !error() && !rows().length) {
+    <p>Sin resultados para estos filtros.</p>
+  }
+  <tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="loading()"
+    (move)="move($event)"
+    (resize)="resize($event)"
+  />
+</section>
+@if (canExport()) {
+  <section class="panel">
+    <h2>Exportación CSV</h2>
+    <p>
+      Cada archivo contiene hasta 500 filas y corresponde a su propia instantánea. Los filtros
+      aplicados se conservan; descarga la siguiente página explícitamente.
+    </p>
+    <div class="actions">
+      <button class="btn secondary" [disabled]="csv.busy() || loading()" (click)="export()">
+        Descargar primera página
+      </button>
+      @if (csv.next() !== null) {
+        <button class="btn secondary" [disabled]="csv.busy()" (click)="export(true)">
+          Descargar siguiente página ({{ csv.next() }})
+        </button>
+      }
+    </div>
+    @if (csv.at()) {
+      <p class="small-muted">Última página generada {{ csv.at() }}</p>
+    }
+    @if (csv.error()) {
+      <tc-feedback [message]="csv.error()" />
+    }
+  </section>
+}

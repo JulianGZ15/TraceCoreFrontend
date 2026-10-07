@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.panel {
+  margin-block: 16px;
+}
+.tabs,
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 16px;
+}
+.tabs a {
+  padding: 8px 12px;
+  border-bottom: 2px solid transparent;
+}
+.tabs a.active {
+  border-color: var(--tc-action);
+  background: var(--tc-selection);
+}
+.record {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--tc-border);
+}
+.mono {
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,142 @@
+<tc-page-heading
+  [title]="summary()?.document?.title ?? 'Documento'"
+  section="EXPEDIENTE DOCUMENTAL"
+  description="Documento lógico, número de archivo y versiones de concurrencia se mantienen separados."
+/>
+<nav class="actions">
+  <a class="btn secondary" routerLink="/documentos">Biblioteca</a>
+  @for (s of ['resumen', 'versiones', 'vinculos']; track s) {
+    <a class="btn secondary" [routerLink]="['/documentos', id, s]">{{
+      s === 'resumen' ? 'Resumen' : s === 'versiones' ? 'Versiones' : 'Vínculos'
+    }}</a>
+  }
+  <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+</nav>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando documento…</p>
+}
+@if (summary(); as s) {
+  <section class="panel">
+    <p class="eyebrow">
+      {{ s.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }} ·
+      {{ s.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}
+    </p>
+    <p>{{ s.ownerLabel }} · {{ s.document.owner.uuid }}</p>
+    <p>Consulta: {{ time(s.evaluatedAt) }}</p>
+    <div class="actions">
+      @if (s.actions.manage) {
+        <button class="btn primary" (click)="upload('UPLOAD')">Cargar nueva versión</button
+        ><button class="btn secondary" (click)="upload('IMPORT')">Importar evidencia</button>
+      }
+      @if (s.actions.link) {
+        <button class="btn secondary" (click)="link()">Vincular versión aprobada</button>
+      }
+      @if (s.actions.archive) {
+        <button class="btn danger" (click)="archive()">Archivar documento</button>
+      }
+    </div>
+  </section>
+  @if (section === 'resumen') {
+    <section class="panel">
+      <h2>Versión vigente</h2>
+      @if (s.current) {
+        <a [routerLink]="['/documentos', id, 'versiones', s.current.metadata.uuid]"
+          >Versión {{ s.current.metadata.number }} · {{ s.current.metadata.filename }}</a
+        >
+      } @else {
+        <p>Sin versión vigente aprobada.</p>
+      }
+      <h2>Última versión cargada</h2>
+      @if (s.latest) {
+        <a [routerLink]="['/documentos', id, 'versiones', s.latest.metadata.uuid]"
+          >Versión {{ s.latest.metadata.number }} · {{ s.latest.metadata.state }}</a
+        >
+      } @else {
+        <p>Aún no hay archivos.</p>
+      }
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="s.document"
+      />
+    </section>
+  }
+  @if (section === 'versiones') {
+    <section class="panel table-panel">
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Tabla de registros; desplazamiento horizontal"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Archivo</th>
+              <th>Estado</th>
+              <th>Vigente</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of versions(); track v.metadata.uuid) {
+              <tr>
+                <td>{{ v.metadata.number }}</td>
+                <td>{{ v.metadata.filename }}</td>
+                <td>{{ v.metadata.state }}</td>
+                <td>{{ v.current ? 'Sí' : 'No' }}</td>
+                <td>
+                  <a [routerLink]="['/documentos', id, 'versiones', v.metadata.uuid]"
+                    >Abrir versión</a
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <tc-pagination
+        [offset]="offset"
+        [limit]="limit"
+        [count]="versions().length"
+        [hasMore]="hasMore()"
+        [busy]="loading()"
+        (move)="move($event)"
+        (resize)="resize($event)"
+      />
+    </section>
+  }
+  @if (section === 'vinculos') {
+    <section class="panel">
+      <h2>Vínculos activos e históricos autorizados</h2>
+      @for (row of links(); track row.view.link.uuid) {
+        <article>
+          <h3>{{ row.subjectLabel }} · {{ row.view.link.role }}</h3>
+          <p>{{ linkState(row) }} · versión documental {{ row.view.file.metadata.number }}</p>
+          <tc-record-values
+            [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+            [value]="row.view.link"
+          />
+          @if (row.withdrawable) {
+            <button class="btn danger" (click)="withdraw(row)">Retirar vínculo</button>
+          }
+        </article>
+      }
+      @if (!links().length) {
+        <p>Sin vínculos autorizados.</p>
+      }
+      <tc-pagination
+        [offset]="offset"
+        [limit]="limit"
+        [count]="links().length"
+        [hasMore]="hasMore()"
+        [busy]="loading()"
+        (move)="move($event)"
+        (resize)="resize($event)"
+      />
+    </section>
+  }
+}

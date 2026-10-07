@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { Component, signal, inject, input, effect, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -21,7 +22,7 @@ import * as M from '../../models';
 import { InspectionComponent as InspectionEditor } from '../../editors/inspection/inspection.component';
 @Component({
   selector: 'tc-quality-inspection',
-  imports: [
+  imports: [ContextualLinksComponent,
     RouterLink,
     PageHeading,
     Feedback,

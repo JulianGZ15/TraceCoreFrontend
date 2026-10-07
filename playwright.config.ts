@@ -7,6 +7,7 @@ export default defineConfig({
     '**/commerce-restart.spec.ts',
     '**/logistics-restart.spec.ts',
     '**/finance-restart.spec.ts',
+    '**/documents-restart.spec.ts',
   ],
   fullyParallel: true,
   workers: 2,

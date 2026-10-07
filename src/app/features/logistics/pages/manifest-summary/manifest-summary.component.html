@@ -64,3 +64,5 @@
     <p>La recepción física y el cumplimiento comercial se confirman por separado.</p>
   </section>
 }
+
+@if (summary()?.manifest?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="MANIFEST" [uuid]="documentSubjectUuid"/> }

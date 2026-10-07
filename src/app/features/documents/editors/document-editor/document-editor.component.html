@@ -1,0 +1,57 @@
+<section class="dialog">
+  <div class="dialog-header">
+    <h2>Nuevo documento</h2>
+    <button type="button" class="btn secondary" (click)="close()">Cerrar</button>
+  </div>
+  <p>
+    Crear la ficha no carga un archivo ni lo aprueba. El propietario y la clasificación permanecen
+    fijos.
+  </p>
+  @if (error()) {
+    <tc-feedback [message]="error()" />
+  }
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <label>Título<input formControlName="title" maxlength="250" /></label
+      ><label
+        >Tipo<select formControlName="type">
+          @for (type of types; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select></label
+      ><label
+        >Clasificación<select formControlName="classification">
+          <option value="INTERNAL">Interno</option>
+          @if (api.session.can('DOCUMENT_CONFIDENTIAL')) {
+            <option value="CONFIDENTIAL">Confidencial</option>
+          }
+        </select></label
+      ><label
+        >Tipo de propietario<select
+          formControlName="ownerKind"
+          (change)="form.controls.ownerUuid.setValue('')"
+        >
+          @for (kind of kinds; track kind) {
+            <option [value]="kind">{{ names[kind] }}</option>
+          }
+        </select></label
+      >
+    </div>
+    <tc-document-subject-picker
+      [kind]="form.controls.ownerKind.value"
+      purpose="MANAGE"
+      (selected)="select($event)"
+    /><label>UUID del propietario<input formControlName="ownerUuid" /></label>
+    @if (form.touched && form.invalid) {
+      <p role="alert">Completa título, clasificación y propietario válido.</p>
+    }
+    <div class="dialog-actions">
+      <button class="btn primary" [disabled]="busy()">Crear documento</button
+      ><button type="button" class="btn secondary" (click)="recover()">
+        Consultar solicitud pendiente</button
+      ><button type="button" class="btn secondary" (click)="repeat()" [disabled]="busy()">
+        Repetir misma solicitud
+      </button>
+    </div>
+  </form>
+</section>

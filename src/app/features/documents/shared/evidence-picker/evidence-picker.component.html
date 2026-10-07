@@ -1,0 +1,56 @@
+<div class="form-grid" [formGroup]="form">
+  <div>
+    <label for="document-evidence-source">Origen</label
+    ><select id="document-evidence-source" formControlName="sourceKind" (change)="sourceChanged()">
+      <option value="QUALITY">Calidad · biblioteca central</option>
+      <option value="PARTY">Terceros</option>
+      <option value="COMMERCIAL">Comercial</option>
+      <option value="LOGISTICS">Logística</option>
+      <option value="FINANCIAL">Finanzas</option>
+    </select>
+  </div>
+  @if (form.controls.sourceKind.value !== 'QUALITY') {
+    <div>
+      <label for="document-evidence-context">Tipo del contexto</label
+      ><select
+        id="document-evidence-context"
+        formControlName="contextKind"
+        (change)="resetSelection()"
+      >
+        <option value="PARTY">Tercero</option>
+        <option value="ORDER">Orden</option>
+        <option value="FRAMEWORK_CONTRACT">Contrato marco</option>
+        <option value="MANIFEST">Manifiesto</option>
+      </select>
+    </div>
+    <label
+      >UUID del contexto de origen<input formControlName="contextUuid" (input)="resetSelection()"
+    /></label>
+  }
+</div>
+<p>La importación conserva los permisos de origen en todas las versiones posteriores.</p>
+<button type="button" class="btn secondary" (click)="apply()" [disabled]="busy()">
+  Consultar evidencias
+</button>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+<ul>
+  @for (row of rows(); track row.uuid) {
+    <li>
+      <button type="button" class="btn secondary" (click)="choose(row)">
+        {{ row.filename }} · {{ row.mediaType }} · {{ row.size }} bytes</button
+      ><small>{{ row.uuid }}</small>
+    </li>
+  }
+</ul>
+@if (chosen()) {
+  <p role="status">Evidencia seleccionada: {{ chosen()?.filename }}</p>
+}
+<tc-pagination
+  [offset]="offset"
+  [count]="rows().length"
+  [hasMore]="hasMore()"
+  [busy]="busy()"
+  (move)="move($event)"
+/>

@@ -39,3 +39,5 @@
     </p>
   </section>
 }
+
+@if (rental()?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="RENTAL_CONTRACT" [uuid]="documentSubjectUuid"/> }

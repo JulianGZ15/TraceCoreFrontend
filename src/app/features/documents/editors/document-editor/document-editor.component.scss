@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+.dialog {
+  max-height: 90dvh;
+  overflow: auto;
+  max-width: 100%;
+}
+.dialog p {
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

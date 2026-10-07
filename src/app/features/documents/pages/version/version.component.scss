@@ -1,0 +1,17 @@
+.actions {
+  flex-wrap: wrap;
+}
+.panel p {
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

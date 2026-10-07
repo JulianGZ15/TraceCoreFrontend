@@ -50,3 +50,5 @@
 @if (!id) {
   <tc-commerce-framework-editor [context]="context()" (saved)="done($event)" />
 }
+
+@if (record()?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="FRAMEWORK_CONTRACT" [uuid]="documentSubjectUuid"/> }

@@ -1,0 +1,42 @@
+.picker {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--tc-border);
+  padding: 16px;
+  border-radius: 8px;
+  min-width: 0;
+}
+ul {
+  margin: 0;
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.picker > button {
+  justify-self: start;
+}
+li button {
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  text-align: left;
+}
+small {
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+p {
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

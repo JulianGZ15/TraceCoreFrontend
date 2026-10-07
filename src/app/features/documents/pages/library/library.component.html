@@ -1,0 +1,126 @@
+<tc-page-heading
+  title="Biblioteca documental"
+  section="DOCUMENTOS"
+  description="Versiones, decisiones y vínculos autorizados. La clasificación no modifica los permisos de las evidencias originales."
+/>
+<div class="actions">
+  @if (session.can('DOCUMENT_MANAGE')) {
+    <button class="btn primary" (click)="create()">Nuevo documento</button>
+  }
+  <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+</div>
+<form class="panel" [formGroup]="form" (ngSubmit)="apply()">
+  <div class="form-grid">
+    <label>Buscar por título<input formControlName="search" maxlength="250" /></label
+    ><label
+      >Tipo<select formControlName="type">
+        <option value="">Todos</option>
+        @for (t of types; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select></label
+    ><label
+      >Clasificación<select formControlName="classification">
+        <option value="">Todas autorizadas</option>
+        <option value="INTERNAL">Interno</option>
+        <option value="CONFIDENTIAL">Confidencial</option>
+      </select></label
+    ><label
+      >Estado<select formControlName="state">
+        <option value="ACTIVE">Activo</option>
+        <option value="ARCHIVED">Archivado</option>
+        <option value="">Todos</option>
+      </select></label
+    ><label
+      >Tipo del propietario<select
+        formControlName="ownerKind"
+        (change)="form.controls.ownerUuid.setValue('')"
+      >
+        <option value="">Sin filtro</option>
+        @for (k of kinds; track k) {
+          <option [value]="k">{{ names[k] }}</option>
+        }
+      </select></label
+    ><label>UUID del propietario<input formControlName="ownerUuid" /></label>
+  </div>
+  @if (form.controls.ownerKind.value) {
+    <tc-document-subject-picker
+      [kind]="kind()"
+      (selected)="form.controls.ownerUuid.setValue($event.uuid)"
+    />
+  }
+  <button class="btn secondary">Aplicar filtros</button>
+</form>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (notice()) {
+  <tc-feedback [message]="notice()" kind="success" />
+}
+@if (pending.own().length) {
+  <section class="panel">
+    <h2>Solicitudes pendientes de conciliación</h2>
+    <p>Consulta antes de repetir. Los archivos no se guardan en el navegador.</p>
+    @for (p of pending.own(); track p.key) {
+      <div class="actions">
+        <span>{{ p.operation }} · {{ p.key }}</span
+        ><button class="btn secondary" (click)="recover(p)">Consultar resultado</button
+        ><button class="btn secondary" (click)="repeat(p)">
+          {{
+            p.operation === 'UPLOAD' ? 'Seleccionar archivo original' : 'Repetir misma solicitud'
+          }}
+        </button>
+      </div>
+    }
+  </section>
+}
+@if (loading()) {
+  <p role="status">Consultando biblioteca…</p>
+}
+<section class="panel table-panel">
+  <div
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de registros; desplazamiento horizontal"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Propietario</th>
+          <th>Clasificación</th>
+          <th>Estado</th>
+          <th>Expediente</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.document.uuid) {
+          <tr>
+            <td>
+              {{ row.document.title }}<small>{{ row.document.uuid }}</small>
+            </td>
+            <td>{{ row.ownerLabel }}</td>
+            <td>
+              {{ row.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }}
+            </td>
+            <td>{{ row.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}</td>
+            <td><a [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (!loading() && !error() && !rows().length) {
+    <p>Sin documentos autorizados para estos filtros.</p>
+  }
+  <tc-pagination
+    [offset]="offset"
+    [limit]="limit"
+    [count]="rows().length"
+    [hasMore]="hasMore()"
+    [busy]="loading()"
+    (move)="move($event)"
+    (resize)="resize($event)"
+  />
+</section>

@@ -12,6 +12,9 @@ export const routes: Routes = [
     canActivate: [accessGuard],
     loadComponent: () => import('./core/layout/shell').then((m) => m.Shell),
     children: [
+      { path: 'documentos', loadChildren: () => import('./features/documents/documents.routes').then(m=>m.documentRoutes) },
+      { path: 'consultas', loadChildren: () => import('./features/queries/queries.routes').then(m=>m.queryRoutes) },
+      { path: 'soporte', loadChildren: () => import('./features/support/support.routes').then(m=>m.supportRoutes) },
       {
         path: 'finanzas',
         loadChildren: () =>

@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.record-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+  margin: 0;
+}
+.record-values > div {
+  min-width: 0;
+  padding: 12px;
+  background: var(--tc-surface-muted, var(--tc-canvas));
+  border-radius: 4px;
+}
+dt {
+  font-size: 12px;
+  color: var(--tc-text-muted);
+}
+dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}

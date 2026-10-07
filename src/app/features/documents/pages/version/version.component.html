@@ -1,0 +1,50 @@
+<tc-page-heading
+  [title]="'Versión documental ' + (version()?.metadata?.number ?? '')"
+  section="DOCUMENTOS"
+  description="El hash permite verificar integridad; no representa firma digital ni certificación."
+/>
+<nav class="actions">
+  <a class="btn secondary" [routerLink]="['/documentos', id, 'versiones']">Volver a versiones</a
+  ><button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+</nav>
+@if (error()) {
+  <tc-feedback [message]="error()" />
+}
+@if (loading()) {
+  <p role="status">Consultando versión…</p>
+}
+@if (version(); as v) {
+  @if (summary(); as s) {
+    <section class="panel">
+      <h2>{{ v.metadata.filename }}</h2>
+      <p>{{ v.metadata.state }} · {{ v.current ? 'Vigente' : 'Histórica o pendiente' }}</p>
+      <div class="actions">
+        @if (v.downloadable) {
+          <button class="btn primary" (click)="download()">Descargar archivo</button>
+        }
+        @if (decisionAllowed(s, v.metadata, 'APPROVE')) {
+          <button class="btn primary" (click)="decide('APPROVE')">Aprobar versión</button>
+        }
+        @if (decisionAllowed(s, v.metadata, 'REJECT')) {
+          <button class="btn danger" (click)="decide('REJECT')">Rechazar versión</button>
+        }
+        @if (decisionAllowed(s, v.metadata, 'REVOKE')) {
+          <button class="btn danger" (click)="decide('REVOKE')">Revocar aprobación</button>
+        }
+      </div>
+      <tc-record-values
+        [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+        [value]="v.metadata"
+      />
+    </section>
+    <section class="panel">
+      <h2>Historial de decisiones</h2>
+      @if (!decisions().length) {
+        <p>Sin decisiones registradas.</p>
+      }
+      @for (d of decisions(); track $index) {
+        <tc-record-values [timezone]="session.context()?.company?.timezone ?? 'UTC'" [value]="d" />
+      }
+    </section>
+  }
+}

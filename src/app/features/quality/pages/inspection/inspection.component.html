@@ -105,3 +105,5 @@
 } @else if (!route.snapshot.paramMap.has('uuid')) {
   <tc-quality-inspection-editor />
 }
+
+@if (record()?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="INSPECTION" [uuid]="documentSubjectUuid"/> }

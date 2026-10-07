@@ -1,0 +1,26 @@
+ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+li,
+small,
+p {
+  overflow-wrap: anywhere;
+}
+small {
+  display: block;
+  margin-top: 4px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block: 16px;
+  flex-wrap: wrap;
+}
+:host {
+  display: block;
+  min-width: 0;
+}

@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { CancelComponent } from '../../editors/cancel/cancel.component';
 @Component({
   selector: 'tc-logistics-manifest-summary',
-  imports: [RouterLink, PageHeading, Feedback, SectionNavComponent, PendingRequestsComponent],
+  imports: [ContextualLinksComponent,RouterLink, PageHeading, Feedback, SectionNavComponent, PendingRequestsComponent],
   templateUrl: './manifest-summary.component.html',
   styleUrl: './manifest-summary.component.scss',
 })

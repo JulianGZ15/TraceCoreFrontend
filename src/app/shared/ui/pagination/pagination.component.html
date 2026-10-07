@@ -20,7 +20,7 @@
     ><button
       type="button"
       class="btn secondary"
-      [disabled]="busy() || count() < limit()"
+      [disabled]="busy() || (hasMore() === undefined ? count() < limit() : !hasMore())"
       (click)="move.emit(offset() + limit())"
     >
       Siguiente

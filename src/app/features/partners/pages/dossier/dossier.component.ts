@@ -1,3 +1,4 @@
+import { ContextualLinksComponent } from '../../../documents/shared/contextual-links/contextual-links.component';
 import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -9,7 +10,7 @@ import { SectionNavigationComponent } from '../../components/section-navigation/
 import { uuidPattern } from '../../rules';
 @Component({
   selector: 'tc-party-dossier',
-  imports: [RouterOutlet, Feedback, PartyHeaderComponent, SectionNavigationComponent],
+  imports: [ContextualLinksComponent,RouterOutlet, Feedback, PartyHeaderComponent, SectionNavigationComponent],
   providers: [DossierStore],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
