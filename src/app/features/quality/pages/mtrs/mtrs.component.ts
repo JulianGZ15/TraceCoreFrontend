@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, inject, input, effect, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -22,6 +24,8 @@ import { MtrComponent } from '../../editors/mtr/mtr.component';
 @Component({
   selector: 'tc-quality-mtrs',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     PageHeading,
     ListContainer,

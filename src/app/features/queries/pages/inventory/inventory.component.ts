@@ -1,3 +1,4 @@
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject, signal, computed, TemplateRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
@@ -30,6 +31,7 @@ import { SectionNavComponent } from '../../components/section-nav/section-nav.co
 @Component({
   selector: 'tc-query-inventory',
   imports: [
+    DataTable,
     RouterLink,
     ReactiveFormsModule,
     PageHeading,

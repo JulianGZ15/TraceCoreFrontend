@@ -1,9 +1,5 @@
 <tc-list-container tableLabel="Movimientos de inventario">
-  <tc-page-heading
-    listHeader
-    section="Inventario y patios"
-    title="Movimientos de inventario"
-  >
+  <tc-page-heading listHeader section="Inventario y patios" title="Movimientos de inventario">
     <tc-inventory-inventory-nav />
   </tc-page-heading>
 
@@ -37,21 +33,28 @@
     }
   </tc-search-toolbar>
 
-  <div
+  <tc-data-table
+    label="Movimientos de inventario"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Movimientos de inventario
+      </caption>
       <thead>
         <tr>
-          <th>Folio / tipo</th>
-          <th>Estado</th>
-          <th>Origen / destino</th>
-          <th>Fecha</th>
-          <th>Acción</th>
+          <th scope="col">Folio / tipo</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Origen / destino</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -59,7 +62,7 @@
           <tr>
             <td>{{ r.folio }}<br />{{ label(r.type) }}</td>
             <td>{{ label(r.state) }}</td>
-            <td class="long">
+            <td class="mono long">
               {{ r.sourceYardUuid ?? r.sourceSiteUuid ?? 'Sin ubicación' }} →
               {{ r.destinationYardUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
             </td>
@@ -73,7 +76,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

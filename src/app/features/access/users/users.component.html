@@ -11,17 +11,20 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Tabla de usuarios">
-    <table>
+  <tc-data-table label="Tabla de usuarios" appearance="embedded" [busy]="list.busy()">
+    @if (list.busy() && !list.items().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="list.busy() && !list.items().length">
       <caption class="sr-only">
         Usuarios de la empresa
       </caption>
       <thead>
         <tr>
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Correo</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +38,7 @@
             </td>
             <td>{{ user.email }}</td>
             <td><tc-status [active]="user.active" /></td>
-            <td>
+            <td class="table-actions">
               <div class="row-actions">
                 <button class="btn secondary" (click)="update(user)">Editar</button
                 ><button class="btn secondary" (click)="assignments(user)">Asignaciones</button>
@@ -51,13 +54,15 @@
         }
       </tbody>
     </table>
-  </div>
-  <tc-pagination
-    [offset]="list.offset()"
-    [limit]="list.limit()"
-    [count]="list.items().length"
-    [busy]="list.busy()"
-    (move)="list.load($event)"
-    (resize)="list.resize($event)"
-  />
+
+    <tc-pagination
+      tableFooter
+      [offset]="list.offset()"
+      [limit]="list.limit()"
+      [count]="list.items().length"
+      [busy]="list.busy()"
+      (move)="list.load($event)"
+      (resize)="list.resize($event)"
+    />
+  </tc-data-table>
 </section>

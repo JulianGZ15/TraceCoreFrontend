@@ -76,13 +76,6 @@
   margin: 16px 0;
   padding: 24px;
 }
-.table-scroll {
-  overflow: auto;
-  max-width: 100%;
-}
-td .mono {
-  overflow-wrap: anywhere;
-}
 .small-muted {
   color: var(--tc-text-muted);
 }
@@ -150,10 +143,6 @@ input[type='checkbox'] {
   .btn {
     min-height: 44px;
   }
-}
-
-.table-scroll table {
-  min-width: 720px;
 }
 
 label:has(input[type='checkbox']) {

@@ -54,136 +54,155 @@
     }
   </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Pieza y responsable">
-      <div class="field">
-        <label for="maint-asset">Pieza (UUID)</label>
-        <input id="maint-asset" type="text" formControlName="assetUuid" placeholder="UUID de la pieza…" />
-      </div>
-
-      <div class="field">
-        <label for="maint-resp">Responsable (UUID)</label>
-        <input id="maint-resp" type="text" formControlName="responsibleUuid" placeholder="UUID del responsable…" />
-      </div>
-    </tc-filter-section>
-
-    <tc-filter-section title="Estado y tipo de mantenimiento">
-      <div class="field">
-        <label>Estado</label>
-        <div class="pill-group" role="group" aria-label="Estado del mantenimiento">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.state.value === ''"
-            (click)="setDraftState('')"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.state.value === 'PLANNED'"
-            (click)="setDraftState('PLANNED')"
-          >
-            {{ label('PLANNED') }}
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.state.value === 'IN_PROGRESS'"
-            (click)="setDraftState('IN_PROGRESS')"
-          >
-            {{ label('IN_PROGRESS') }}
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.state.value === 'COMPLETED'"
-            (click)="setDraftState('COMPLETED')"
-          >
-            {{ label('COMPLETED') }}
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
-            (click)="setDraftState('CANCELLED')"
-          >
-            {{ label('CANCELLED') }}
-          </button>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Pieza y responsable">
+        <div class="field">
+          <label for="maint-asset">Pieza (UUID)</label>
+          <input
+            id="maint-asset"
+            type="text"
+            formControlName="assetUuid"
+            placeholder="UUID de la pieza…"
+          />
         </div>
-      </div>
 
-      <div class="field">
-        <label>Tipo de intervención</label>
-        <div class="pill-group" role="group" aria-label="Tipo de intervención">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.kind.value === ''"
-            (click)="setDraftKind('')"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.kind.value === 'PREVENTIVE'"
-            (click)="setDraftKind('PREVENTIVE')"
-          >
-            Preventivo
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.kind.value === 'CORRECTIVE'"
-            (click)="setDraftKind('CORRECTIVE')"
-          >
-            Correctivo
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.kind.value === 'PRESERVATION'"
-            (click)="setDraftKind('PRESERVATION')"
-          >
-            Preservación
-          </button>
+        <div class="field">
+          <label for="maint-resp">Responsable (UUID)</label>
+          <input
+            id="maint-resp"
+            type="text"
+            formControlName="responsibleUuid"
+            placeholder="UUID del responsable…"
+          />
         </div>
-      </div>
-    </tc-filter-section>
+      </tc-filter-section>
 
-    <tc-filter-section title="Periodo de programación">
-      <div class="field">
-        <tc-date-range
-          label="Programación"
-          fromLabel="Desde"
-          toLabel="Hasta (excluyente)"
-          [from]="drawerForm.controls.scheduledFrom.value"
-          [to]="drawerForm.controls.scheduledTo.value"
-          (rangeChange)="drawerForm.controls.scheduledFrom.setValue($event.from); drawerForm.controls.scheduledTo.setValue($event.to)"
-        />
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+      <tc-filter-section title="Estado y tipo de mantenimiento">
+        <div class="field">
+          <label>Estado</label>
+          <div class="pill-group" role="group" aria-label="Estado del mantenimiento">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.state.value === ''"
+              (click)="setDraftState('')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.state.value === 'PLANNED'"
+              (click)="setDraftState('PLANNED')"
+            >
+              {{ label('PLANNED') }}
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.state.value === 'IN_PROGRESS'"
+              (click)="setDraftState('IN_PROGRESS')"
+            >
+              {{ label('IN_PROGRESS') }}
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.state.value === 'COMPLETED'"
+              (click)="setDraftState('COMPLETED')"
+            >
+              {{ label('COMPLETED') }}
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+              (click)="setDraftState('CANCELLED')"
+            >
+              {{ label('CANCELLED') }}
+            </button>
+          </div>
+        </div>
 
-  <div
+        <div class="field">
+          <label>Tipo de intervención</label>
+          <div class="pill-group" role="group" aria-label="Tipo de intervención">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.kind.value === ''"
+              (click)="setDraftKind('')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.kind.value === 'PREVENTIVE'"
+              (click)="setDraftKind('PREVENTIVE')"
+            >
+              Preventivo
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.kind.value === 'CORRECTIVE'"
+              (click)="setDraftKind('CORRECTIVE')"
+            >
+              Correctivo
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.kind.value === 'PRESERVATION'"
+              (click)="setDraftKind('PRESERVATION')"
+            >
+              Preservación
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+
+      <tc-filter-section title="Periodo de programación">
+        <div class="field">
+          <tc-date-range
+            label="Programación"
+            fromLabel="Desde"
+            toLabel="Hasta (excluyente)"
+            [from]="drawerForm.controls.scheduledFrom.value"
+            [to]="drawerForm.controls.scheduledTo.value"
+            (rangeChange)="
+              drawerForm.controls.scheduledFrom.setValue($event.from);
+              drawerForm.controls.scheduledTo.setValue($event.to)
+            "
+          />
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
+
+  <tc-data-table
+    label="Agenda de mantenimiento"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Agenda de mantenimiento
+      </caption>
       <thead>
         <tr>
-          <th>Pieza</th>
-          <th>Programación</th>
-          <th>Estado</th>
-          <th>Responsable</th>
-          <th>Acción</th>
+          <th scope="col">Pieza</th>
+          <th scope="col">Programación</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Responsable</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -196,7 +215,7 @@
             <td>{{ date(row.record.scheduledAt) }}</td>
             <td>{{ label(row.record.state) }} · {{ label(row.record.kind) }}</td>
             <td class="mono">{{ row.record.responsibleUuid }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn secondary" [routerLink]="['/calidad/mantenimiento', row.record.uuid]">
                 Abrir
               </a>
@@ -209,7 +228,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

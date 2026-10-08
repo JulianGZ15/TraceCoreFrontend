@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +23,8 @@ import { form, message, instant, exact } from '../../rules';
 @Component({
   selector: 'tc-commerce-return-detail',
   imports: [
+    Skeleton,
+    DataTable,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

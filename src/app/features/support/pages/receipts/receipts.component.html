@@ -53,20 +53,26 @@
   @if (initialLoading()) {
     <tc-skeleton listTable variant="table" />
   } @else {
-    <div
+    <tc-data-table
+      label="Recibos RFID en Core"
       listTable
-      class="table-scroll"
-      tabindex="0"
-      role="region"
-      aria-label="Tabla de registros; desplazamiento horizontal"
+      appearance="embedded"
+      layout="fill"
+      [busy]="loading()"
     >
-      <table>
+      @if (loading() && !rows().length) {
+        <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+      }
+      <table [hidden]="loading() && !rows().length">
+        <caption class="sr-only">
+          Recibos RFID en Core
+        </caption>
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Recibo</th>
-            <th>Resultado</th>
-            <th>Detalle</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Recibo</th>
+            <th scope="col">Resultado</th>
+            <th scope="col">Detalle</th>
           </tr>
         </thead>
         <tbody>
@@ -74,10 +80,10 @@
             <tr>
               <td>{{ time(row['receivedAt']) }}</td>
               <td>
-                {{ row['eventUuid'] }}<small>{{ row['assetUuid'] }}</small>
+                {{ row['eventUuid'] }}<small class="mono">{{ row['assetUuid'] }}</small>
               </td>
               <td>{{ row['status'] }}</td>
-              <td>
+              <td class="table-actions">
                 <button class="btn secondary" (click)="selected.set(row)">Consultar detalle</button>
               </td>
             </tr>
@@ -87,7 +93,7 @@
       @if (!loading() && !error() && !rows().length) {
         <p>Sin registros autorizados para estos filtros.</p>
       }
-    </div>
+    </tc-data-table>
   }
 
   <tc-pagination
@@ -107,30 +113,18 @@
     <tc-filter-section title="Equipo específico" description="UUID del activo asociado">
       <div class="field">
         <label for="rec-asset-uuid">UUID del equipo</label>
-        <input
-          id="rec-asset-uuid"
-          formControlName="assetUuid"
-          placeholder="UUID del equipo…"
-        />
+        <input id="rec-asset-uuid" formControlName="assetUuid" placeholder="UUID del equipo…" />
       </div>
     </tc-filter-section>
 
     <tc-filter-section title="Rango de fechas" description="Instante ISO con desplazamiento UTC">
       <div class="field">
         <label for="rec-from">Desde (ISO con offset)</label>
-        <input
-          id="rec-from"
-          formControlName="from"
-          placeholder="2026-10-01T00:00:00-06:00"
-        />
+        <input id="rec-from" formControlName="from" placeholder="2026-10-01T00:00:00-06:00" />
       </div>
       <div class="field">
         <label for="rec-to">Hasta, excluido (ISO con offset)</label>
-        <input
-          id="rec-to"
-          formControlName="to"
-          placeholder="2026-11-01T00:00:00-06:00"
-        />
+        <input id="rec-to" formControlName="to" placeholder="2026-11-01T00:00:00-06:00" />
       </div>
     </tc-filter-section>
   </form>
@@ -139,10 +133,7 @@
 @if (selected(); as row) {
   <section class="panel">
     <h2>Detalle de solo lectura</h2>
-    <tc-record-values
-      [timezone]="session.context()?.company?.timezone ?? 'UTC'"
-      [value]="row"
-    />
+    <tc-record-values [timezone]="session.context()?.company?.timezone ?? 'UTC'" [value]="row" />
     <button class="btn secondary" (click)="selected.set(null)">Cerrar detalle</button>
   </section>
 }

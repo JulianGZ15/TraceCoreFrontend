@@ -7,9 +7,51 @@ import { Session, safeReturn } from '../../core/auth/session';
 import { money, numberText } from './rules';
 import { InvoiceNewComponent } from './pages/invoice-new/invoice-new.component';
 import { AccountComponent } from './pages/account/account.component';
+import { InvoicesComponent } from './pages/invoices/invoices.component';
+import { convertToParamMap } from '@angular/router';
 import { renderFinance, fid } from './testing';
 import { Subject } from 'rxjs';
 describe('Finanzas: precisión, permisos y recuperación', () => {
+  it('conserva las filas durante un refresco y las limpia al cambiar la consulta', async () => {
+    const { fixture, api } = await renderFinance(InvoicesComponent);
+    const page = fixture.componentInstance;
+    const rows = [{ record: { uuid: fid }, label: 'Cliente' }];
+    api.get = vi.fn().mockResolvedValue(rows);
+    await page.reload();
+    let release!: (value: typeof rows) => void;
+    api.get = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    const refresh = page.reload();
+    expect(page.loading()).toBe(true);
+    expect(page.rows()).toBe(rows);
+    release(rows);
+    await refresh;
+    Object.defineProperty(page.route.snapshot, 'queryParamMap', {
+      value: convertToParamMap({ offset: '25' }),
+    });
+    const nextPage = page.reload();
+    expect(page.rows()).toEqual([]);
+    release([]);
+    await nextPage;
+  });
+  it.each([0, 401, 403])(
+    'refresco con error %s mantiene únicamente filas autorizadas',
+    async (status) => {
+      const { fixture, api } = await renderFinance(InvoicesComponent);
+      const page = fixture.componentInstance;
+      const rows = [{ record: { uuid: fid }, label: 'Cliente' }];
+      api.get = vi.fn().mockResolvedValue(rows);
+      await page.reload();
+      api.get = vi.fn().mockRejectedValue(new HttpErrorResponse({ status }));
+      await page.reload();
+      expect(page.rows()).toEqual(status === 0 ? rows : []);
+      expect(page.error()).toBeTruthy();
+    },
+  );
   it('descarta una evaluación de crédito que llega después de terminar la sesión', async () => {
     const { fixture, api, session } = await renderFinance(AccountComponent);
     let resolve: () => void = () => {};

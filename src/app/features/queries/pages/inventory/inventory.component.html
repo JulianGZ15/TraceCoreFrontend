@@ -51,11 +51,7 @@
           }
         </button>
         @if (csv.next() !== null) {
-          <button
-            class="btn secondary"
-            [disabled]="csv.busy()"
-            (click)="export(true)"
-          >
+          <button class="btn secondary" [disabled]="csv.busy()" (click)="export(true)">
             CSV ({{ csv.next() }})
           </button>
         }
@@ -89,54 +85,63 @@
       label="Consultando inventario…"
     />
   } @else {
-    <div
+    <tc-data-table
+      label="Consulta de inventario"
       listTable
-      class="table-scroll"
-      tabindex="0"
-      role="region"
-      aria-label="Tabla de registros; desplazamiento horizontal"
+      appearance="embedded"
+      layout="fill"
+      minTableWidth="720px"
+      [busy]="loading()"
     >
-    <table>
-      <thead>
-        <tr>
-          <th>Equipo</th>
-          <th>Modelo</th>
-          <th>Ciclo de vida</th>
-          <th>Ubicación</th>
-          <th>Peso bruto (kg)</th>
-          <th>Expediente</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.assetUuid) {
+      @if (loading() && !rows().length) {
+        <tc-skeleton variant="table" [columns]="6" label="Cargando registros…" />
+      }
+      <table [hidden]="loading() && !rows().length">
+        <caption class="sr-only">
+          Consulta de inventario
+        </caption>
+        <thead>
           <tr>
-            <td>
-              {{ row.internalCode }}<small>{{ row.serialNumber ?? 'Sin serial' }}</small>
-            </td>
-            <td>{{ row.modelCode }}</td>
-            <td>{{ row.lifecycle }}</td>
-            <td>
-              {{ row.locationUuid ?? row.siteUuid ?? 'Sin ubicación' }}
-              <small>Raíz {{ row.rootAssetUuid ?? row.assetUuid }}</small>
-            </td>
-            <td>
-              {{
-                row.grossWeightKgExact === undefined
-                  ? 'API incompatible: falta valor exacto'
-                  : (row.grossWeightKgExact ?? 'Desconocido')
-              }}
-            </td>
-            <td>
-              <a [routerLink]="['/consultas/equipos', row.assetUuid]">Abrir expediente integral</a>
-            </td>
+            <th scope="col">Equipo</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">Ciclo de vida</th>
+            <th scope="col">Ubicación</th>
+            <th scope="col" class="table-number">Peso bruto (kg)</th>
+            <th scope="col">Expediente</th>
           </tr>
-        }
-      </tbody>
-    </table>
-    @if (!loading() && !error() && !rows().length) {
-      <p>Sin resultados para estos filtros.</p>
-    }
-  </div>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.assetUuid) {
+            <tr>
+              <td>
+                {{ row.internalCode }}<small>{{ row.serialNumber ?? 'Sin serial' }}</small>
+              </td>
+              <td>{{ row.modelCode }}</td>
+              <td>{{ row.lifecycle }}</td>
+              <td>
+                {{ row.locationUuid ?? row.siteUuid ?? 'Sin ubicación' }}
+                <small class="mono">Raíz {{ row.rootAssetUuid ?? row.assetUuid }}</small>
+              </td>
+              <td class="table-number">
+                {{
+                  row.grossWeightKgExact === undefined
+                    ? 'API incompatible: falta valor exacto'
+                    : (row.grossWeightKgExact ?? 'Desconocido')
+                }}
+              </td>
+              <td>
+                <a [routerLink]="['/consultas/equipos', row.assetUuid]"
+                  >Abrir expediente integral</a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (!loading() && !error() && !rows().length) {
+        <p>Sin resultados para estos filtros.</p>
+      }
+    </tc-data-table>
   }
 
   <tc-pagination
@@ -153,7 +158,10 @@
 
 <ng-template #filterDrawerTpl>
   <form [formGroup]="drawerForm" class="flex flex-col gap-5">
-    <tc-filter-section title="Ciclo de vida" description="Estado operativo del equipo en inventario">
+    <tc-filter-section
+      title="Ciclo de vida"
+      description="Estado operativo del equipo en inventario"
+    >
       <div class="pill-group">
         <button
           type="button"
@@ -219,11 +227,7 @@
     <tc-filter-section title="Equipo específico" description="Identificador único">
       <div class="field">
         <label for="inv-asset-uuid">UUID de equipo</label>
-        <input
-          id="inv-asset-uuid"
-          formControlName="assetUuid"
-          placeholder="UUID de equipo…"
-        />
+        <input id="inv-asset-uuid" formControlName="assetUuid" placeholder="UUID de equipo…" />
       </div>
     </tc-filter-section>
   </form>

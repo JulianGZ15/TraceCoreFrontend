@@ -11,18 +11,21 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Tabla de patios">
-    <table>
+  <tc-data-table label="Tabla de patios" appearance="embedded" [busy]="list.busy()">
+    @if (list.busy() && !list.items().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="list.busy() && !list.items().length">
       <caption class="sr-only">
         Patios de la empresa
       </caption>
       <thead>
         <tr>
-          <th>Código</th>
-          <th>Nombre / dirección</th>
-          <th>Zona horaria</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th scope="col">Código</th>
+          <th scope="col">Nombre / dirección</th>
+          <th scope="col">Zona horaria</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +38,7 @@
             </td>
             <td>{{ yard.timezone }}</td>
             <td><tc-status [active]="yard.active" /></td>
-            <td>
+            <td class="table-actions">
               <a class="btn secondary" [routerLink]="['/organizacion/patios', yard.uuid]"
                 >Ver patio</a
               >
@@ -52,13 +55,15 @@
         }
       </tbody>
     </table>
-  </div>
-  <tc-pagination
-    [offset]="list.offset()"
-    [limit]="list.limit()"
-    [count]="list.items().length"
-    [busy]="list.busy()"
-    (move)="list.load($event)"
-    (resize)="list.resize($event)"
-  />
+
+    <tc-pagination
+      tableFooter
+      [offset]="list.offset()"
+      [limit]="list.limit()"
+      [count]="list.items().length"
+      [busy]="list.busy()"
+      (move)="list.load($event)"
+      (resize)="list.resize($event)"
+    />
+  </tc-data-table>
 </section>

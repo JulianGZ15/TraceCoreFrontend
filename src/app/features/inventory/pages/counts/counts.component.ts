@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,6 +15,8 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
 @Component({
   selector: 'tc-inventory-counts',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     ReactiveFormsModule,
     PageHeading,
@@ -35,7 +39,8 @@ export class CountsComponent extends InventoryForm {
     sourceReference: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
   ngOnInit() {
-    if (this.route.snapshot.queryParamMap.get('method') === 'RFID') this.form.controls.method.setValue('RFID');
+    if (this.route.snapshot.queryParamMap.get('method') === 'RFID')
+      this.form.controls.method.setValue('RFID');
     this.watch(() => this.load());
   }
   async load() {

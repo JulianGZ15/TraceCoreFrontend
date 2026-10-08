@@ -1,9 +1,5 @@
 <tc-list-container tableLabel="Propuestas y conciliación">
-  <tc-page-heading
-    listHeader
-    section="Inventario y patios"
-    title="Propuestas y conciliación"
-  >
+  <tc-page-heading listHeader section="Inventario y patios" title="Propuestas y conciliación">
     <tc-inventory-inventory-nav />
   </tc-page-heading>
 
@@ -27,21 +23,28 @@
     }
   </div>
 
-  <div
+  <tc-data-table
+    label="Propuestas y conciliación"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Propuestas y conciliación
+      </caption>
       <thead>
         <tr>
-          <th>Referencia / tipo</th>
-          <th>Estado</th>
-          <th>Captura</th>
-          <th>Expiración</th>
-          <th>Acción</th>
+          <th scope="col">Referencia / tipo</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Captura</th>
+          <th scope="col">Expiración</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -60,7 +63,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

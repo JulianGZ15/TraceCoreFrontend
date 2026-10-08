@@ -1,0 +1,15 @@
+<div class="tc-table-heading">
+  <ng-content select="[tableHeading]" />
+</div>
+<div
+  class="tc-table-scroll"
+  role="region"
+  tabindex="0"
+  [attr.aria-label]="label()"
+  [attr.aria-busy]="busy()"
+>
+  <ng-content />
+</div>
+<div class="tc-table-footer">
+  <ng-content select="[tableFooter]" />
+</div>

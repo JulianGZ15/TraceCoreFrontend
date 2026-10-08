@@ -1,10 +1,5 @@
 <tc-list-container tableLabel="Estándares">
-  <tc-page-heading
-    listHeader
-    section="Calidad y mantenimiento"
-    title="Estándares"
-    description=""
-  >
+  <tc-page-heading listHeader section="Calidad y mantenimiento" title="Estándares" description="">
     <tc-quality-nav />
   </tc-page-heading>
 
@@ -26,20 +21,20 @@
     </div>
   }
 
-  <div
-    listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
-  >
-    <table>
+  <tc-data-table label="Estándares" listTable appearance="embedded" layout="fill" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Estándares
+      </caption>
       <thead>
         <tr>
-          <th>Organización</th>
-          <th>Código / edición</th>
-          <th>Título</th>
-          <th>UUID</th>
+          <th scope="col">Organización</th>
+          <th scope="col">Código / edición</th>
+          <th scope="col">Título</th>
+          <th scope="col">UUID</th>
         </tr>
       </thead>
       <tbody>
@@ -57,7 +52,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

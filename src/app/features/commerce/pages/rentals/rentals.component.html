@@ -5,10 +5,7 @@
     [title]="title"
     description="Documentos administrativos, cumplimiento y trazabilidad por patio."
   >
-    <tc-commerce-section-nav
-      [base]="navBase"
-      [sections]="sections"
-    />
+    <tc-commerce-section-nav [base]="navBase" [sections]="sections" />
   </tc-page-heading>
 
   <ng-container listFeedback>
@@ -44,95 +41,99 @@
     </button>
   </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Estado del contrato">
-      <div class="pill-group" role="group" aria-label="Estado del contrato">
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === ''"
-          (click)="setDraftState('')"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'DRAFT'"
-          (click)="setDraftState('DRAFT')"
-        >
-          Borrador
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'ACTIVE'"
-          (click)="setDraftState('ACTIVE')"
-        >
-          Activo
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'CLOSED'"
-          (click)="setDraftState('CLOSED')"
-        >
-          Cerrado
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
-          (click)="setDraftState('CANCELLED')"
-        >
-          Cancelado
-        </button>
-      </div>
-    </tc-filter-section>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Estado del contrato">
+        <div class="pill-group" role="group" aria-label="Estado del contrato">
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === ''"
+            (click)="setDraftState('')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'DRAFT'"
+            (click)="setDraftState('DRAFT')"
+          >
+            Borrador
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'ACTIVE'"
+            (click)="setDraftState('ACTIVE')"
+          >
+            Activo
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'CLOSED'"
+            (click)="setDraftState('CLOSED')"
+          >
+            Cerrado
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+            (click)="setDraftState('CANCELLED')"
+          >
+            Cancelado
+          </button>
+        </div>
+      </tc-filter-section>
 
-    <tc-filter-section title="Partes involucradas">
-      <div class="field">
-        <tc-commerce-lookup
-          resource="party-options"
-          [yard]="yard"
-          [params]="{ purpose: 'CONTRACTOR' }"
-          title="Contratante"
-          [value]="drawerForm.controls.partyUuid.value"
-          (selectedChange)="onPartyPicked('partyUuid', $event)"
-        />
-      </div>
+      <tc-filter-section title="Partes involucradas">
+        <div class="field">
+          <tc-commerce-lookup
+            resource="party-options"
+            [yard]="yard"
+            [params]="{ purpose: 'CONTRACTOR' }"
+            title="Contratante"
+            [value]="drawerForm.controls.partyUuid.value"
+            (selectedChange)="onPartyPicked('partyUuid', $event)"
+          />
+        </div>
 
-      <div class="field">
-        <tc-commerce-lookup
-          resource="party-options"
-          [yard]="yard"
-          [params]="{ purpose: 'DISTRIBUTOR' }"
-          title="Distribuidor"
-          [value]="drawerForm.controls.distributorUuid.value"
-          (selectedChange)="onPartyPicked('distributorUuid', $event)"
-        />
-      </div>
+        <div class="field">
+          <tc-commerce-lookup
+            resource="party-options"
+            [yard]="yard"
+            [params]="{ purpose: 'DISTRIBUTOR' }"
+            title="Distribuidor"
+            [value]="drawerForm.controls.distributorUuid.value"
+            (selectedChange)="onPartyPicked('distributorUuid', $event)"
+          />
+        </div>
 
-      <div class="field">
-        <tc-commerce-lookup
-          resource="party-options"
-          [yard]="yard"
-          [params]="{ purpose: 'END_CUSTOMER' }"
-          title="Cliente final"
-          [value]="drawerForm.controls.endCustomerUuid.value"
-          (selectedChange)="onPartyPicked('endCustomerUuid', $event)"
-        />
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+        <div class="field">
+          <tc-commerce-lookup
+            resource="party-options"
+            [yard]="yard"
+            [params]="{ purpose: 'END_CUSTOMER' }"
+            title="Cliente final"
+            [value]="drawerForm.controls.endCustomerUuid.value"
+            (selectedChange)="onPartyPicked('endCustomerUuid', $event)"
+          />
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
 
   <tc-commerce-records
     listTable
     [rows]="rows()"
     [columns]="columns"
     (selected)="selected.set($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Contratos de renta"
+    [busy]="loading()"
   />
   <tc-pagination
     listPagination

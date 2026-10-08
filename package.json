@@ -9,7 +9,8 @@
     "test": "ng test",
     "test:e2e": "playwright test",
     "test:unit": "ng test --watch=false",
-    "sync:brand": "node tools/sync-brand.mjs"
+    "sync:brand": "node tools/sync-brand.mjs",
+    "check:tables": "node tools/check-tables.mjs"
   },
   "private": true,
   "packageManager": "npm@11.8.0",

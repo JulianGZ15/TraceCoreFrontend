@@ -1,0 +1,53 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+}
+
+:host(.tc-table-panel) {
+  background: var(--tc-panel);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-panel);
+  box-shadow: var(--tc-shadow);
+  overflow: hidden;
+}
+
+.tc-table-heading:not(:empty) {
+  padding: 16px;
+  border-bottom: 1px solid var(--tc-border);
+}
+
+.tc-table-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--tc-focus);
+    outline-offset: -2px;
+  }
+}
+
+.tc-table-heading,
+.tc-table-footer {
+  flex: none;
+}
+
+.tc-table-heading:empty,
+.tc-table-footer:empty {
+  display: none;
+}
+
+@media (min-width: 1024px) and (min-height: 700px) {
+  :host(.tc-table-fill) {
+    flex: 1;
+    min-height: 0;
+  }
+
+  :host(.tc-table-fill) .tc-table-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+}

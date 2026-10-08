@@ -14,12 +14,8 @@
   </div>
 
   <div class="list-zone-table panel table-panel">
-    <div
-      class="table-scroll-wrap"
-      tabindex="0"
-      [attr.aria-label]="tableLabel()"
-    >
-      <ng-content select="[listTable], table, .table-wrap, tc-skeleton" />
+    <div class="list-table-content">
+      <ng-content select="[listTable], tc-data-table, tc-skeleton" />
     </div>
 
     <div class="list-zone-pagination">

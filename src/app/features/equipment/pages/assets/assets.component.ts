@@ -1,14 +1,7 @@
-import {
-  Component,
-  signal,
-  computed,
-  TemplateRef,
-} from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-} from '@angular/forms';
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
+import { Component, signal, computed, TemplateRef } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -32,6 +25,8 @@ import { LookupComponent } from '../../components/lookup/lookup.component';
 @Component({
   selector: 'tc-equipment-assets',
   imports: [
+    Skeleton,
+    DataTable,
     PageHeading,
     ListContainer,
     Feedback,
@@ -88,7 +83,9 @@ export class AssetsComponent extends EquipmentPage {
 
   readonly currentValues = signal<Record<string, string>>({});
   readonly resolvedLabels = new Map<string, string>();
-  readonly chips = computed(() => chipsFor(this.filterDefs, this.currentValues(), this.resolvedLabels));
+  readonly chips = computed(() =>
+    chipsFor(this.filterDefs, this.currentValues(), this.resolvedLabels),
+  );
   readonly activeFilterCount = computed(() => activeCount(this.filterDefs, this.currentValues()));
 
   constructor() {

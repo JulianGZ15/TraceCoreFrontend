@@ -1,7 +1,15 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PageHeading, ListContainer, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
+import {
+  PageHeading,
+  ListContainer,
+  Feedback,
+  Pagination,
+  SearchToolbar,
+} from '../../../../shared/ui/page';
 import { RfidPage } from '../../page-base';
 import { RfidNavComponent } from '../../shared/rfid-nav/rfid-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -10,6 +18,8 @@ import * as M from '../../models';
 @Component({
   selector: 'tc-rfid-sessions',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     FormsModule,
     PageHeading,

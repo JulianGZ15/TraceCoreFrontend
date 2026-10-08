@@ -124,14 +124,14 @@ test('CSV downloads explicit pages preserving filters and continuity headers', a
   await page.goto('/consultas/inventario?yardUuid=' + ids.yard + '&search=EQ');
   await expect(page.getByText('999999999999.999999')).toBeVisible();
   let d = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Descargar primera página' }).click();
+  await page.getByRole('button', { name: 'Exportar CSV', exact: true }).click();
   await d;
-  await expect(page.getByRole('button', { name: /Descargar siguiente página/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^CSV \(\d+\)$/ })).toBeVisible();
   d = page.waitForEvent('download');
-  await page.getByRole('button', { name: /Descargar siguiente página/ }).click();
+  await page.getByRole('button', { name: /^CSV \(\d+\)$/ }).click();
   await d;
   expect(f.gets.filter((p) => p.includes('/exports/'))).toHaveLength(2);
-  await expect(page.getByRole('button', { name: /Descargar siguiente página/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^CSV \(\d+\)$/ })).toHaveCount(0);
 });
 test('support shows read-only receipts and audit metadata with independent filters', async ({
   page,

@@ -1,9 +1,5 @@
 <tc-list-container tableLabel="Reservas de conjuntos">
-  <tc-page-heading
-    listHeader
-    section="Inventario y patios"
-    title="Reservas de conjuntos"
-  >
+  <tc-page-heading listHeader section="Inventario y patios" title="Reservas de conjuntos">
     <tc-inventory-inventory-nav />
   </tc-page-heading>
 
@@ -22,21 +18,28 @@
     }
   </div>
 
-  <div
+  <tc-data-table
+    label="Reservas de conjuntos"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Reservas de conjuntos
+      </caption>
       <thead>
         <tr>
-          <th>Raíz</th>
-          <th>Estado</th>
-          <th>Inicio / fin exclusivo</th>
-          <th>Expiración del apartado</th>
-          <th>Acción</th>
+          <th scope="col">Raíz</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Inicio / fin exclusivo</th>
+          <th scope="col">Expiración del apartado</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -55,7 +58,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

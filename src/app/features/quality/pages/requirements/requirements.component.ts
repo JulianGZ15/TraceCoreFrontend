@@ -1,6 +1,14 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { PageHeading, ListContainer, Feedback, Pagination, SearchToolbar } from '../../../../shared/ui/page';
+import {
+  PageHeading,
+  ListContainer,
+  Feedback,
+  Pagination,
+  SearchToolbar,
+} from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -11,6 +19,8 @@ import { RequirementComponent } from '../../editors/requirement/requirement.comp
 @Component({
   selector: 'tc-quality-requirements',
   imports: [
+    Skeleton,
+    DataTable,
     ReactiveFormsModule,
     PageHeading,
     ListContainer,

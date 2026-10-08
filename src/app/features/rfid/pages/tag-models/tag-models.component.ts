@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
@@ -10,6 +12,8 @@ import { ModelComponent } from '../../editors/model/model.component';
 @Component({
   selector: 'tc-rfid-tag-models',
   imports: [
+    Skeleton,
+    DataTable,
     FormsModule,
     PageHeading,
     ListContainer,

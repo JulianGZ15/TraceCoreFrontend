@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component } from '@angular/core';
 
 import { SectionPage } from '../../section-page';
@@ -10,7 +12,7 @@ import { certificateState, reviews } from '../../rules';
 
 @Component({
   selector: 'tc-party-certificates',
-  imports: [Feedback, Pagination],
+  imports: [Skeleton, DataTable, Feedback, Pagination],
   templateUrl: './certificates.component.html',
   styleUrl: './certificates.component.scss',
 })

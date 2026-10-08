@@ -16,17 +16,20 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Identificaciones fiscales">
-    <table>
+  <tc-data-table label="Identificaciones fiscales" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
         Identificaciones fiscales del tercero
       </caption>
       <thead>
         <tr>
-          <th>Identificación</th>
-          <th>Verificación</th>
-          <th>Evidencia / revisión</th>
-          <th>Acciones</th>
+          <th scope="col">Identificación</th>
+          <th scope="col">Verificación</th>
+          <th scope="col">Evidencia / revisión</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -44,7 +47,7 @@
               ><small class="mono">{{ r.verifiedBy }}</small
               ><small>{{ r.verifiedAt ? date(r.verifiedAt) : '' }}</small>
             </td>
-            <td>
+            <td class="table-actions">
               <div class="row-actions">
                 @if (session.can('PARTY_MANAGE') && r.verification !== 'VERIFIED') {
                   <button class="btn secondary" (click)="edit(r)">Editar identificación</button>
@@ -72,7 +75,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
   @if (paged) {
     <tc-pagination
       [offset]="offset()"

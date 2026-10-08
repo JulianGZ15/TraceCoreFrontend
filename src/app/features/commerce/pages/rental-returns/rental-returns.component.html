@@ -3,10 +3,7 @@
   [title]="title"
   description="Documentos administrativos, cumplimiento y trazabilidad por patio."
 >
-  <tc-commerce-section-nav
-    [base]="navBase"
-    [sections]="sections"
-  />
+  <tc-commerce-section-nav [base]="navBase" [sections]="sections" />
 </tc-page-heading>
 <tc-commerce-pending-requests /><tc-feedback [message]="error()" />
 <div class="toolbar">
@@ -22,6 +19,7 @@
   [rows]="rows()"
   [columns]="columns"
   (selected)="selected.set($event)"
+  [busy]="loading()"
 /><tc-pagination
   [offset]="offset"
   [limit]="limit"

@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject, signal, computed, OnDestroy, TemplateRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -30,6 +32,8 @@ import { openPartnerEditor } from '../../editor-view';
 @Component({
   selector: 'tc-party-directory',
   imports: [
+    Skeleton,
+    DataTable,
     ReactiveFormsModule,
     RouterLink,
     PageHeading,
@@ -92,6 +96,7 @@ export class DirectoryComponent implements OnDestroy {
   readonly activeFilterCount = computed(() => activeCount(this.filterDefs, this.formValues()));
 
   private generation = 0;
+  private rowContext = '';
 
   constructor() {
     this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((q) => {
@@ -104,9 +109,7 @@ export class DirectoryComponent implements OnDestroy {
       this.form.reset({ search, role, active });
       this.formValues.set({ search, role, active });
 
-      this.limit.set(
-        [25, 50, 100].includes(Number(q.get('limit'))) ? Number(q.get('limit')) : 25,
-      );
+      this.limit.set([25, 50, 100].includes(Number(q.get('limit'))) ? Number(q.get('limit')) : 25);
       const offset = Number(q.get('offset') ?? 0);
       this.offset.set(Number.isInteger(offset) && offset >= 0 ? offset : 0);
       void this.load();
@@ -118,15 +121,20 @@ export class DirectoryComponent implements OnDestroy {
       epoch = this.session.epoch();
     this.busy.set(true);
     this.error.set('');
-    this.rows.set([]);
     const v = this.form.getRawValue(),
       params: Record<string, string | number> = { offset: this.offset(), limit: this.limit() };
     for (const [key, value] of Object.entries(v)) if (value) params[key] = value;
+    const rowContext = JSON.stringify([epoch, params]);
+    if (rowContext !== this.rowContext) this.rows.set([]);
+    this.rowContext = rowContext;
     try {
       const rows = await this.api.directory(params);
       if (generation === this.generation && epoch === this.session.epoch()) this.rows.set(rows);
     } catch (e) {
-      if (generation === this.generation) this.error.set(errorMessage(e));
+      if (generation === this.generation) {
+        this.error.set(errorMessage(e));
+        if ([401, 403].includes((e as { status?: number })?.status ?? 0)) this.rows.set([]);
+      }
     } finally {
       if (generation === this.generation) this.busy.set(false);
     }

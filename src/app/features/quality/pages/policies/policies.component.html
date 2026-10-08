@@ -26,21 +26,27 @@
     </div>
   }
 
-  <div
+  <tc-data-table
+    label="Políticas de inspección"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Políticas de inspección
+      </caption>
       <thead>
         <tr>
-          <th>Método / revisión</th>
-          <th>Destino</th>
-          <th>Intervalos</th>
-          <th>Estado</th>
-          <th>Acción</th>
+          <th scope="col">Método / revisión</th>
+          <th scope="col">Destino</th>
+          <th scope="col">Intervalos</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -55,7 +61,7 @@
               horas
             </td>
             <td>{{ label(row.state) }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn secondary" [routerLink]="['/calidad/politicas', row.uuid]"
                 >Abrir política</a
               >
@@ -68,7 +74,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

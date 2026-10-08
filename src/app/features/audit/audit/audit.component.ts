@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../shared/ui/data-table/data-table.component';
 import { Component, inject } from '@angular/core';
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { Api, Audit } from '../../../core/http/api';
@@ -7,7 +9,7 @@ import { PageList } from '../../../shared/ui/list-model';
 import { AuditDetail } from '../audit-detail/audit-detail.component';
 @Component({
   selector: 'tc-audit',
-  imports: [PageHeading, Feedback, Pagination],
+  imports: [Skeleton, DataTable, PageHeading, Feedback, Pagination],
   templateUrl: './audit.component.html',
   styleUrl: './audit.component.scss',
 })

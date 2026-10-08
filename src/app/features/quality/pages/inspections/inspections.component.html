@@ -54,103 +54,122 @@
     }
   </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Pieza y responsable">
-      <div class="field">
-        <label for="insp-asset">Pieza (UUID)</label>
-        <input id="insp-asset" type="text" formControlName="assetUuid" placeholder="UUID de la pieza…" />
-      </div>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Pieza y responsable">
+        <div class="field">
+          <label for="insp-asset">Pieza (UUID)</label>
+          <input
+            id="insp-asset"
+            type="text"
+            formControlName="assetUuid"
+            placeholder="UUID de la pieza…"
+          />
+        </div>
 
-      <div class="field">
-        <label for="insp-resp">Responsable (UUID)</label>
-        <input id="insp-resp" type="text" formControlName="responsibleUuid" placeholder="UUID del responsable…" />
-      </div>
-    </tc-filter-section>
+        <div class="field">
+          <label for="insp-resp">Responsable (UUID)</label>
+          <input
+            id="insp-resp"
+            type="text"
+            formControlName="responsibleUuid"
+            placeholder="UUID del responsable…"
+          />
+        </div>
+      </tc-filter-section>
 
-    <tc-filter-section title="Estado">
-      <div class="pill-group" role="group" aria-label="Estado de la inspección">
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === ''"
-          (click)="setDraftState('')"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'PLANNED'"
-          (click)="setDraftState('PLANNED')"
-        >
-          {{ label('PLANNED') }}
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'RECORDED'"
-          (click)="setDraftState('RECORDED')"
-        >
-          {{ label('RECORDED') }}
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'APPROVED'"
-          (click)="setDraftState('APPROVED')"
-        >
-          {{ label('APPROVED') }}
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'REJECTED'"
-          (click)="setDraftState('REJECTED')"
-        >
-          {{ label('REJECTED') }}
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
-          (click)="setDraftState('CANCELLED')"
-        >
-          {{ label('CANCELLED') }}
-        </button>
-      </div>
-    </tc-filter-section>
+      <tc-filter-section title="Estado">
+        <div class="pill-group" role="group" aria-label="Estado de la inspección">
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === ''"
+            (click)="setDraftState('')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'PLANNED'"
+            (click)="setDraftState('PLANNED')"
+          >
+            {{ label('PLANNED') }}
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'RECORDED'"
+            (click)="setDraftState('RECORDED')"
+          >
+            {{ label('RECORDED') }}
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'APPROVED'"
+            (click)="setDraftState('APPROVED')"
+          >
+            {{ label('APPROVED') }}
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'REJECTED'"
+            (click)="setDraftState('REJECTED')"
+          >
+            {{ label('REJECTED') }}
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+            (click)="setDraftState('CANCELLED')"
+          >
+            {{ label('CANCELLED') }}
+          </button>
+        </div>
+      </tc-filter-section>
 
-    <tc-filter-section title="Periodo de programación">
-      <div class="field">
-        <tc-date-range
-          label="Programación"
-          fromLabel="Desde"
-          toLabel="Hasta (excluyente)"
-          [from]="drawerForm.controls.scheduledFrom.value"
-          [to]="drawerForm.controls.scheduledTo.value"
-          (rangeChange)="drawerForm.controls.scheduledFrom.setValue($event.from); drawerForm.controls.scheduledTo.setValue($event.to)"
-        />
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+      <tc-filter-section title="Periodo de programación">
+        <div class="field">
+          <tc-date-range
+            label="Programación"
+            fromLabel="Desde"
+            toLabel="Hasta (excluyente)"
+            [from]="drawerForm.controls.scheduledFrom.value"
+            [to]="drawerForm.controls.scheduledTo.value"
+            (rangeChange)="
+              drawerForm.controls.scheduledFrom.setValue($event.from);
+              drawerForm.controls.scheduledTo.setValue($event.to)
+            "
+          />
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
 
-  <div
+  <tc-data-table
+    label="Agenda de inspecciones"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Agenda de inspecciones
+      </caption>
       <thead>
         <tr>
-          <th>Pieza</th>
-          <th>Programación</th>
-          <th>Estado</th>
-          <th>Responsable</th>
-          <th>Acción</th>
+          <th scope="col">Pieza</th>
+          <th scope="col">Programación</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Responsable</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -163,7 +182,7 @@
             <td>{{ date(row.record.scheduledAt) }}</td>
             <td>{{ label(row.record.state) }}</td>
             <td class="mono">{{ row.record.inspectorUuid }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn secondary" [routerLink]="['/calidad/inspecciones', row.record.uuid]">
                 Abrir
               </a>
@@ -176,7 +195,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

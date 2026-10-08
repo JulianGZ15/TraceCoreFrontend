@@ -1,14 +1,25 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import {
+  DataTable,
+  TableLayout,
+  TableAppearance,
+} from '../../../../shared/ui/data-table/data-table.component';
 import { Component, input, output, inject } from '@angular/core';
 import { Row, Entity } from '../../models';
 import { Session } from '../../../../core/auth/session';
 import { label, numberText, prettyDate } from '../../rules';
 @Component({
   selector: 'tc-commerce-records',
-  imports: [],
+  imports: [Skeleton, DataTable],
   templateUrl: './records.component.html',
   styleUrl: './records.component.scss',
 })
 export class RecordsComponent {
+  readonly tableLabel = input('Registros comerciales');
+  readonly busy = input(false);
+  readonly layout = input<TableLayout>('content');
+  readonly appearance = input<TableAppearance>('embedded');
+
   readonly session = inject(Session);
   readonly rows = input<Row[]>([]);
   readonly columns = input<{ key: string; label: string }[]>([]);

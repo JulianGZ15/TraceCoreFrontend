@@ -52,21 +52,27 @@
     </div>
   </tc-search-toolbar>
 
-  <div
+  <tc-data-table
+    label="Equipos · calidad"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Equipos · calidad
+      </caption>
       <thead>
         <tr>
-          <th>Identidad</th>
-          <th>Ficha</th>
-          <th>Condición declarada</th>
-          <th>Ciclo de vida</th>
-          <th>Acción</th>
+          <th scope="col">Identidad</th>
+          <th scope="col">Ficha</th>
+          <th scope="col">Condición declarada</th>
+          <th scope="col">Ciclo de vida</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -80,7 +86,7 @@
             <td>{{ row.modelCode }} · {{ row.sheetRevision }}</td>
             <td>{{ label(row.condition) }}</td>
             <td>{{ label(row.lifecycle) }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn secondary" [routerLink]="['/calidad/equipos', row.uuid, 'resumen']">
                 Abrir expediente
               </a>
@@ -93,7 +99,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

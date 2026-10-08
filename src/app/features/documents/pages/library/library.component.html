@@ -44,7 +44,9 @@
             <button class="btn secondary" (click)="recover(p)">Consultar resultado</button>
             <button class="btn secondary" (click)="repeat(p)">
               {{
-                p.operation === 'UPLOAD' ? 'Seleccionar archivo original' : 'Repetir misma solicitud'
+                p.operation === 'UPLOAD'
+                  ? 'Seleccionar archivo original'
+                  : 'Repetir misma solicitud'
               }}
             </button>
           </div>
@@ -67,28 +69,35 @@
       label="Consultando biblioteca…"
     />
   } @else {
-    <div
+    <tc-data-table
+      label="Biblioteca de documentos"
       listTable
-      class="table-scroll"
-      tabindex="0"
-      role="region"
-      aria-label="Tabla de registros; desplazamiento horizontal"
+      appearance="embedded"
+      layout="fill"
+      minTableWidth="720px"
+      [busy]="loading()"
     >
-      <table>
+      @if (loading() && !rows().length) {
+        <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+      }
+      <table [hidden]="loading() && !rows().length">
+        <caption class="sr-only">
+          Biblioteca de documentos
+        </caption>
         <thead>
           <tr>
-            <th>Título</th>
-            <th>Propietario</th>
-            <th>Clasificación</th>
-            <th>Estado</th>
-            <th>Expediente</th>
+            <th scope="col" class="table-identity">Título</th>
+            <th scope="col">Propietario</th>
+            <th scope="col">Clasificación</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Expediente</th>
           </tr>
         </thead>
         <tbody>
           @for (row of rows(); track row.document.uuid) {
             <tr>
               <td>
-                {{ row.document.title }}<small>{{ row.document.uuid }}</small>
+                {{ row.document.title }}<small class="mono">{{ row.document.uuid }}</small>
               </td>
               <td>{{ row.ownerLabel }}</td>
               <td>
@@ -103,7 +112,7 @@
       @if (!loading() && !error() && !rows().length) {
         <p>Sin documentos autorizados para estos filtros.</p>
       }
-    </div>
+    </tc-data-table>
   }
 
   <tc-pagination
@@ -207,7 +216,11 @@
 
       <div class="field">
         <label for="filter-owner-uuid">UUID del propietario</label>
-        <input id="filter-owner-uuid" formControlName="ownerUuid" placeholder="UUID del propietario…" />
+        <input
+          id="filter-owner-uuid"
+          formControlName="ownerUuid"
+          placeholder="UUID del propietario…"
+        />
       </div>
 
       @if (drawerForm.controls.ownerKind.value) {

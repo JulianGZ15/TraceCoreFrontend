@@ -1,8 +1,17 @@
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { ReadPage } from '../../../../shared/ui/read-page';
-import { PageHeading, Feedback, Pagination, PageNav, PageNavItem, Skeleton, Spinner } from '../../../../shared/ui/page';
+import {
+  PageHeading,
+  Feedback,
+  Pagination,
+  PageNav,
+  PageNavItem,
+  Skeleton,
+  Spinner,
+} from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { Page } from '../../../../core/http/workspace-api';
 import { Summary, VersionView, Linked } from '../../models';
@@ -15,7 +24,17 @@ import {
 } from '../../editors/decision-editor/decision-editor.component';
 @Component({
   selector: 'tc-document-dossier',
-  imports: [RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent, PageNav, Skeleton, Spinner],
+  imports: [
+    DataTable,
+    RouterLink,
+    PageHeading,
+    Feedback,
+    Pagination,
+    RecordValuesComponent,
+    PageNav,
+    Skeleton,
+    Spinner,
+  ],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
 })

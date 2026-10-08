@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component } from '@angular/core';
 
 import { SectionPage } from '../../section-page';
@@ -9,7 +11,7 @@ import { addressFields } from '../../record-fields';
 
 @Component({
   selector: 'tc-party-addresses',
-  imports: [Feedback, Pagination],
+  imports: [Skeleton, DataTable, Feedback, Pagination],
   templateUrl: './addresses.component.html',
   styleUrl: './addresses.component.scss',
 })

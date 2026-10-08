@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 
 import { SectionPage } from '../../section-page';
@@ -10,7 +12,7 @@ import { confirm } from '../../../../shared/ui/editor';
 import { CanDeactivateFn } from '@angular/router';
 @Component({
   selector: 'tc-party-evidence',
-  imports: [Feedback, Pagination],
+  imports: [Skeleton, DataTable, Feedback, Pagination],
   templateUrl: './evidence.component.html',
   styleUrl: './evidence.component.scss',
 })

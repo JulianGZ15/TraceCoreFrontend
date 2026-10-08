@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../shared/ui/data-table/data-table.component';
 import { Component, inject } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { Api, Role } from '../../../core/http/api';
@@ -7,7 +9,7 @@ import { edit, codeValidator } from '../../../shared/ui/editor';
 import { PermissionsPanel } from '../permissions';
 @Component({
   selector: 'tc-roles',
-  imports: [PageHeading, Feedback, Pagination],
+  imports: [Skeleton, DataTable, PageHeading, Feedback, Pagination],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss',
 })

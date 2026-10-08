@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, computed, TemplateRef } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -24,6 +26,8 @@ import { CatalogEditorComponent } from '../../editors/catalog-editor/catalog-edi
 @Component({
   selector: 'tc-equipment-lots',
   imports: [
+    Skeleton,
+    DataTable,
     PageHeading,
     ListContainer,
     Feedback,

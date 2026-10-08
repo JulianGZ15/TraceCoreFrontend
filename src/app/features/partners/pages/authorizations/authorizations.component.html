@@ -43,18 +43,21 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Autorizaciones y elegibilidad">
-    <table>
+  <tc-data-table label="Autorizaciones y elegibilidad" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
         Autorizaciones y elegibilidad del tercero
       </caption>
       <thead>
         <tr>
-          <th>Operación</th>
-          <th>Vigencia</th>
-          <th>Estado</th>
-          <th>Aprobación</th>
-          <th>Acciones</th>
+          <th scope="col">Operación</th>
+          <th scope="col">Vigencia</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Aprobación</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -72,7 +75,7 @@
               ><small>{{ date(r.approvedAt) }}</small
               ><small class="mono">{{ r.revokedBy }}</small>
             </td>
-            <td>
+            <td class="table-actions">
               @if (session.can('PARTY_APPROVE') && !r.revokedAt) {
                 <button class="btn danger" [disabled]="busy()" (click)="revoke(r)">
                   Revocar autorización
@@ -89,7 +92,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
   @if (paged) {
     <tc-pagination
       [offset]="offset()"

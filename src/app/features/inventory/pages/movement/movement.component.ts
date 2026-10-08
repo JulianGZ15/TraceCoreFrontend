@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +14,15 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
 
 @Component({
   selector: 'tc-inventory-movement',
-  imports: [RouterLink, ReactiveFormsModule, PageHeading, Feedback, InventoryNavComponent],
+  imports: [
+    Skeleton,
+    DataTable,
+    RouterLink,
+    ReactiveFormsModule,
+    PageHeading,
+    Feedback,
+    InventoryNavComponent,
+  ],
   templateUrl: './movement.component.html',
   styleUrl: './movement.component.scss',
 })

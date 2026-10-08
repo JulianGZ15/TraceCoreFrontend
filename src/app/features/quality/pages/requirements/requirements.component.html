@@ -46,20 +46,26 @@
     }
   </tc-search-toolbar>
 
-  <div
+  <tc-data-table
+    label="Requisitos de ficha"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Requisitos de ficha
+      </caption>
       <thead>
         <tr>
-          <th>Ficha / norma</th>
-          <th>Requisitos</th>
-          <th>Revisión</th>
-          <th>Acciones</th>
+          <th scope="col">Ficha / norma</th>
+          <th scope="col">Requisitos</th>
+          <th scope="col">Revisión</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -75,7 +81,7 @@
               >
             </td>
             <td>{{ row.revokedAt ? 'Revocado' : row.approvedAt ? 'Aprobado' : 'Pendiente' }}</td>
-            <td>
+            <td class="table-actions">
               @if (access.global('QUALITY_APPROVE')) {
                 @if (!row.approvedAt && !row.revokedAt) {
                   <button
@@ -107,7 +113,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

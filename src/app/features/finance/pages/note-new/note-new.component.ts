@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,6 +12,8 @@ import { PageHeading, Feedback } from '../../../../shared/ui/page';
 @Component({
   selector: 'tc-finance-note-new',
   imports: [
+    Skeleton,
+    DataTable,
     ReactiveFormsModule,
     RouterLink,
     FieldsComponent,

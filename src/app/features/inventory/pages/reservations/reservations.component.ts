@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -13,6 +15,8 @@ import { ReservationEditorComponent } from '../../editors/reservation-editor/res
 @Component({
   selector: 'tc-inventory-reservations',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     PageHeading,
     ListContainer,

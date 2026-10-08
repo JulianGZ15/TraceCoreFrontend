@@ -3,12 +3,6 @@ small {
   overflow-wrap: anywhere;
   font-family: var(--font-mono);
 }
-.table-scroll {
-  overflow: auto;
-}
-td {
-  vertical-align: top;
-}
 .actions {
   flex-wrap: wrap;
 }
@@ -25,10 +19,4 @@ form .btn {
 :host {
   display: block;
   min-width: 0;
-}
-table {
-  min-width: 720px;
-}
-td:first-child {
-  min-width: 240px;
 }

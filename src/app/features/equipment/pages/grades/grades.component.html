@@ -23,42 +23,55 @@
     <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar registros</button>
   </div>
 
-  <table listTable>
-    <caption class="sr-only">Grados de material</caption>
-    <thead>
-      <tr>
-        @for (col of columns; track col.key) {
-          <th>{{ col.label }}</th>
-        }
-        <th>UUID / acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.uuid) {
+  <tc-data-table
+    label="Grados de material"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="2" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Grados de material
+      </caption>
+      <thead>
         <tr>
           @for (col of columns; track col.key) {
-            <td>{{ value(row, col.key) }}</td>
+            <th scope="col">{{ col.label }}</th>
           }
-          <td>
-            <small class="mono">{{ row.uuid }}</small>
-            <div class="row-actions">
-              @if (session.can('TECHNICAL_APPROVE') && !row.approved) {
-                <button class="btn secondary" (click)="approve(row)">Aprobar grado</button>
-              }
-            </div>
-          </td>
+          <th scope="col">UUID / acciones</th>
         </tr>
-      } @empty {
-        @if (!busy() && !error()) {
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
           <tr>
-            <td [attr.colspan]="columns.length + 1" class="empty-state">
-              No hay registros para estos criterios.
+            @for (col of columns; track col.key) {
+              <td>{{ value(row, col.key) }}</td>
+            }
+            <td class="table-actions">
+              <small class="mono">{{ row.uuid }}</small>
+              <div class="row-actions">
+                @if (session.can('TECHNICAL_APPROVE') && !row.approved) {
+                  <button class="btn secondary" (click)="approve(row)">Aprobar grado</button>
+                }
+              </div>
             </td>
           </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td [attr.colspan]="columns.length + 1" class="empty-state">
+                No hay registros para estos criterios.
+              </td>
+            </tr>
+          }
         }
-      }
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

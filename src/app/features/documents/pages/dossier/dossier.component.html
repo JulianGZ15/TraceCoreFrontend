@@ -9,11 +9,7 @@
     }
     Actualizar
   </button>
-  <tc-page-nav
-    nav
-    ariaLabel="Secciones del expediente documental"
-    [items]="navItems()"
-  />
+  <tc-page-nav nav ariaLabel="Secciones del expediente documental" [items]="navItems()" />
 </tc-page-heading>
 @if (error()) {
   <tc-feedback [message]="error()" />
@@ -74,20 +70,21 @@
   }
   @if (section === 'versiones') {
     <section class="panel table-panel">
-      <div
-        class="table-scroll"
-        tabindex="0"
-        role="region"
-        aria-label="Tabla de registros; desplazamiento horizontal"
-      >
-        <table>
+      <tc-data-table label="Última versión cargada" appearance="embedded" [busy]="loading()">
+        @if (loading() && !versions().length) {
+          <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+        }
+        <table [hidden]="loading() && !versions().length">
+          <caption class="sr-only">
+            Última versión cargada
+          </caption>
           <thead>
             <tr>
-              <th>Número</th>
-              <th>Archivo</th>
-              <th>Estado</th>
-              <th>Vigente</th>
-              <th>Detalle</th>
+              <th scope="col">Número</th>
+              <th scope="col">Archivo</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Vigente</th>
+              <th scope="col">Detalle</th>
             </tr>
           </thead>
           <tbody>
@@ -106,16 +103,18 @@
             }
           </tbody>
         </table>
-      </div>
-      <tc-pagination
-        [offset]="offset"
-        [limit]="limit"
-        [count]="versions().length"
-        [hasMore]="hasMore()"
-        [busy]="loading()"
-        (move)="move($event)"
-        (resize)="resize($event)"
-      />
+
+        <tc-pagination
+          tableFooter
+          [offset]="offset"
+          [limit]="limit"
+          [count]="versions().length"
+          [hasMore]="hasMore()"
+          [busy]="loading()"
+          (move)="move($event)"
+          (resize)="resize($event)"
+        />
+      </tc-data-table>
     </section>
   }
   @if (section === 'vinculos') {

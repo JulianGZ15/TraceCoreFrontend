@@ -1,0 +1,54 @@
+@if (visible()) {
+  <tc-data-table label="Piezas recibidas" [busy]="busy()" minTableWidth="640px">
+    <h2 tableHeading>Recepción</h2>
+    <table>
+      <caption class="sr-only">
+        Piezas recibidas
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Pieza</th>
+          <th scope="col">Captura</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Equipo A</td>
+          <td>
+            <input aria-label="Observación de Equipo A" [formControl]="observation" />
+            <input
+              type="checkbox"
+              aria-label="Seleccionar Equipo A"
+              [checked]="selected"
+              (change)="selected = !selected"
+            />
+            <button type="button" (click)="opens = opens + 1">Abrir Equipo A</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <tc-pagination tableFooter [count]="25" [busy]="busy()" (move)="offset = $event" />
+  </tc-data-table>
+}
+@if (inList()) {
+  <tc-list-container tableLabel="Listado de piezas">
+    <tc-data-table listTable label="Listado de piezas" appearance="embedded" layout="fill">
+      <table>
+        <caption>
+          Listado de piezas
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Pieza</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Equipo B</td>
+          </tr>
+        </tbody>
+      </table>
+    </tc-data-table>
+    <tc-pagination listPagination [count]="1" />
+  </tc-list-container>
+}

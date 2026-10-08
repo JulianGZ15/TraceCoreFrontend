@@ -18,6 +18,7 @@
       [rows]="rows()"
       [columns]="columns"
       (selected)="choose($event)"
+      [busy]="loading()"
     /><tc-pagination
       [offset]="offset"
       [limit]="limit"

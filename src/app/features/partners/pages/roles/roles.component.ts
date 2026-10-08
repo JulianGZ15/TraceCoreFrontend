@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component } from '@angular/core';
 
 import { SectionPage } from '../../section-page';
@@ -8,7 +10,7 @@ import { PeriodEditorComponent } from '../../editors/period-editor/period-editor
 
 @Component({
   selector: 'tc-party-roles',
-  imports: [Feedback, Pagination],
+  imports: [Skeleton, DataTable, Feedback, Pagination],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss',
 })

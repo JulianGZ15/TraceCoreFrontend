@@ -16,17 +16,20 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Contactos">
-    <table>
+  <tc-data-table label="Contactos" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
         Contactos del tercero
       </caption>
       <thead>
         <tr>
-          <th>Contacto</th>
-          <th>Canales</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th scope="col">Contacto</th>
+          <th scope="col">Canales</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -52,7 +55,7 @@
                 <small>Principal</small>
               }
             </td>
-            <td>
+            <td class="table-actions">
               @if (session.can('PARTY_MANAGE')) {
                 <button class="btn secondary" (click)="edit(r)">Editar contacto</button>
               }
@@ -67,7 +70,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
   @if (paged) {
     <tc-pagination
       [offset]="offset()"

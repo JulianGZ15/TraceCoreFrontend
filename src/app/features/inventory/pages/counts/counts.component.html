@@ -1,9 +1,5 @@
 <tc-list-container tableLabel="Conteos físicos">
-  <tc-page-heading
-    listHeader
-    section="Inventario y patios"
-    title="Conteos físicos"
-  >
+  <tc-page-heading listHeader section="Inventario y patios" title="Conteos físicos">
     <tc-inventory-inventory-nav />
   </tc-page-heading>
 
@@ -45,21 +41,28 @@
     }
   </div>
 
-  <div
+  <tc-data-table
+    label="Abrir snapshot"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Abrir snapshot
+      </caption>
       <thead>
         <tr>
-          <th>Folio</th>
-          <th>Método / estado</th>
-          <th>Esperado congelado</th>
-          <th>Apertura</th>
-          <th>Acción</th>
+          <th scope="col">Folio</th>
+          <th scope="col">Método / estado</th>
+          <th scope="col">Esperado congelado</th>
+          <th scope="col">Apertura</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -78,7 +81,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

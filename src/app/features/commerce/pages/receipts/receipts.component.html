@@ -5,10 +5,7 @@
     [title]="title"
     description="Documentos administrativos, cumplimiento y trazabilidad por patio."
   >
-    <tc-commerce-section-nav
-      [base]="navBase"
-      [sections]="sections"
-    />
+    <tc-commerce-section-nav [base]="navBase" [sections]="sections" />
   </tc-page-heading>
 
   <ng-container listFeedback>
@@ -54,41 +51,45 @@
     </button>
   </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Origen del material">
-      <div class="field">
-        <tc-commerce-lookup
-          resource="party-options"
-          [yard]="yard"
-          [params]="{ purpose: 'ORIGIN' }"
-          title="Tercero de origen"
-          [value]="drawerForm.controls.originPartyUuid.value"
-          (selectedChange)="onOriginPicked($event)"
-        />
-      </div>
-    </tc-filter-section>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Origen del material">
+        <div class="field">
+          <tc-commerce-lookup
+            resource="party-options"
+            [yard]="yard"
+            [params]="{ purpose: 'ORIGIN' }"
+            title="Tercero de origen"
+            [value]="drawerForm.controls.originPartyUuid.value"
+            (selectedChange)="onOriginPicked($event)"
+          />
+        </div>
+      </tc-filter-section>
 
-    <tc-filter-section title="Orden vinculada">
-      <div class="field">
-        <tc-commerce-lookup
-          resource="orders/directory"
-          [yard]="yard"
-          [params]="{ purpose: 'CONTRACTOR' }"
-          title="Orden de procedencia"
-          [value]="drawerForm.controls.orderUuid.value"
-          (selectedChange)="onOrderPicked($event)"
-        />
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+      <tc-filter-section title="Orden vinculada">
+        <div class="field">
+          <tc-commerce-lookup
+            resource="orders/directory"
+            [yard]="yard"
+            [params]="{ purpose: 'CONTRACTOR' }"
+            title="Orden de procedencia"
+            [value]="drawerForm.controls.orderUuid.value"
+            (selectedChange)="onOrderPicked($event)"
+          />
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
 
   <tc-commerce-records
     listTable
     [rows]="rows()"
     [columns]="columns"
     (selected)="selected.set($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Recepciones administrativas"
+    [busy]="loading()"
   />
   <tc-pagination
     listPagination

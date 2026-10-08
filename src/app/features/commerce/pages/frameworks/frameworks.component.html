@@ -5,10 +5,7 @@
     [title]="title"
     description="Documentos administrativos, cumplimiento y trazabilidad por patio."
   >
-    <tc-commerce-section-nav
-      [base]="navBase"
-      [sections]="sections"
-    />
+    <tc-commerce-section-nav [base]="navBase" [sections]="sections" />
   </tc-page-heading>
 
   <ng-container listFeedback>
@@ -31,6 +28,10 @@
     [rows]="rows()"
     [columns]="columns"
     (selected)="selected.set($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Contratos marco"
+    [busy]="loading()"
   />
 
   <tc-pagination

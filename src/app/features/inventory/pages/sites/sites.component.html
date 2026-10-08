@@ -1,9 +1,5 @@
 <tc-list-container tableLabel="Sitios operativos externos">
-  <tc-page-heading
-    listHeader
-    section="Inventario y patios"
-    title="Sitios operativos externos"
-  >
+  <tc-page-heading listHeader section="Inventario y patios" title="Sitios operativos externos">
     <tc-inventory-inventory-nav />
   </tc-page-heading>
 
@@ -28,20 +24,27 @@
     }
   </tc-search-toolbar>
 
-  <div
+  <tc-data-table
+    label="Sitios operativos externos"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Sitios operativos externos
+      </caption>
       <thead>
         <tr>
-          <th>Código / nombre</th>
-          <th>Tipo</th>
-          <th>Estado</th>
-          <th>Acción</th>
+          <th scope="col">Código / nombre</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -59,7 +62,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

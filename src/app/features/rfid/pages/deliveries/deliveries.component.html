@@ -37,27 +37,40 @@
     </button>
   </tc-search-toolbar>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Entregas">
-    <table>
+  <tc-data-table
+    label="Entregas"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="6" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Entregas
+      </caption>
       <thead>
         <tr>
-          <th>UUID</th>
-          <th>Estado</th>
-          <th>Intentos</th>
-          <th>Próximo intento</th>
-          <th>Error</th>
-          <th>Acción</th>
+          <th scope="col">UUID</th>
+          <th scope="col">Estado</th>
+            <th scope="col" class="table-number">Intentos</th>
+          <th scope="col">Próximo intento</th>
+          <th scope="col">Error</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
         @for (r of rows(); track r.uuid) {
           <tr>
-            <td>{{ r.uuid }}</td>
+            <td class="mono">{{ r.uuid }}</td>
             <td>{{ label(r.state) }}</td>
-            <td>{{ r.attempts }}</td>
+            <td class="table-number">{{ r.attempts }}</td>
             <td>{{ date(r.nextAttemptAt) }}</td>
             <td>{{ r.errorCode ?? 'Sin error' }}</td>
-            <td>
+            <td class="table-actions">
               @if (r.state === 'FAILED') {
                 <button class="btn" [disabled]="busy()" (click)="requeue(r)">Reencolar</button>
               }
@@ -70,7 +83,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

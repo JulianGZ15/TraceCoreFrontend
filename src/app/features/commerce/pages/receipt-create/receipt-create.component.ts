@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, inject } from '@angular/core';
 import { takeUntil } from 'rxjs';
 import { RouterLink } from '@angular/router';
@@ -13,6 +15,8 @@ import { form, message } from '../../rules';
 @Component({
   selector: 'tc-commerce-receipt-create',
   imports: [
+    Skeleton,
+    DataTable,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

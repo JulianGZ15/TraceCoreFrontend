@@ -36,15 +36,28 @@
     }
   </tc-search-toolbar>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Portones">
-    <table>
+  <tc-data-table
+    label="Portones"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Portones
+      </caption>
       <thead>
         <tr>
-          <th>Código</th>
-          <th>Nombre</th>
-          <th>Patio</th>
-          <th>Estado</th>
-          <th>Detalle</th>
+          <th scope="col">Código</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Patio</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Detalle</th>
         </tr>
       </thead>
       <tbody>
@@ -52,9 +65,9 @@
           <tr>
             <td>{{ r.data.code }}</td>
             <td>{{ r.data.name }}</td>
-            <td>{{ r.data.yardUuid }}</td>
+            <td class="mono">{{ r.data.yardUuid }}</td>
             <td>{{ r.data.active ? 'Activo' : 'Inactivo' }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn" [routerLink]="['/rfid/portones', r.data.uuid]">Consultar</a>
             </td>
           </tr>
@@ -65,7 +78,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

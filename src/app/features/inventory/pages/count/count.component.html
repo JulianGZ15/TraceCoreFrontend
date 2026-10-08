@@ -1,14 +1,8 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Conteo y diferencias"
->
+<tc-page-heading section="Inventario y patios" title="Conteo y diferencias">
   <tc-inventory-inventory-nav />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
-<tc-feedback
-  [message]="success()"
-  kind="success"
-/>
+<tc-feedback [message]="success()" kind="success" />
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -56,20 +50,26 @@
         <button class="btn primary" [disabled]="busy()">Registrar observación</button>
       </form>
     }
-    <div
-      class="table-scroll"
-      tabindex="0"
-      role="region"
-      aria-label="Tabla con desplazamiento horizontal"
+    <tc-data-table
+      label="Registrar observación manual"
+      appearance="embedded"
+      [busy]="busy()"
+      minTableWidth="720px"
     >
-      <table>
+      @if (busy() && !rows().length) {
+        <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+      }
+      <table [hidden]="busy() && !rows().length">
+        <caption class="sr-only">
+          Registrar observación manual
+        </caption>
         <thead>
           <tr>
-            <th>Pieza / identificador</th>
-            <th>Esperado / observado</th>
-            <th>Diferencia</th>
-            <th>Resolución</th>
-            <th>Acción</th>
+            <th scope="col">Pieza / identificador</th>
+            <th scope="col">Esperado / observado</th>
+            <th scope="col">Diferencia</th>
+            <th scope="col">Resolución</th>
+            <th scope="col">Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -83,7 +83,7 @@
               </td>
               <td>{{ label(r.difference) }}</td>
               <td>{{ r.resolution ? label(r.resolution) : 'Pendiente' }}</td>
-              <td>
+              <td class="table-actions">
                 @if (
                   c.state === 'OPEN' && !r.resolution && access.can('INVENTORY_ADJUST', c.yardUuid)
                 ) {
@@ -98,15 +98,17 @@
           }
         </tbody>
       </table>
-    </div>
-    <tc-pagination
-      [offset]="offset()"
-      [limit]="limit()"
-      [count]="rows().length"
-      [busy]="busy()"
-      (move)="page($event)"
-      (resize)="query({ limit: $event, offset: 0 })"
-    />
+
+      <tc-pagination
+        tableFooter
+        [offset]="offset()"
+        [limit]="limit()"
+        [count]="rows().length"
+        [busy]="busy()"
+        (move)="page($event)"
+        (resize)="query({ limit: $event, offset: 0 })"
+      />
+    </tc-data-table>
     @if (selected(); as r) {
       <form [formGroup]="resolveForm" (ngSubmit)="resolve()">
         <h3>Resolver {{ label(r.difference) }}</h3>

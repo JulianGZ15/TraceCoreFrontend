@@ -22,7 +22,12 @@
           <option [value]="v">{{ label(v) }}</option>
         }
       </select></label
-    ><tc-logistics-records [zone]="zone" [rows]="rows()" [columns]="columns" /><tc-pagination
+    ><tc-logistics-records
+      [zone]="zone"
+      [rows]="rows()"
+      [columns]="columns"
+      [busy]="loading()"
+    /><tc-pagination
       [offset]="offset"
       [limit]="limit"
       [count]="rows().length"

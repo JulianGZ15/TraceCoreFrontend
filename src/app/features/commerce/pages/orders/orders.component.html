@@ -5,10 +5,7 @@
     [title]="title"
     description="Documentos administrativos, cumplimiento y trazabilidad por patio."
   >
-    <tc-commerce-section-nav
-      [base]="navBase"
-      [sections]="sections"
-    />
+    <tc-commerce-section-nav [base]="navBase" [sections]="sections" />
   </tc-page-heading>
 
   <ng-container listFeedback>
@@ -56,110 +53,114 @@
     </button>
   </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Tipo de orden">
-      <div class="pill-group" role="group" aria-label="Tipo de orden">
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === ''"
-          (click)="setDraftType('')"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === 'OC'"
-          (click)="setDraftType('OC')"
-        >
-          Compra
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === 'OV'"
-          (click)="setDraftType('OV')"
-        >
-          Venta
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.type.value === 'OR'"
-          (click)="setDraftType('OR')"
-        >
-          Renta
-        </button>
-      </div>
-    </tc-filter-section>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Tipo de orden">
+        <div class="pill-group" role="group" aria-label="Tipo de orden">
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.type.value === ''"
+            (click)="setDraftType('')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.type.value === 'OC'"
+            (click)="setDraftType('OC')"
+          >
+            Compra
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.type.value === 'OV'"
+            (click)="setDraftType('OV')"
+          >
+            Venta
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.type.value === 'OR'"
+            (click)="setDraftType('OR')"
+          >
+            Renta
+          </button>
+        </div>
+      </tc-filter-section>
 
-    <tc-filter-section title="Estado de la orden">
-      <div class="pill-group" role="group" aria-label="Estado de la orden">
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === ''"
-          (click)="setDraftState('')"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'DRAFT'"
-          (click)="setDraftState('DRAFT')"
-        >
-          Borrador
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'APPROVED'"
-          (click)="setDraftState('APPROVED')"
-        >
-          Aprobada
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'CLOSED'"
-          (click)="setDraftState('CLOSED')"
-        >
-          Cerrada
-        </button>
-        <button
-          type="button"
-          class="pill-option"
-          [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
-          (click)="setDraftState('CANCELLED')"
-        >
-          Cancelada
-        </button>
-      </div>
-    </tc-filter-section>
+      <tc-filter-section title="Estado de la orden">
+        <div class="pill-group" role="group" aria-label="Estado de la orden">
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === ''"
+            (click)="setDraftState('')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'DRAFT'"
+            (click)="setDraftState('DRAFT')"
+          >
+            Borrador
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'APPROVED'"
+            (click)="setDraftState('APPROVED')"
+          >
+            Aprobada
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'CLOSED'"
+            (click)="setDraftState('CLOSED')"
+          >
+            Cerrada
+          </button>
+          <button
+            type="button"
+            class="pill-option"
+            [class.active]="drawerForm.controls.state.value === 'CANCELLED'"
+            (click)="setDraftState('CANCELLED')"
+          >
+            Cancelada
+          </button>
+        </div>
+      </tc-filter-section>
 
-    <tc-filter-section title="Contraparte">
-      <div class="field">
-        <tc-commerce-lookup
-          resource="party-options"
-          [yard]="yard"
-          [params]="{ purpose: 'CONTRACTOR' }"
-          title="Contraparte"
-          [value]="drawerForm.controls.partyUuid.value"
-          (selectedChange)="onPartyPicked($event)"
-        />
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+      <tc-filter-section title="Contraparte">
+        <div class="field">
+          <tc-commerce-lookup
+            resource="party-options"
+            [yard]="yard"
+            [params]="{ purpose: 'CONTRACTOR' }"
+            title="Contraparte"
+            [value]="drawerForm.controls.partyUuid.value"
+            (selectedChange)="onPartyPicked($event)"
+          />
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
 
   <tc-commerce-records
     listTable
     [rows]="rows()"
     [columns]="columns"
     (selected)="selected.set($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Órdenes comerciales"
+    [busy]="loading()"
   />
   <tc-pagination
     listPagination

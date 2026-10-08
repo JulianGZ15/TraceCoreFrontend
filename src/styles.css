@@ -137,8 +137,7 @@ h1:focus {
   outline-offset: 2px;
 }
 .mono,
-.eyebrow,
-th {
+.eyebrow {
   font-family: var(--font-mono);
 }
 .mono {
@@ -397,41 +396,108 @@ select[aria-invalid='true'] {
   margin: 0;
   border-bottom: 1px solid var(--tc-border);
 }
-.table-scroll {
-  overflow-x: auto;
-  max-width: 100%;
-}
-table {
-  border-collapse: collapse;
+/* Projected cells retain the consumer's Angular scope. Keep these rules global
+   and namespaced so every table uses one visual contract without ::ng-deep. */
+tc-data-table table {
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
+  min-width: var(--tc-table-min-width, 0px);
   text-align: left;
+  font-family: var(--font-body);
   font-size: 14px;
+  line-height: 20px;
 }
-th {
+tc-data-table th {
   background: var(--tc-table-header);
   color: var(--tc-text-muted);
+  font-family: var(--font-mono);
   font-size: 12px;
+  line-height: 18px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   position: sticky;
   top: 0;
   z-index: 2;
+  text-align: left;
 }
-th,
-td {
+tc-data-table th,
+tc-data-table td {
+  height: 40px;
   padding: 10px 12px;
   vertical-align: middle;
   border-bottom: 1px solid var(--tc-border);
-  min-height: 40px;
+  overflow-wrap: break-word;
 }
-td small {
+tc-data-table td small {
   display: block;
   margin-top: 4px;
   color: var(--tc-text-muted);
+  font-size: 12px;
+  line-height: 18px;
 }
-tbody tr:hover {
+tc-data-table td.mono {
+  font-size: 14px;
+}
+tc-data-table td p {
+  margin: 4px 0 0;
+}
+tc-data-table tbody tr:hover,
+tc-data-table tbody tr:focus-within {
   background: var(--tc-selection);
+}
+tc-data-table .table-number {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+tc-data-table .table-identity {
+  min-width: 240px;
+}
+tc-data-table .table-actions {
+  white-space: normal;
+}
+tc-data-table .table-actions :is(button, a) {
+  white-space: nowrap;
+}
+tc-data-table .table-actions > .btn + .btn,
+tc-data-table .table-actions > a + a {
+  margin-inline-start: 8px;
+}
+.tc-table-footer:not(:empty),
+.list-zone-pagination:not(:empty) {
+  flex: none;
+  border-top: 1px solid var(--tc-border);
+  background: var(--tc-canvas);
+}
+/* Record adapters participate in the list flex layout but never own scroll. */
+@media (min-width: 1024px) and (min-height: 700px) {
+  /* Routed page hosts must pass the viewport constraint down to ListContainer. */
+  .main-content > :has(> tc-list-container) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+  }
+}
+.list-table-content > tc-commerce-records,
+.list-table-content > tc-logistics-records,
+.list-table-content > tc-finance-records {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+@media (max-width: 1023px), (max-height: 699px) {
+  .list-table-content > tc-commerce-records,
+  .list-table-content > tc-logistics-records,
+  .list-table-content > tc-finance-records {
+    display: block;
+    flex: none;
+  }
 }
 /* Motion & Transitions - Etapa 11 */
 @keyframes tcViewEnter {
@@ -754,4 +820,10 @@ button.tc-btn-busy {
   border-radius: 8px;
 }
 
-.finance-dialog {width:min(860px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;background:var(--tc-panel,#fff);border-radius:8px;}
+.finance-dialog {
+  width: min(860px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  background: var(--tc-panel, #fff);
+  border-radius: 8px;
+}

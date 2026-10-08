@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, computed, TemplateRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -25,6 +27,8 @@ import { SiteEditorComponent } from '../../editors/site-editor/site-editor.compo
 @Component({
   selector: 'tc-inventory-sites',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     ReactiveFormsModule,
     PageHeading,

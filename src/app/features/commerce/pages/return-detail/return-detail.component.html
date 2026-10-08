@@ -1,9 +1,6 @@
 <tc-page-heading section="Centro comercial" [title]="title">
-  <tc-commerce-section-nav
-    [base]="navBase"
-    [sections]="sections"
-  />
-</tc-page-heading><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
+  <tc-commerce-section-nav [base]="navBase" [sections]="sections" /> </tc-page-heading
+><tc-commerce-pending-requests /><tc-feedback [message]="error()" /><button
   class="btn secondary"
   (click)="reload()"
   [disabled]="loading()"
@@ -15,13 +12,24 @@
     <h2>{{ d.returned.folio }}</h2>
     <p class="mono">{{ d.returned.uuid }}</p>
     <p>{{ d.returned['reference'] }}</p>
-    <div class="table-scroll">
-      <table>
+    <tc-data-table
+      label="Piezas de devolución"
+      appearance="embedded"
+      minTableWidth="640px"
+      [busy]="loading()"
+    >
+      @if (loading() && !d.items.length) {
+        <tc-skeleton variant="table" [columns]="3" label="Cargando registros…" />
+      }
+      <table [hidden]="loading() && !d.items.length">
+        <caption class="sr-only">
+          Piezas de devolución
+        </caption>
         <thead>
           <tr>
-            <th>Pieza</th>
-            <th>Aceptación / condición</th>
-            <th>Observaciones</th>
+            <th scope="col">Pieza</th>
+            <th scope="col">Aceptación / condición</th>
+            <th scope="col">Observaciones</th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +42,6 @@
           }
         </tbody>
       </table>
-    </div>
+    </tc-data-table>
   </section>
 }

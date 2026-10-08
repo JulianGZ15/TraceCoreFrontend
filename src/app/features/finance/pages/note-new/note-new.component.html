@@ -61,14 +61,25 @@
   <section class="panel">
     <h2>Vista previa calculada por el servidor</h2>
     <p>{{ c.currency }} · {{ c.fractionDigits }} decimales</p>
-    <div class="table-scroll" tabindex="0" role="region" aria-label="Partidas de vista previa">
-      <table>
+    <tc-data-table
+      label="Partidas de vista previa"
+      appearance="embedded"
+      minTableWidth="1000px"
+      [busy]="loading()"
+    >
+      @if (loading() && !c.parts.length) {
+        <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+      }
+      <table [hidden]="loading() && !c.parts.length">
+        <caption class="sr-only">
+          Partidas de vista previa
+        </caption>
         <thead>
           <tr>
-            <th>Fuente</th>
-            <th>Neto</th>
-            <th>Impuesto</th>
-            <th>Neto restante de la fuente</th>
+            <th scope="col">Fuente</th>
+            <th scope="col" class="table-number">Neto</th>
+            <th scope="col" class="table-number">Impuesto</th>
+            <th scope="col" class="table-number">Neto restante de la fuente</th>
           </tr>
         </thead>
         <tbody>
@@ -77,14 +88,14 @@
               <td>
                 {{ p.concept }}<small class="mono uuid">{{ p.sourceUuid }}</small>
               </td>
-              <td class="mono">{{ numberText(p.netAmountExact) }}</td>
-              <td class="mono">{{ numberText(p.taxAmountExact) }}</td>
-              <td class="mono">{{ numberText(p.remainingNetExact) }}</td>
+              <td class="table-number mono">{{ numberText(p.netAmountExact) }}</td>
+              <td class="table-number mono">{{ numberText(p.taxAmountExact) }}</td>
+              <td class="table-number mono">{{ numberText(p.remainingNetExact) }}</td>
             </tr>
           }
         </tbody>
       </table>
-    </div>
+    </tc-data-table>
     <div class="metrics">
       <div class="metric">
         Neto<strong>{{ numberText(c.netAmountExact) }}</strong>

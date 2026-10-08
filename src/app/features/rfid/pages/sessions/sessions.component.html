@@ -36,25 +36,38 @@
     }
   </tc-search-toolbar>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Sesiones autorizadas">
-    <table>
+  <tc-data-table
+    label="Sesiones autorizadas"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Sesiones autorizadas
+      </caption>
       <thead>
         <tr>
-          <th>UUID</th>
-          <th>Propósito</th>
-          <th>Patio</th>
-          <th>Autorizada hasta</th>
-          <th>Detalle</th>
+          <th scope="col">UUID</th>
+          <th scope="col">Propósito</th>
+          <th scope="col">Patio</th>
+          <th scope="col">Autorizada hasta</th>
+          <th scope="col">Detalle</th>
         </tr>
       </thead>
       <tbody>
         @for (r of rows(); track r.data.session.uuid) {
           <tr>
-            <td>{{ r.data.session.uuid }}</td>
+            <td class="mono">{{ r.data.session.uuid }}</td>
             <td>{{ label(r.data.session.purpose) }}</td>
-            <td>{{ r.data.session.yardUuid }}</td>
+            <td class="mono">{{ r.data.session.yardUuid }}</td>
             <td>{{ date(r.data.session.expiresAt) }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn" [routerLink]="['/rfid/sesiones', r.data.session.uuid]">Consultar</a>
             </td>
           </tr>
@@ -65,7 +78,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

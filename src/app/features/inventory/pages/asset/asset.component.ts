@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,6 +15,8 @@ import { CustodyEditorComponent } from '../../editors/custody-editor/custody-edi
 @Component({
   selector: 'tc-inventory-asset',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     ReactiveFormsModule,
     PageHeading,

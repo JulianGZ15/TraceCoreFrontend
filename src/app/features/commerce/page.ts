@@ -52,6 +52,7 @@ export abstract class CommercePage implements OnInit, OnDestroy {
   limit = 25;
   filters: Record<string, string> = {};
   private seq = 0;
+  private rowContext = '';
   protected stop = new Subject<void>();
   protected ended = new Subject<void>();
   ngOnInit() {
@@ -176,7 +177,18 @@ export abstract class CommercePage implements OnInit, OnDestroy {
       this.filters[k] = q.get(k) ?? '';
     this.loading.set(true);
     this.error.set('');
-    this.rows.set([]);
+    const rowContext = JSON.stringify([
+      epoch,
+      this.mode,
+      this.collection,
+      this.id,
+      this.offset,
+      this.limit,
+      q.get('yardUuid') ?? this.session.selectedYard(),
+      this.filters,
+    ]);
+    if (rowContext !== this.rowContext) this.rows.set([]);
+    this.rowContext = rowContext;
     this.selected.set(null);
     try {
       let rows: Row[] | Entity[] = [];
@@ -239,6 +251,7 @@ export abstract class CommercePage implements OnInit, OnDestroy {
     } catch (e) {
       if (seq === this.seq) {
         this.error.set(message(e));
+        if ([401, 403].includes((e as { status?: number })?.status ?? 0)) this.rows.set([]);
         if (e && typeof e === 'object' && 'status' in e && e.status === 403)
           void this.session.refresh();
       }

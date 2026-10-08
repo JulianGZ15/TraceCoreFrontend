@@ -77,6 +77,7 @@ test('obsolete preview retains interval; definitive request includes fingerprint
   const f = await commerceFixture(page);
   await login(page);
   await page.goto('/comercial/asignaciones/' + cids.assignment + '/corte');
+  await expect(page.getByRole('button', { name: 'Recargar datos', exact: true })).toBeEnabled();
   await page.getByLabel('Fin con offset').fill('2026-10-02T12:00:00Z');
   await page.getByRole('button', { name: /Previsualizar en servidor/ }).click();
   await expect(page.getByText('1234.5678').first()).toBeVisible();
@@ -89,12 +90,16 @@ test('obsolete preview retains interval; definitive request includes fingerprint
     'preview-fingerprint',
   );
 });
-test('return form renders after asynchronous contract loading on a direct route', async ({ page }) => {
+test('return form renders after asynchronous contract loading on a direct route', async ({
+  page,
+}) => {
   await commerceFixture(page);
   await login(page);
   await page.goto('/comercial/rentas/' + cids.rental + '/devoluciones/nueva');
   await expect(page.getByLabel('Folio de devolución', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('Recepción administrativa del cliente final', { exact: true })).toBeVisible();
+  await expect(
+    page.getByLabel('Recepción administrativa del cliente final', { exact: true }),
+  ).toBeVisible();
 });
 for (const width of [390, 768, 1280, 1440])
   test('commerce responsive ' + width, async ({ page }, info) => {

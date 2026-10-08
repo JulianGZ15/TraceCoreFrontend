@@ -26,20 +26,26 @@
     </div>
   }
 
-  <div
+  <tc-data-table
+    label="Documentos MTR"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Documentos MTR
+      </caption>
       <thead>
         <tr>
-          <th>Folio / revisión</th>
-          <th>Emisión</th>
-          <th>Estado</th>
-          <th>Expediente</th>
+          <th scope="col">Folio / revisión</th>
+          <th scope="col">Emisión</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Expediente</th>
         </tr>
       </thead>
       <tbody>
@@ -51,8 +57,10 @@
             </td>
             <td>{{ date(row.issuedAt) }}</td>
             <td>{{ label(row.state) }}</td>
-            <td>
-              <a class="btn secondary" [routerLink]="['/calidad/mtrs', row.uuid]">Abrir documento</a>
+            <td class="table-actions">
+              <a class="btn secondary" [routerLink]="['/calidad/mtrs', row.uuid]"
+                >Abrir documento</a
+              >
             </td>
           </tr>
         } @empty {
@@ -62,7 +70,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

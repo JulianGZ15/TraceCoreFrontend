@@ -13,18 +13,21 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Tabla de auditoría">
-    <table>
+  <tc-data-table label="Tabla de auditoría" appearance="embedded" [busy]="list.busy()">
+    @if (list.busy() && !list.items().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="list.busy() && !list.items().length">
       <caption class="sr-only">
         Eventos de auditoría, más recientes primero
       </caption>
       <thead>
         <tr>
-          <th>Fecha / zona</th>
-          <th>Acción</th>
-          <th>Recurso</th>
-          <th>Actor</th>
-          <th>Detalle</th>
+          <th scope="col">Fecha / zona</th>
+          <th scope="col">Acción</th>
+          <th scope="col">Recurso</th>
+          <th scope="col">Actor</th>
+          <th scope="col">Detalle</th>
         </tr>
       </thead>
       <tbody>
@@ -38,7 +41,9 @@
               {{ event.resourceType }}<small class="mono">{{ event.resourceUuid }}</small>
             </td>
             <td class="mono">{{ event.actorUuid ?? 'Sin actor identificado' }}</td>
-            <td><button class="btn secondary" (click)="detail(event)">Ver evento</button></td>
+            <td class="table-actions">
+              <button class="btn secondary" (click)="detail(event)">Ver evento</button>
+            </td>
           </tr>
         } @empty {
           @if (!list.busy() && !list.error()) {
@@ -49,13 +54,15 @@
         }
       </tbody>
     </table>
-  </div>
-  <tc-pagination
-    [offset]="list.offset()"
-    [limit]="list.limit()"
-    [count]="list.items().length"
-    [busy]="list.busy()"
-    (move)="list.load($event)"
-    (resize)="list.resize($event)"
-  />
+
+    <tc-pagination
+      tableFooter
+      [offset]="list.offset()"
+      [limit]="list.limit()"
+      [count]="list.items().length"
+      [busy]="list.busy()"
+      (move)="list.load($event)"
+      (resize)="list.resize($event)"
+    />
+  </tc-data-table>
 </section>

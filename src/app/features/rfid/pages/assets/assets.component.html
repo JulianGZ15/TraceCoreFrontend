@@ -41,15 +41,28 @@
     </label>
   </tc-search-toolbar>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Equipos RFID">
-    <table>
+  <tc-data-table
+    label="Equipos RFID"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Equipos RFID
+      </caption>
       <thead>
         <tr>
-          <th>Equipo</th>
-          <th>Serial</th>
-          <th>Ciclo de vida</th>
-          <th>Chip vigente</th>
-          <th>Acción</th>
+          <th scope="col">Equipo</th>
+          <th scope="col">Serial</th>
+          <th scope="col">Ciclo de vida</th>
+          <th scope="col">Chip vigente</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -62,7 +75,7 @@
             <td>{{ r.identity.serialNumber ?? 'Sin serial' }}</td>
             <td>{{ label(r.identity.lifecycle) }}</td>
             <td class="mono">{{ r.binding?.tagUuid ?? 'Sin vínculo' }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn" [routerLink]="['/rfid/equipos', r.identity.uuid]">Expediente</a>
             </td>
           </tr>
@@ -73,7 +86,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

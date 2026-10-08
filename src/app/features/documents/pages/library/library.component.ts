@@ -1,3 +1,4 @@
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject, signal, computed, TemplateRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
@@ -36,6 +37,7 @@ import { workspaceError as errorMessage } from '../../../../core/http/workspace-
 @Component({
   selector: 'tc-document-library',
   imports: [
+    DataTable,
     RouterLink,
     ReactiveFormsModule,
     PageHeading,

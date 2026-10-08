@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { SectionPage } from '../../section-page';
@@ -8,7 +10,7 @@ import { EvaluationEditorComponent } from '../../editors/evaluation-editor/evalu
 
 @Component({
   selector: 'tc-party-avl',
-  imports: [Feedback, Pagination, ReactiveFormsModule],
+  imports: [Skeleton, DataTable, Feedback, Pagination, ReactiveFormsModule],
   templateUrl: './avl.component.html',
   styleUrl: './avl.component.scss',
 })

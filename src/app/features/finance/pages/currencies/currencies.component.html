@@ -23,7 +23,9 @@
   </ng-container>
 
   <div listToolbar class="currencies-toolbar flex items-center justify-between gap-4 py-2">
-    <p class="text-sm">La precisión es inmutable. Las operaciones se mantienen separadas por divisa.</p>
+    <p class="text-sm">
+      La precisión es inmutable. Las operaciones se mantienen separadas por divisa.
+    </p>
     @if (can('FINANCE_MANAGE')) {
       <button class="btn primary" (click)="action('currency')">Registrar divisa</button>
     }
@@ -34,6 +36,10 @@
     [rows]="rows()"
     [columns]="columns"
     (selected)="open($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Divisas y precisión"
+    [busy]="loading()"
   />
   <tc-pagination
     listPagination
@@ -43,4 +49,3 @@
     (move)="move($event)"
   />
 </tc-list-container>
-

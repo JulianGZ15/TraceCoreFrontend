@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, computed, TemplateRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
@@ -22,6 +24,8 @@ import * as M from '../../models';
 @Component({
   selector: 'tc-rfid-assets',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     FormsModule,
     ReactiveFormsModule,

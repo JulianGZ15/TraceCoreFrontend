@@ -1,7 +1,8 @@
 <tc-page-heading
   [title]="title"
   section="ADMINISTRACIÓN FINANCIERA"
-  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos.">
+  description="Facturas administrativas, pagos, aplicaciones y crédito con importes exactos."
+>
   <tc-finance-section-nav
     [base]="navBase"
     [sections]="sections"
@@ -32,7 +33,12 @@
   </section>
 }
 <section class="panel">
-  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+  <tc-finance-records
+    [rows]="rows()"
+    [columns]="columns"
+    (selected)="open($event)"
+    [busy]="loading()"
+  /><tc-pagination
     [offset]="offset"
     [limit]="limit"
     [count]="rows().length"

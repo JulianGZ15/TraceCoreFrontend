@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -24,6 +26,8 @@ import { CommercePending } from '../../pending';
 @Component({
   selector: 'tc-commerce-billing-preview',
   imports: [
+    Skeleton,
+    DataTable,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

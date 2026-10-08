@@ -1,14 +1,8 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Expediente físico"
->
+<tc-page-heading section="Inventario y patios" title="Expediente físico">
   <tc-inventory-inventory-nav />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
-<tc-feedback
-  [message]="success()"
-  kind="success"
-/>
+<tc-feedback [message]="success()" kind="success" />
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -63,65 +57,81 @@
       }
     }
     @if (section === 'ubicacion') {
-      <div
-        class="table-scroll"
-        tabindex="0"
-        role="region"
-        aria-label="Tabla con desplazamiento horizontal"
+      <tc-data-table
+        label="Expediente físico"
+        appearance="embedded"
+        [busy]="busy()"
+        minTableWidth="720px"
       >
-        <table>
+        @if (busy() && !placements().length) {
+          <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+        }
+        <table [hidden]="busy() && !placements().length">
+          <caption class="sr-only">
+            Expediente físico
+          </caption>
           <thead>
             <tr>
-              <th>Destino</th>
-              <th>Peso kg</th>
-              <th>Inicio</th>
-              <th>Fin exclusivo</th>
+              <th scope="col">Destino</th>
+              <th scope="col" class="table-number">Peso kg</th>
+              <th scope="col">Inicio</th>
+              <th scope="col">Fin exclusivo</th>
             </tr>
           </thead>
           <tbody>
             @for (r of placements(); track r.uuid) {
               <tr>
-                <td class="long">{{ r.locationUuid ?? r.siteUuid }}</td>
-                <td>{{ optionalExact(r.grossWeightKg, r.grossWeightKgExact, 'Desconocido') }}</td>
+                <td class="mono long">{{ r.locationUuid ?? r.siteUuid }}</td>
+                <td class="table-number">
+                  {{ optionalExact(r.grossWeightKg, r.grossWeightKgExact, 'Desconocido') }}
+                </td>
                 <td>{{ date(r.validFrom) }}</td>
                 <td>{{ r.validTo ? date(r.validTo) : 'Vigente' }}</td>
               </tr>
             }
           </tbody>
         </table>
-      </div>
-      <tc-pagination
-        [offset]="offset()"
-        [limit]="limit()"
-        [count]="rows().length"
-        [busy]="busy()"
-        (move)="page($event)"
-        (resize)="query({ limit: $event, offset: 0 })"
-      />
+
+        <tc-pagination
+          tableFooter
+          [offset]="offset()"
+          [limit]="limit()"
+          [count]="rows().length"
+          [busy]="busy()"
+          (move)="page($event)"
+          (resize)="query({ limit: $event, offset: 0 })"
+        />
+      </tc-data-table>
     }
     @if (section === 'custodia') {
       @if (access.can('CUSTODY_MANAGE', currentYard()) && !p.transit) {
         <button class="btn primary" (click)="custody()">Transferir custodia del conjunto</button>
       }
-      <div
-        class="table-scroll"
-        tabindex="0"
-        role="region"
-        aria-label="Tabla con desplazamiento horizontal"
+      <tc-data-table
+        label="Expediente físico"
+        appearance="embedded"
+        [busy]="busy()"
+        minTableWidth="720px"
       >
-        <table>
+        @if (busy() && !custodians().length) {
+          <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+        }
+        <table [hidden]="busy() && !custodians().length">
+          <caption class="sr-only">
+            Expediente físico
+          </caption>
           <thead>
             <tr>
-              <th>Custodio</th>
-              <th>Modalidad</th>
-              <th>Vigencia</th>
-              <th>Acuerdo / motivo</th>
+              <th scope="col">Custodio</th>
+              <th scope="col">Modalidad</th>
+              <th scope="col">Vigencia</th>
+              <th scope="col">Acuerdo / motivo</th>
             </tr>
           </thead>
           <tbody>
             @for (r of custodians(); track r.uuid) {
               <tr>
-                <td class="long">{{ r.companyUuid ?? r.partyUuid }}</td>
+                <td class="mono long">{{ r.companyUuid ?? r.partyUuid }}</td>
                 <td>{{ label(r.mode) }}</td>
                 <td>{{ date(r.validFrom) }} — {{ r.validTo ? date(r.validTo) : 'Vigente' }}</td>
                 <td>{{ r.agreementReference }}<br />{{ r.reason }}</td>
@@ -129,15 +139,17 @@
             }
           </tbody>
         </table>
-      </div>
-      <tc-pagination
-        [offset]="offset()"
-        [limit]="limit()"
-        [count]="rows().length"
-        [busy]="busy()"
-        (move)="page($event)"
-        (resize)="query({ limit: $event, offset: 0 })"
-      />
+
+        <tc-pagination
+          tableFooter
+          [offset]="offset()"
+          [limit]="limit()"
+          [count]="rows().length"
+          [busy]="busy()"
+          (move)="page($event)"
+          (resize)="query({ limit: $event, offset: 0 })"
+        />
+      </tc-data-table>
     }
     @if (section === 'disponibilidad') {
       <p>Disponibilidad administrativa por intervalo; no acredita liberación de calidad.</p>

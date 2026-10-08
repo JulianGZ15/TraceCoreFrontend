@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -12,6 +14,8 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
 @Component({
   selector: 'tc-inventory-proposals',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     PageHeading,
     ListContainer,

@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../shared/ui/data-table/data-table.component';
 import { Component, inject } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
@@ -9,7 +11,7 @@ import { Field, edit, newPassword } from '../../../shared/ui/editor';
 import { AssignmentsPanel } from '../assignments';
 @Component({
   selector: 'tc-users',
-  imports: [PageHeading, Feedback, Status, Pagination],
+  imports: [Skeleton, DataTable, PageHeading, Feedback, Status, Pagination],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
 })

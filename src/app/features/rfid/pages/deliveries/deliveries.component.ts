@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, computed, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import {
@@ -21,6 +23,8 @@ import * as M from '../../models';
 @Component({
   selector: 'tc-rfid-deliveries',
   imports: [
+    Skeleton,
+    DataTable,
     FormsModule,
     ReactiveFormsModule,
     PageHeading,

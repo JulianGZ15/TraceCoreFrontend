@@ -25,124 +25,128 @@
   <tc-search-toolbar
     listToolbar
     [showSearch]="false"
-  label="Filtros de compromisos"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  @if (can('FINANCE_CREDIT')) {
-    <button toolbarAction class="btn primary" (click)="action('commitment')">
-      Aprobar compromiso
+    label="Filtros de compromisos"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    @if (can('FINANCE_CREDIT')) {
+      <button toolbarAction class="btn primary" (click)="action('commitment')">
+        Aprobar compromiso
+      </button>
+    }
+    <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+      Recargar
     </button>
-  }
-  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
-    Recargar
-  </button>
-</tc-search-toolbar>
+  </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Contraparte y moneda">
-      <div class="field">
-        <tc-finance-lookup
-          title="Tercero"
-          [value]="drawerForm.controls.partyUuid.value"
-          (selectedChange)="onPartyPicked($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label for="commitment-currency">Divisa</label>
-        <select id="commitment-currency" formControlName="currency">
-          <option value="">Todas</option>
-          @for (c of currencies(); track c.uuid) {
-            <option [value]="c.code">{{ c.code }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="field">
-        <label>Dirección</label>
-        <div class="pill-group" role="group" aria-label="Dirección del compromiso">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.direction.value === ''"
-            (click)="setDraftDirection('')"
-          >
-            Ambas
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.direction.value === 'RECEIVABLE'"
-            (click)="setDraftDirection('RECEIVABLE')"
-          >
-            Por cobrar
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.direction.value === 'PAYABLE'"
-            (click)="setDraftDirection('PAYABLE')"
-          >
-            Por pagar
-          </button>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Contraparte y moneda">
+        <div class="field">
+          <tc-finance-lookup
+            title="Tercero"
+            [value]="drawerForm.controls.partyUuid.value"
+            (selectedChange)="onPartyPicked($event)"
+          />
         </div>
-      </div>
-    </tc-filter-section>
 
-    <tc-filter-section title="Operación y liberación">
-      <div class="field">
-        <tc-finance-lookup
-          title="Orden"
-          resource="order-options"
-          [value]="drawerForm.controls.orderUuid.value"
-          (selectedChange)="onOrderPicked($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>Estado de liberación</label>
-        <div class="pill-group" role="group" aria-label="Estado de liberación del compromiso">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.released.value === ''"
-            (click)="setDraftReleased('')"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.released.value === 'false'"
-            (click)="setDraftReleased('false')"
-          >
-            Vigentes
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.released.value === 'true'"
-            (click)="setDraftReleased('true')"
-          >
-            Liquidados
-          </button>
+        <div class="field">
+          <label for="commitment-currency">Divisa</label>
+          <select id="commitment-currency" formControlName="currency">
+            <option value="">Todas</option>
+            @for (c of currencies(); track c.uuid) {
+              <option [value]="c.code">{{ c.code }}</option>
+            }
+          </select>
         </div>
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+
+        <div class="field">
+          <label>Dirección</label>
+          <div class="pill-group" role="group" aria-label="Dirección del compromiso">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.direction.value === ''"
+              (click)="setDraftDirection('')"
+            >
+              Ambas
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.direction.value === 'RECEIVABLE'"
+              (click)="setDraftDirection('RECEIVABLE')"
+            >
+              Por cobrar
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.direction.value === 'PAYABLE'"
+              (click)="setDraftDirection('PAYABLE')"
+            >
+              Por pagar
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+
+      <tc-filter-section title="Operación y liberación">
+        <div class="field">
+          <tc-finance-lookup
+            title="Orden"
+            resource="order-options"
+            [value]="drawerForm.controls.orderUuid.value"
+            (selectedChange)="onOrderPicked($event)"
+          />
+        </div>
+
+        <div class="field">
+          <label>Estado de liberación</label>
+          <div class="pill-group" role="group" aria-label="Estado de liberación del compromiso">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.released.value === ''"
+              (click)="setDraftReleased('')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.released.value === 'false'"
+              (click)="setDraftReleased('false')"
+            >
+              Vigentes
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.released.value === 'true'"
+              (click)="setDraftReleased('true')"
+            >
+              Liquidados
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
 
   <tc-finance-records
     listTable
     [rows]="rows()"
     [columns]="columns"
     (selected)="open($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Compromisos de crédito"
+    [busy]="loading()"
   />
   <tc-pagination
     listPagination

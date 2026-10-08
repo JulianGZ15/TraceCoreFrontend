@@ -35,17 +35,20 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Evidencias">
-    <table>
+  <tc-data-table label="Evidencias" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
         Evidencias del tercero
       </caption>
       <thead>
         <tr>
-          <th>Archivo</th>
-          <th>Tipo / tamaño</th>
-          <th>SHA-256</th>
-          <th>Acciones</th>
+          <th scope="col">Archivo</th>
+          <th scope="col">Tipo / tamaño</th>
+          <th scope="col">SHA-256</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -61,7 +64,7 @@
             <td>
               <span class="mono">{{ r.sha256 }}</span>
             </td>
-            <td>
+            <td class="table-actions">
               <button class="btn secondary" [disabled]="busy()" (click)="download(r)">
                 Descargar evidencia
               </button>
@@ -76,7 +79,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
   @if (paged) {
     <tc-pagination
       [offset]="offset()"

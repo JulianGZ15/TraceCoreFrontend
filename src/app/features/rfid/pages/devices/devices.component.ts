@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +13,8 @@ import { DeviceComponent } from '../../editors/device/device.component';
 @Component({
   selector: 'tc-rfid-devices',
   imports: [
+    Skeleton,
+    DataTable,
     RouterLink,
     FormsModule,
     PageHeading,

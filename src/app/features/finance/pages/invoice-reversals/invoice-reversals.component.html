@@ -32,7 +32,12 @@
   </section>
 }
 <section class="panel">
-  <tc-finance-records [rows]="rows()" [columns]="columns" (selected)="open($event)" /><tc-pagination
+  <tc-finance-records
+    [rows]="rows()"
+    [columns]="columns"
+    (selected)="open($event)"
+    [busy]="loading()"
+  /><tc-pagination
     [offset]="offset"
     [limit]="limit"
     [count]="rows().length"

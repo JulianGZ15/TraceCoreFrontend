@@ -6,9 +6,7 @@
     description="Identificación, autorización y ejecución se consultan por separado."
   >
     @if (access.global('RFID_TAG_MANAGE')) {
-      <button class="btn primary" [disabled]="busy()" (click)="create()">
-        Nuevo registro
-      </button>
+      <button class="btn primary" [disabled]="busy()" (click)="create()">Nuevo registro</button>
     }
     <tc-rfid-nav />
   </tc-page-heading>
@@ -24,14 +22,27 @@
     <tc-rfid-pending />
   </ng-container>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Modelos de chip">
-    <table>
+  <tc-data-table
+    label="Modelos de chip"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Modelos de chip
+      </caption>
       <thead>
         <tr>
-          <th>Fabricante</th>
-          <th>Modelo</th>
-          <th>Capacidad EPC</th>
-          <th>TID serializado</th>
+          <th scope="col">Fabricante</th>
+          <th scope="col">Modelo</th>
+          <th scope="col">Capacidad EPC</th>
+          <th scope="col">TID serializado</th>
         </tr>
       </thead>
       <tbody>
@@ -49,7 +60,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

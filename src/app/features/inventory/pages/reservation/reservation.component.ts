@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -13,7 +15,16 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
 
 @Component({
   selector: 'tc-inventory-reservation',
-  imports: [RouterLink, ReactiveFormsModule, PageHeading, Feedback, Pagination, InventoryNavComponent],
+  imports: [
+    Skeleton,
+    DataTable,
+    RouterLink,
+    ReactiveFormsModule,
+    PageHeading,
+    Feedback,
+    Pagination,
+    InventoryNavComponent,
+  ],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
 })

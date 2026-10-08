@@ -25,98 +25,103 @@
   <tc-search-toolbar
     listToolbar
     label="Buscar pagos por referencia de operación"
-  placeholder="Referencia de operación…"
-  [value]="filters['search']"
-  [chips]="chips()"
-  [count]="activeFilterCount()"
-  [busy]="loading()"
-  (search)="onSearch($event)"
-  (openFilters)="openFilters(filterDrawerTpl)"
-  (remove)="onRemoveChip($event)"
-  (clear)="onClearAll()"
->
-  @if (can('FINANCE_APPROVE')) {
-    <button toolbarAction class="btn primary" (click)="action('payment')">
-      Registrar pago
+    placeholder="Referencia de operación…"
+    [value]="filters['search']"
+    [chips]="chips()"
+    [count]="activeFilterCount()"
+    [busy]="loading()"
+    (search)="onSearch($event)"
+    (openFilters)="openFilters(filterDrawerTpl)"
+    (remove)="onRemoveChip($event)"
+    (clear)="onClearAll()"
+  >
+    @if (can('FINANCE_APPROVE')) {
+      <button toolbarAction class="btn primary" (click)="action('payment')">Registrar pago</button>
+    }
+    <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
+      Recargar
     </button>
-  }
-  <button toolbarAction class="btn secondary" [disabled]="loading()" (click)="reload()">
-    Recargar
-  </button>
-</tc-search-toolbar>
+  </tc-search-toolbar>
 
-<ng-template #filterDrawerTpl>
-  <form [formGroup]="drawerForm">
-    <tc-filter-section title="Contraparte y moneda">
-      <div class="field">
-        <tc-finance-lookup
-          title="Tercero"
-          [value]="drawerForm.controls.partyUuid.value"
-          (selectedChange)="onPartyPicked($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label for="payment-currency">Divisa</label>
-        <select id="payment-currency" formControlName="currency">
-          <option value="">Todas</option>
-          @for (c of currencies(); track c.uuid) {
-            <option [value]="c.code">{{ c.code }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="field">
-        <label>Dirección</label>
-        <div class="pill-group" role="group" aria-label="Dirección del pago">
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.direction.value === ''"
-            (click)="setDraftDirection('')"
-          >
-            Ambas
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.direction.value === 'RECEIVABLE'"
-            (click)="setDraftDirection('RECEIVABLE')"
-          >
-            Por cobrar
-          </button>
-          <button
-            type="button"
-            class="pill-option"
-            [class.active]="drawerForm.controls.direction.value === 'PAYABLE'"
-            (click)="setDraftDirection('PAYABLE')"
-          >
-            Por pagar
-          </button>
+  <ng-template #filterDrawerTpl>
+    <form [formGroup]="drawerForm">
+      <tc-filter-section title="Contraparte y moneda">
+        <div class="field">
+          <tc-finance-lookup
+            title="Tercero"
+            [value]="drawerForm.controls.partyUuid.value"
+            (selectedChange)="onPartyPicked($event)"
+          />
         </div>
-      </div>
-    </tc-filter-section>
 
-    <tc-filter-section title="Periodo de operación">
-      <div class="field">
-        <tc-date-range
-          label="Periodo de operación"
-          fromLabel="Desde"
-          toLabel="Hasta (exclusivo)"
-          [from]="drawerForm.controls.from.value"
-          [to]="drawerForm.controls.to.value"
-          (rangeChange)="drawerForm.controls.from.setValue($event.from); drawerForm.controls.to.setValue($event.to)"
-        />
-      </div>
-    </tc-filter-section>
-  </form>
-</ng-template>
+        <div class="field">
+          <label for="payment-currency">Divisa</label>
+          <select id="payment-currency" formControlName="currency">
+            <option value="">Todas</option>
+            @for (c of currencies(); track c.uuid) {
+              <option [value]="c.code">{{ c.code }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Dirección</label>
+          <div class="pill-group" role="group" aria-label="Dirección del pago">
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.direction.value === ''"
+              (click)="setDraftDirection('')"
+            >
+              Ambas
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.direction.value === 'RECEIVABLE'"
+              (click)="setDraftDirection('RECEIVABLE')"
+            >
+              Por cobrar
+            </button>
+            <button
+              type="button"
+              class="pill-option"
+              [class.active]="drawerForm.controls.direction.value === 'PAYABLE'"
+              (click)="setDraftDirection('PAYABLE')"
+            >
+              Por pagar
+            </button>
+          </div>
+        </div>
+      </tc-filter-section>
+
+      <tc-filter-section title="Periodo de operación">
+        <div class="field">
+          <tc-date-range
+            label="Periodo de operación"
+            fromLabel="Desde"
+            toLabel="Hasta (exclusivo)"
+            [from]="drawerForm.controls.from.value"
+            [to]="drawerForm.controls.to.value"
+            (rangeChange)="
+              drawerForm.controls.from.setValue($event.from);
+              drawerForm.controls.to.setValue($event.to)
+            "
+          />
+        </div>
+      </tc-filter-section>
+    </form>
+  </ng-template>
 
   <tc-finance-records
     listTable
     [rows]="rows()"
     [columns]="columns"
     (selected)="open($event)"
+    layout="fill"
+    appearance="embedded"
+    tableLabel="Pagos y anticipos"
+    [busy]="loading()"
   />
   <tc-pagination
     listPagination

@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, inject, input, effect, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -22,6 +24,8 @@ import { StandardComponent } from '../../editors/standard/standard.component';
 @Component({
   selector: 'tc-quality-standards',
   imports: [
+    Skeleton,
+    DataTable,
     PageHeading,
     ListContainer,
     Feedback,

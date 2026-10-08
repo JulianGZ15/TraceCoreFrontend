@@ -69,14 +69,3 @@ dd {
 .uuid {
   overflow-wrap: anywhere;
 }
-
-.table-scroll {
-  max-width: 100%;
-  overflow: auto;
-}
-.table-scroll table {
-  min-width: 1000px;
-}
-.table-scroll td.mono {
-  white-space: nowrap;
-}

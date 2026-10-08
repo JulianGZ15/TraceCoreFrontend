@@ -83,6 +83,7 @@ export abstract class FinancePage implements OnInit, OnDestroy {
   protected stop = new Subject<void>();
   protected ended = new Subject<void>();
   private seq = 0;
+  private rowContext = '';
   get navBase() {
     return this.mode === 'invoice'
       ? '/finanzas/facturas/' + this.id
@@ -156,7 +157,19 @@ export abstract class FinancePage implements OnInit, OnDestroy {
     ])
       this.filters[key] = q.get(key) ?? '';
     this.selected.set(null);
-    this.rows.set([]);
+    const rowContext = JSON.stringify([
+      epoch,
+      this.mode,
+      this.collection,
+      this.resource,
+      this.id,
+      this.offset,
+      this.limit,
+      this.currency,
+      this.filters,
+    ]);
+    if (rowContext !== this.rowContext) this.rows.set([]);
+    this.rowContext = rowContext;
     this.check.set(null);
     this.loading.set(true);
     this.error.set('');
@@ -235,6 +248,7 @@ export abstract class FinancePage implements OnInit, OnDestroy {
     } catch (e) {
       if (seq === this.seq) {
         this.error.set(message(e));
+        if ([401, 403].includes((e as { status?: number })?.status ?? 0)) this.rows.set([]);
         if ((e as { status?: number })?.status === 403) void this.session.refresh();
       }
     } finally {

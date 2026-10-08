@@ -16,17 +16,20 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Condiciones comerciales">
-    <table>
+  <tc-data-table label="Condiciones comerciales" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
         Condiciones comerciales del tercero
       </caption>
       <thead>
         <tr>
-          <th>Acuerdo</th>
-          <th>Crédito acordado</th>
-          <th>Vigencia</th>
-          <th>Acciones</th>
+          <th scope="col">Acuerdo</th>
+          <th scope="col">Crédito acordado</th>
+          <th scope="col">Vigencia</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -42,7 +45,7 @@
             <td>
               {{ state(r) }}<small>{{ date(r.validFrom) }} → {{ date(r.validTo) }}</small>
             </td>
-            <td>
+            <td class="table-actions">
               @if (session.can('PARTY_APPROVE') && (!r.validTo || now() < endTime(r.validTo))) {
                 <button class="btn secondary" [disabled]="busy()" (click)="close(r)">
                   Cerrar vigencia
@@ -59,7 +62,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
   @if (paged) {
     <tc-pagination
       [offset]="offset()"

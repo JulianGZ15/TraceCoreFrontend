@@ -11,16 +11,19 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Tabla de roles">
-    <table>
+  <tc-data-table label="Tabla de roles" appearance="embedded" [busy]="list.busy()">
+    @if (list.busy() && !list.items().length) {
+      <tc-skeleton variant="table" [columns]="3" label="Cargando registros…" />
+    }
+    <table [hidden]="list.busy() && !list.items().length">
       <caption class="sr-only">
         Roles de acceso
       </caption>
       <thead>
         <tr>
-          <th>Código</th>
-          <th>Nombre</th>
-          <th>Acciones</th>
+          <th scope="col">Código</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -28,7 +31,7 @@
           <tr>
             <td class="mono">{{ role.code }}</td>
             <td>{{ role.name }}</td>
-            <td>
+            <td class="table-actions">
               <button class="btn secondary" (click)="permissions(role)">Gestionar permisos</button>
             </td>
           </tr>
@@ -41,13 +44,15 @@
         }
       </tbody>
     </table>
-  </div>
-  <tc-pagination
-    [offset]="list.offset()"
-    [limit]="list.limit()"
-    [count]="list.items().length"
-    [busy]="list.busy()"
-    (move)="list.load($event)"
-    (resize)="list.resize($event)"
-  />
+
+    <tc-pagination
+      tableFooter
+      [offset]="list.offset()"
+      [limit]="list.limit()"
+      [count]="list.items().length"
+      [busy]="list.busy()"
+      (move)="list.load($event)"
+      (resize)="list.resize($event)"
+    />
+  </tc-data-table>
 </section>

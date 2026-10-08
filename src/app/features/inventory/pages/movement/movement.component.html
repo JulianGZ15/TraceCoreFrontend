@@ -1,14 +1,8 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Detalle de movimiento"
->
+<tc-page-heading section="Inventario y patios" title="Detalle de movimiento">
   <tc-inventory-inventory-nav />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
-<tc-feedback
-  [message]="success()"
-  kind="success"
-/>
+<tc-feedback [message]="success()" kind="success" />
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -21,39 +15,47 @@
     <p>
       Salida: {{ date(d.movement.dispatchedAt) }} · Recepción: {{ date(d.movement.receivedAt) }}
     </p>
-    <div
-      class="table-scroll"
-      tabindex="0"
-      role="region"
-      aria-label="Tabla con desplazamiento horizontal"
+    <tc-data-table
+      label="Detalle de movimiento"
+      appearance="embedded"
+      [busy]="busy()"
+      minTableWidth="720px"
     >
-      <table>
+      @if (busy() && !d.items.length) {
+        <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+      }
+      <table [hidden]="busy() && !d.items.length">
+        <caption class="sr-only">
+          Detalle de movimiento
+        </caption>
         <thead>
           <tr>
-            <th>Pieza / raíz</th>
-            <th>Destino previsto</th>
-            <th>Destino real</th>
-            <th>Peso kg</th>
-            <th>Condición declarada</th>
+            <th scope="col">Pieza / raíz</th>
+            <th scope="col">Destino previsto</th>
+            <th scope="col">Destino real</th>
+            <th scope="col" class="table-number">Peso kg</th>
+            <th scope="col">Condición declarada</th>
           </tr>
         </thead>
         <tbody>
           @for (r of d.items; track r.uuid) {
             <tr>
               <td class="long">
-                {{ r.assetUuid }}<br /><small>{{ r.rootAssetUuid }}</small>
+                {{ r.assetUuid }}<br /><small class="mono">{{ r.rootAssetUuid }}</small>
               </td>
-              <td class="long">
+              <td class="mono long">
                 {{ r.destinationLocationUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
               </td>
-              <td class="long">{{ r.actualDestinationLocationUuid ?? 'Sin recepción' }}</td>
-              <td>{{ optionalExact(r.grossWeightKg, r.grossWeightKgExact, 'Desconocido') }}</td>
+              <td class="mono long">{{ r.actualDestinationLocationUuid ?? 'Sin recepción' }}</td>
+              <td class="table-number">
+                {{ optionalExact(r.grossWeightKg, r.grossWeightKgExact, 'Desconocido') }}
+              </td>
               <td>{{ r.receivedCondition ? label(r.receivedCondition) : 'Sin declaración' }}</td>
             </tr>
           }
         </tbody>
       </table>
-    </div>
+    </tc-data-table>
     @if (d.logisticsManaged !== false) {
       <p role="status">
         Este movimiento se gestiona desde logística, o el backend no informa su vinculación.

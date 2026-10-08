@@ -22,25 +22,38 @@
     <tc-rfid-pending />
   </ng-container>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Autorizaciones de programación">
-    <table>
+  <tc-data-table
+    label="Autorizaciones de programación"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Autorizaciones de programación
+      </caption>
       <thead>
         <tr>
-          <th>UUID</th>
-          <th>Tipo</th>
-          <th>Equipo</th>
-          <th>Estado Core</th>
-          <th>Detalle</th>
+          <th scope="col">UUID</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Equipo</th>
+          <th scope="col">Estado Core</th>
+          <th scope="col">Detalle</th>
         </tr>
       </thead>
       <tbody>
         @for (r of rows(); track r.data.uuid) {
           <tr>
-            <td>{{ r.data.uuid }}</td>
+            <td class="mono">{{ r.data.uuid }}</td>
             <td>{{ label(r.data.command.type) }}</td>
-            <td>{{ r.data.command.assetUuid }}</td>
+            <td class="mono">{{ r.data.command.assetUuid }}</td>
             <td>{{ label(r.data.state) }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn" [routerLink]="['/rfid/comandos', r.data.uuid]">Consultar</a>
             </td>
           </tr>
@@ -51,7 +64,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

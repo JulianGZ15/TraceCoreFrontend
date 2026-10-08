@@ -25,25 +25,38 @@
     }
   </ng-container>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Instalaciones">
-    <table>
+  <tc-data-table
+    label="Instalaciones"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Instalaciones
+      </caption>
       <thead>
         <tr>
-          <th>Identidad</th>
-          <th>UUID</th>
-          <th>Estado</th>
-          <th>Versión</th>
-          <th>Acción</th>
+          <th scope="col">Identidad</th>
+          <th scope="col">UUID</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Versión</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
         @for (r of rows(); track r.uuid) {
           <tr>
             <td>{{ r.device?.kind }}</td>
-            <td>{{ r.uuid }}</td>
+            <td class="mono">{{ r.uuid }}</td>
             <td>{{ r.device?.active ? 'Activo' : 'Inactivo' }}</td>
             <td>{{ r.version }}</td>
-            <td>
+            <td class="table-actions">
               <a class="btn" [routerLink]="['/rfid/dispositivos', r.uuid]">Consultar</a>
             </td>
           </tr>
@@ -54,7 +67,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

@@ -1,9 +1,5 @@
 <tc-list-container tableLabel="Situación física de equipos">
-  <tc-page-heading
-    listHeader
-    section="Inventario y patios"
-    title="Situación física de equipos"
-  >
+  <tc-page-heading listHeader section="Inventario y patios" title="Situación física de equipos">
     <tc-inventory-inventory-nav />
   </tc-page-heading>
 
@@ -28,21 +24,28 @@
     <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
   </tc-search-toolbar>
 
-  <div
+  <tc-data-table
+    label="Situación física de equipos"
     listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla con desplazamiento horizontal"
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
   >
-    <table>
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Situación física de equipos
+      </caption>
       <thead>
         <tr>
-          <th>Equipo</th>
-          <th>Ciclo de vida</th>
-          <th>Situación</th>
-          <th>Raíz / ubicación</th>
-          <th>Acción</th>
+          <th scope="col">Equipo</th>
+          <th scope="col">Ciclo de vida</th>
+          <th scope="col">Situación</th>
+          <th scope="col">Raíz / ubicación</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -70,7 +73,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

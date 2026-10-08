@@ -1,12 +1,26 @@
-<div class="table-scroll">
-  <table>
+<tc-data-table
+  [label]="tableLabel()"
+  [busy]="busy()"
+  [layout]="layout()"
+  [appearance]="appearance()"
+  minTableWidth="640px"
+>
+  @if (busy() && !rows().length) {
+    <tc-skeleton variant="table" [columns]="columns().length + 2" label="Cargando registros…" />
+  }
+  <table [hidden]="busy() && !rows().length">
+    <caption class="sr-only">
+      {{
+        tableLabel()
+      }}
+    </caption>
     <thead>
       <tr>
-        <th>Identidad</th>
+        <th scope="col">Identidad</th>
         @for (c of columns(); track c.key) {
-          <th>{{ c.label }}</th>
+          <th scope="col" [class.table-number]="c.key.endsWith('Exact')">{{ c.label }}</th>
         }
-        <th>Detalle</th>
+        <th scope="col">Detalle</th>
       </tr>
     </thead>
     <tbody>
@@ -26,9 +40,14 @@
             <small class="mono uuid">{{ row.record.uuid }}</small>
           </td>
           @for (c of columns(); track c.key) {
-            <td [class.mono]="c.key.endsWith('Exact')">{{ value(row.record, c.key) }}</td>
+            <td
+              [class.mono]="c.key.endsWith('Exact')"
+              [class.table-number]="c.key.endsWith('Exact')"
+            >
+              {{ value(row.record, c.key) }}
+            </td>
           }
-          <td>
+          <td class="table-actions">
             <button class="btn secondary" type="button" (click)="selected.emit(row.record)">
               Abrir
             </button>
@@ -41,4 +60,4 @@
       }
     </tbody>
   </table>
-</div>
+</tc-data-table>

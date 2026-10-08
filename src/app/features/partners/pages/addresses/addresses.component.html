@@ -16,17 +16,20 @@
       <span role="status">Cargando…</span>
     }
   </div>
-  <div class="table-scroll" tabindex="0" aria-label="Domicilios">
-    <table>
+  <tc-data-table label="Domicilios" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
         Domicilios del tercero
       </caption>
       <thead>
         <tr>
-          <th>Tipo</th>
-          <th>Dirección</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Dirección</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -40,7 +43,7 @@
               ><small class="mono">{{ r.uuid }}</small>
             </td>
             <td>{{ r.active ? 'Activo' : 'Inactivo' }}</td>
-            <td>
+            <td class="table-actions">
               @if (session.can('PARTY_MANAGE')) {
                 <button class="btn secondary" (click)="edit(r)">Editar domicilio</button>
               }
@@ -55,7 +58,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
   @if (paged) {
     <tc-pagination
       [offset]="offset()"

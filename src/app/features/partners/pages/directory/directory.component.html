@@ -33,7 +33,13 @@
     (remove)="onRemoveChip($event)"
     (clear)="onClearAll()"
   >
-    <button toolbarAction class="btn secondary tc-btn-busy" (click)="load()" [disabled]="busy()">
+    <button
+      toolbarAction
+      class="btn secondary"
+      [class.tc-btn-busy]="busy()"
+      (click)="load()"
+      [disabled]="busy()"
+    >
       @if (busy()) {
         <tc-spinner size="sm" />
       }
@@ -89,43 +95,55 @@
     </form>
   </ng-template>
 
-  <table listTable>
-    <caption class="sr-only">
-      Directorio de terceros
-    </caption>
-    <thead>
-      <tr>
-        <th>Identidad</th>
-        <th>País</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (party of rows(); track party.uuid) {
+  <tc-data-table
+    label="Directorio de terceros"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    minTableWidth="640px"
+    [busy]="busy()"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Directorio de terceros
+      </caption>
+      <thead>
         <tr>
-          <td>
-            <strong>{{ party.legalName }}</strong
-            ><small>{{ party.tradeName }}</small
-            ><small class="mono">{{ party.uuid }}</small>
-          </td>
-          <td>{{ party.country }}</td>
-          <td><tc-status [active]="party.active" /></td>
-          <td>
-            <a class="btn secondary" [routerLink]="['/terceros', party.uuid, 'general']"
-              >Abrir expediente</a
-            >
-          </td>
+          <th scope="col">Identidad</th>
+          <th scope="col">País</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
         </tr>
-      } @empty {
-        @if (!busy() && !error()) {
+      </thead>
+      <tbody>
+        @for (party of rows(); track party.uuid) {
           <tr>
-            <td colspan="4" class="empty-state">No hay terceros con estos filtros.</td>
+            <td>
+              <strong>{{ party.legalName }}</strong
+              ><small>{{ party.tradeName }}</small
+              ><small class="mono">{{ party.uuid }}</small>
+            </td>
+            <td>{{ party.country }}</td>
+            <td><tc-status [active]="party.active" /></td>
+            <td class="table-actions">
+              <a class="btn secondary" [routerLink]="['/terceros', party.uuid, 'general']"
+                >Abrir expediente</a
+              >
+            </td>
           </tr>
+        } @empty {
+          @if (!busy() && !error()) {
+            <tr>
+              <td colspan="4" class="empty-state">No hay terceros con estos filtros.</td>
+            </tr>
+          }
         }
-      }
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </tc-data-table>
 
   <tc-pagination
     listPagination
@@ -137,4 +155,3 @@
     (resize)="apply(0, $event)"
   />
 </tc-list-container>
-

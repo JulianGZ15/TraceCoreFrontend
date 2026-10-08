@@ -31,25 +31,38 @@
     </label>
   </tc-search-toolbar>
 
-  <div listTable class="table-wrap" tabindex="0" aria-label="Pasos de portón">
-    <table>
+  <tc-data-table
+    label="Pasos de portón"
+    listTable
+    appearance="embedded"
+    layout="fill"
+    [busy]="busy()"
+    minTableWidth="720px"
+  >
+    @if (busy() && !rows().length) {
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">
+        Pasos de portón
+      </caption>
       <thead>
         <tr>
-          <th>UUID</th>
-          <th>Sesión</th>
-          <th>Dirección</th>
-          <th>Propuesta</th>
-          <th>Detalle</th>
+          <th scope="col">UUID</th>
+          <th scope="col">Sesión</th>
+          <th scope="col">Dirección</th>
+          <th scope="col">Propuesta</th>
+          <th scope="col">Detalle</th>
         </tr>
       </thead>
       <tbody>
         @for (r of rows(); track r.data.uuid) {
           <tr>
-            <td>{{ r.data.uuid }}</td>
-            <td>{{ r.data.sessionUuid }}</td>
+            <td class="mono">{{ r.data.uuid }}</td>
+            <td class="mono">{{ r.data.sessionUuid }}</td>
             <td>{{ label(r.data.direction) }}</td>
-            <td>{{ r.data.proposalUuid ?? 'Sin propuesta' }}</td>
-            <td>
+            <td class="mono">{{ r.data.proposalUuid ?? 'Sin propuesta' }}</td>
+            <td class="table-actions">
               <a class="btn" [routerLink]="['/rfid/pasos', r.data.uuid]">Consultar</a>
             </td>
           </tr>
@@ -60,7 +73,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 
   <tc-pagination
     listPagination

@@ -1,4 +1,8 @@
-<tc-page-heading section="RFID e integración" title="Expediente RFID" description="Chip, equipo y vínculo son identidades distintas.">
+<tc-page-heading
+  section="RFID e integración"
+  title="Expediente RFID"
+  description="Chip, equipo y vínculo son identidades distintas."
+>
   <tc-rfid-nav />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
@@ -11,27 +15,46 @@
   <section class="panel">
     <h2>{{ a.identity.internalCode }}</h2>
     <p class="mono">{{ a.identity.uuid }}</p>
-    <p>Ciclo de vida: {{ label(a.identity.lifecycle) }} · Condición declarada: {{ a.identity.condition ?? 'Sin condición' }}</p>
+    <p>
+      Ciclo de vida: {{ label(a.identity.lifecycle) }} · Condición declarada:
+      {{ a.identity.condition ?? 'Sin condición' }}
+    </p>
     <p>Ficha: {{ a.identity.modelCode }} · {{ a.identity.sheetRevision }}</p>
     <p class="mono">Chip vigente: {{ a.binding?.tagUuid ?? 'Sin vínculo' }}</p>
-    @if (access.can('RFID_TAG_MANAGE', a.identity.yardUuid) && access.any('RFID_SCAN') && a.identity.lifecycle === 'REGISTERED') {
-      <a class="btn primary" routerLink="/rfid/comandos/nuevo" [queryParams]="{ assetUuid: a.identity.uuid, tagUuid: a.binding?.tagUuid }">
+    @if (
+      access.can('RFID_TAG_MANAGE', a.identity.yardUuid) &&
+      access.any('RFID_SCAN') &&
+      a.identity.lifecycle === 'REGISTERED'
+    ) {
+      <a
+        class="btn primary"
+        routerLink="/rfid/comandos/nuevo"
+        [queryParams]="{ assetUuid: a.identity.uuid, tagUuid: a.binding?.tagUuid }"
+      >
         Programar / inspeccionar chip
       </a>
     }
   </section>
   <nav class="tabs" aria-label="Historial del equipo">
     <button class="btn" (click)="filter({ tab: 'assignments' })">Asignaciones</button>
-    <button class="btn" (click)="filter({ tab: 'inspections' })">Inspecciones del chip vigente</button>
+    <button class="btn" (click)="filter({ tab: 'inspections' })">
+      Inspecciones del chip vigente
+    </button>
   </nav>
-  <div class="panel table-wrap" tabindex="0" aria-label="Historial RFID">
-    <table>
+  <tc-data-table label="Historial RFID" [busy]="busy()" minTableWidth="720px">
+    @if (busy() && !bindings().length) {
+      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+    }
+    <table [hidden]="busy() && !bindings().length">
+      <caption class="sr-only">
+        Historial RFID
+      </caption>
       <thead>
         <tr>
-          <th>Registro</th>
-          <th>Detalle</th>
-          <th>Desde / fecha</th>
-          <th>Hasta / resultado</th>
+          <th scope="col">Registro</th>
+          <th scope="col">Detalle</th>
+          <th scope="col">Desde / fecha</th>
+          <th scope="col">Hasta / resultado</th>
         </tr>
       </thead>
       <tbody>
@@ -67,7 +90,7 @@
         }
       </tbody>
     </table>
-  </div>
+  </tc-data-table>
 }
 <tc-pagination
   [offset]="offset()"

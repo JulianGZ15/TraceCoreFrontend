@@ -1,14 +1,8 @@
-<tc-page-heading
-  section="Inventario y patios"
-  title="Conciliación de propuesta"
->
+<tc-page-heading section="Inventario y patios" title="Conciliación de propuesta">
   <tc-inventory-inventory-nav />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
-<tc-feedback
-  [message]="success()"
-  kind="success"
-/>
+<tc-feedback [message]="success()" kind="success" />
 @if (busy()) {
   <p role="status">Cargando…</p>
 }
@@ -19,20 +13,26 @@
       {{ label(d.proposal.type) }} · {{ label(d.proposal.state) }} · Expira
       {{ date(d.proposal.expiresAt) }}
     </p>
-    <div
-      class="table-scroll"
-      tabindex="0"
-      role="region"
-      aria-label="Tabla con desplazamiento horizontal"
+    <tc-data-table
+      label="Conciliación de propuesta"
+      appearance="embedded"
+      [busy]="busy()"
+      minTableWidth="720px"
     >
-      <table>
+      @if (busy() && !d.items.length) {
+        <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+      }
+      <table [hidden]="busy() && !d.items.length">
+        <caption class="sr-only">
+          Conciliación de propuesta
+        </caption>
         <thead>
           <tr>
-            <th>Pieza / identificador</th>
-            <th>Esperado</th>
-            <th>Observado</th>
-            <th>Diferencia</th>
-            <th>Grupo corregido</th>
+            <th scope="col">Pieza / identificador</th>
+            <th scope="col">Esperado</th>
+            <th scope="col">Observado</th>
+            <th scope="col">Diferencia</th>
+            <th scope="col">Grupo corregido</th>
           </tr>
         </thead>
         <tbody>
@@ -68,7 +68,7 @@
           }
         </tbody>
       </table>
-    </div>
+    </tc-data-table>
     <p>
       Extras y desconocidos permanecen como evidencia. Para mover extras, prepara otra propuesta.
     </p>

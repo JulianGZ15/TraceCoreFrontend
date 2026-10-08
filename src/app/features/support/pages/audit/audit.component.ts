@@ -1,3 +1,4 @@
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject, signal, computed, TemplateRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
@@ -26,6 +27,7 @@ import { SectionNavComponent } from '../../components/section-nav/section-nav.co
 @Component({
   selector: 'tc-support-audit',
   imports: [
+    DataTable,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../shared/ui/data-table/data-table.component';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
@@ -9,7 +11,7 @@ import { edit } from '../../../shared/ui/editor';
 import { yardFields } from '../detail';
 @Component({
   selector: 'tc-yards',
-  imports: [RouterLink, PageHeading, Feedback, Status, Pagination],
+  imports: [Skeleton, DataTable, RouterLink, PageHeading, Feedback, Status, Pagination],
   templateUrl: './yards.component.html',
   styleUrl: './yards.component.scss',
 })

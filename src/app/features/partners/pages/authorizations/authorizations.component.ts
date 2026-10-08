@@ -1,3 +1,5 @@
+import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
+import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { SectionPage } from '../../section-page';
@@ -9,7 +11,7 @@ import { PeriodEditorComponent } from '../../editors/period-editor/period-editor
 import { errorMessage } from '../../../../core/http/api';
 @Component({
   selector: 'tc-party-authorizations',
-  imports: [Feedback, Pagination, ReactiveFormsModule],
+  imports: [Skeleton, DataTable, Feedback, Pagination, ReactiveFormsModule],
   templateUrl: './authorizations.component.html',
   styleUrl: './authorizations.component.scss',
 })
