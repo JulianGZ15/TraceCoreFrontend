@@ -15,6 +15,8 @@ import {
   FilterChip,
   chipsFor,
   activeCount,
+  Skeleton,
+  Spinner,
 } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { Page, Params } from '../../../../core/http/workspace-api';
@@ -38,6 +40,8 @@ import { SectionNavComponent } from '../../components/section-nav/section-nav.co
     SearchToolbar,
     FilterSection,
     SectionNavComponent,
+    Skeleton,
+    Spinner,
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',

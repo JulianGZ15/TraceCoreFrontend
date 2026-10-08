@@ -69,8 +69,12 @@
       <button class="btn secondary" type="button" [disabled]="busy()" (click)="close()">
         Cancelar
       </button>
-      <button class="btn primary" [disabled]="busy()">
-        {{ busy() ? 'Guardando…' : 'Guardar' }}
+      <button class="btn primary" [class.tc-btn-busy]="busy()" [disabled]="busy()">
+        @if (busy()) {
+          <tc-spinner size="sm" [light]="true" message="Guardando…" />
+        } @else {
+          Guardar
+        }
       </button>
     </div>
   </form>

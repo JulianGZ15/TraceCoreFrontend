@@ -1,7 +1,7 @@
 import { Component, signal, input, effect, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, Pagination, Skeleton, Spinner } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
@@ -22,6 +22,8 @@ import { ReleasesComponent } from '../../sections/releases/releases.component';
     RouterLinkActive,
     PageHeading,
     Feedback,
+    Skeleton,
+    Spinner,
     QualityNavComponent,
     PendingRequestsComponent,
     PoliciesComponent,

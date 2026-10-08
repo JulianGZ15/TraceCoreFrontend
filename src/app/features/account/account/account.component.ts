@@ -2,11 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Session } from '../../../core/auth/session';
 import { Api, errorMessage } from '../../../core/http/api';
-import { PageHeading, Feedback, Status } from '../../../shared/ui/page';
+import { PageHeading, Feedback, Status, Spinner } from '../../../shared/ui/page';
 import { newPassword } from '../../../shared/ui/editor';
 @Component({
   selector: 'tc-account',
-  imports: [ReactiveFormsModule, PageHeading, Feedback, Status],
+  imports: [ReactiveFormsModule, PageHeading, Feedback, Status, Spinner],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss',
 })

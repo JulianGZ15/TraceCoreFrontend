@@ -42,46 +42,53 @@
     @if (error()) {
       <tc-feedback [message]="error()" />
     }
-    @if (loading()) {
-      <p role="status">Consultando soporte…</p>
+    @if (updating()) {
+      <div class="tc-updating-badge" role="status">
+        <tc-spinner size="sm" />
+        <span>Actualizando registros…</span>
+      </div>
     }
   </ng-container>
 
-  <div
-    listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Recibo</th>
-          <th>Resultado</th>
-          <th>Detalle</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track $index) {
+  @if (initialLoading()) {
+    <tc-skeleton listTable variant="table" />
+  } @else {
+    <div
+      listTable
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla de registros; desplazamiento horizontal"
+    >
+      <table>
+        <thead>
           <tr>
-            <td>{{ time(row['receivedAt']) }}</td>
-            <td>
-              {{ row['eventUuid'] }}<small>{{ row['assetUuid'] }}</small>
-            </td>
-            <td>{{ row['status'] }}</td>
-            <td>
-              <button class="btn secondary" (click)="selected.set(row)">Consultar detalle</button>
-            </td>
+            <th>Fecha</th>
+            <th>Recibo</th>
+            <th>Resultado</th>
+            <th>Detalle</th>
           </tr>
-        }
-      </tbody>
-    </table>
-    @if (!loading() && !error() && !rows().length) {
-      <p>Sin registros autorizados para estos filtros.</p>
-    }
-  </div>
+        </thead>
+        <tbody>
+          @for (row of rows(); track $index) {
+            <tr>
+              <td>{{ time(row['receivedAt']) }}</td>
+              <td>
+                {{ row['eventUuid'] }}<small>{{ row['assetUuid'] }}</small>
+              </td>
+              <td>{{ row['status'] }}</td>
+              <td>
+                <button class="btn secondary" (click)="selected.set(row)">Consultar detalle</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (!loading() && !error() && !rows().length) {
+        <p>Sin registros autorizados para estos filtros.</p>
+      }
+    </div>
+  }
 
   <tc-pagination
     listPagination

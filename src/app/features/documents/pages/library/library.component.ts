@@ -15,6 +15,8 @@ import {
   FilterChip,
   chipsFor,
   activeCount,
+  Skeleton,
+  Spinner,
 } from '../../../../shared/ui/page';
 import { Page } from '../../../../core/http/workspace-api';
 import {
@@ -40,6 +42,8 @@ import { workspaceError as errorMessage } from '../../../../core/http/workspace-
     Feedback,
     Pagination,
     ListContainer,
+    Skeleton,
+    Spinner,
     SubjectPickerComponent,
     SearchToolbar,
     FilterSection,

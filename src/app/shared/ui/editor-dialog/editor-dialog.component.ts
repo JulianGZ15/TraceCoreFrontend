@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Feedback } from '../feedback/feedback.component';
+import { Feedback, Spinner } from '../page';
 import { errorMessage } from '../../../core/http/api';
 import { EditorData } from '../editor-model';
 import { confirm } from '../confirm-dialog/confirm-dialog.component';
@@ -22,7 +22,7 @@ export function edit(dialog: Dialog, data: EditorData) {
 @Component({
   selector: 'tc-editor',
   host: { '(keydown.escape)': 'escape($event)' },
-  imports: [ReactiveFormsModule, Feedback],
+  imports: [ReactiveFormsModule, Feedback, Spinner],
   templateUrl: './editor-dialog.component.html',
   styleUrl: './editor-dialog.component.scss',
 })

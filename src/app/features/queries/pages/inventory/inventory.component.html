@@ -40,10 +40,15 @@
       @if (canExport()) {
         <button
           class="btn secondary"
+          [class.tc-btn-busy]="csv.busy()"
           [disabled]="csv.busy() || loading()"
           (click)="export()"
         >
-          Exportar CSV
+          @if (csv.busy()) {
+            <tc-spinner size="sm" message="Exportando CSV…" />
+          } @else {
+            Exportar CSV
+          }
         </button>
         @if (csv.next() !== null) {
           <button
@@ -65,21 +70,32 @@
     @if (csv.error()) {
       <tc-feedback [message]="csv.error()" />
     }
-    @if (loading()) {
-      <p role="status">Consultando resultados…</p>
+    @if (updating()) {
+      <span class="tc-updating-badge" role="status">
+        <tc-spinner size="inline" message="Actualizando inventario…" />
+      </span>
     }
     @if (csv.at()) {
       <p class="small-muted">Última exportación generada {{ csv.at() }}</p>
     }
   </ng-container>
 
-  <div
-    listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
+  @if (initialLoading()) {
+    <tc-skeleton
+      listTable
+      variant="table"
+      [rows]="5"
+      [columns]="5"
+      label="Consultando inventario…"
+    />
+  } @else {
+    <div
+      listTable
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla de registros; desplazamiento horizontal"
+    >
     <table>
       <thead>
         <tr>
@@ -121,6 +137,7 @@
       <p>Sin resultados para estos filtros.</p>
     }
   </div>
+  }
 
   <tc-pagination
     listPagination

@@ -27,16 +27,21 @@
       type="button"
       class="btn secondary"
       [attr.aria-current]="step() === n ? 'step' : null"
-      (click)="step.set(n)"
+      (click)="goStep(n)"
     >
       {{ n }} · {{ n === 1 ? 'Contexto' : n === 2 ? 'Raíces' : n === 3 ? 'Destino' : 'Revisión' }}
     </button>
   }
 </nav>
 <form [formGroup]="form" (ngSubmit)="save()">
-  @if (step() === 1) {
-    <section class="panel">
-      <h2>Tipo y contexto</h2>
+  <div
+    class="wizard-step-container"
+    [class.tc-wizard-forward-enter]="direction() === 'forward'"
+    [class.tc-wizard-backward-enter]="direction() === 'backward'"
+  >
+    @if (step() === 1) {
+      <section class="panel">
+        <h2 tabindex="-1" class="wizard-step-heading">Tipo y contexto</h2>
       <div class="form-grid">
         <div class="field">
           <label for="move-type">Tipo</label
@@ -53,7 +58,7 @@
   }
   @if (step() === 2) {
     <section class="panel">
-      <h2>Raíces y peso</h2>
+      <h2 tabindex="-1" class="wizard-step-heading">Raíces y peso</h2>
       <div formArrayName="roots">
         @for (g of roots.controls; track g; let i = $index) {
           <section class="panel" [formGroupName]="i">
@@ -119,7 +124,7 @@
   }
   @if (step() === 3) {
     <section class="panel">
-      <h2>Destinos y referencias</h2>
+      <h2 tabindex="-1" class="wizard-step-heading">Destinos y referencias</h2>
       @if (form.controls.type.value === 'OUTBOUND') {
         <tc-inventory-lookup
           kind="sites"
@@ -212,7 +217,7 @@
   }
   @if (step() === 4) {
     <section class="panel">
-      <h2>Revisión</h2>
+      <h2 tabindex="-1" class="wizard-step-heading">Revisión</h2>
       <p>{{ label(form.controls.type.value) }} · {{ form.controls.reason.value }}</p>
       <p>Referencia: {{ form.controls.sourceReference.value }}</p>
       <ul>
@@ -235,17 +240,22 @@
       </p>
     </section>
   }
+  </div>
   @if (form.invalid && form.touched) {
     <p class="field-error">Completa las raíces, motivo, referencia y revisa las magnitudes.</p>
   }
   <div class="actions">
     @if (step() > 1) {
-      <button class="btn secondary" type="button" (click)="step.update(previousStep)">
+      <button class="btn secondary" type="button" [disabled]="busy()" (click)="prevStep()">
         Anterior
       </button>
     }
-    <button class="btn primary" [disabled]="busy()">
-      {{ step() < 4 ? 'Siguiente' : proposal() ? 'Guardar propuesta' : 'Preparar borrador' }}
+    <button class="btn primary" [class.tc-btn-busy]="busy()" [disabled]="busy()">
+      @if (busy()) {
+        <tc-spinner size="sm" [light]="true" message="Guardando…" />
+      } @else {
+        {{ step() < 4 ? 'Siguiente' : proposal() ? 'Guardar propuesta' : 'Preparar borrador' }}
+      }
     </button>
   </div>
 </form>

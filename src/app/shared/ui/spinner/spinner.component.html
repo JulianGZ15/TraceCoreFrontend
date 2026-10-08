@@ -1,0 +1,19 @@
+<span
+  class="tc-spinner-wrapper"
+  [class.tc-spinner-light]="light()"
+  role="status"
+  aria-live="polite"
+>
+  <span
+    class="tc-spinner"
+    [class.tc-spinner-sm]="size() === 'sm'"
+    [class.tc-spinner-md]="size() === 'md'"
+    [class.tc-spinner-inline]="size() === 'inline'"
+    aria-hidden="true"
+  ></span>
+  @if (message()) {
+    <span class="tc-spinner-message">{{ message() }}</span>
+  } @else {
+    <span class="sr-only">Cargando...</span>
+  }
+</span>

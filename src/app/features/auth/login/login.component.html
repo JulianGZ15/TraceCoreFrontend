@@ -8,7 +8,7 @@
     </div>
     <div class="brand-foot">ASSET INTELLIGENCE &amp; TRACEABILITY</div>
   </section>
-  <main class="login-main">
+  <main class="login-main tc-view-enter">
     <div class="login-form">
       <span class="section-marker"></span>
       <p class="eyebrow">Bienvenido a TraceCore</p>
@@ -53,8 +53,12 @@
             </button>
           </div>
         </div>
-        <button class="btn primary full-width" [disabled]="busy()">
-          {{ busy() ? 'Validando acceso…' : 'Iniciar sesión' }} <span aria-hidden="true">→</span>
+        <button class="btn primary full-width" [class.tc-btn-busy]="busy()" [disabled]="busy()">
+          @if (busy()) {
+            <tc-spinner size="sm" [light]="true" message="Validando acceso…" />
+          } @else {
+            Iniciar sesión <span aria-hidden="true">→</span>
+          }
         </button>
       </form>
       <p class="login-help">¿Necesitas una cuenta? Contacta al administrador de tu organización.</p>

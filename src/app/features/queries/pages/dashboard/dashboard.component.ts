@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ReadPage } from '../../../../shared/ui/read-page';
-import { PageHeading, Feedback, SearchToolbar } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, SearchToolbar, Skeleton, Spinner } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { SubjectPickerComponent } from '../../../documents/shared/subject-picker/subject-picker.component';
 import { QueryAccess } from '../../access';
@@ -16,6 +16,8 @@ import { SectionNavComponent } from '../../components/section-nav/section-nav.co
     SubjectPickerComponent,
     SearchToolbar,
     SectionNavComponent,
+    Skeleton,
+    Spinner,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -27,7 +29,6 @@ export class DashboardComponent extends ReadPage {
 
   override async load() {
     this.yard = this.route.snapshot.queryParamMap.get('yardUuid') ?? this.session.selectedYard();
-    this.data.set(null);
     if (!this.access.dashboard(this.yard)) {
       this.stop.next();
       return;

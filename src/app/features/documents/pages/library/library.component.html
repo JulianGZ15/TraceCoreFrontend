@@ -51,48 +51,60 @@
         }
       </section>
     }
-    @if (loading()) {
-      <p role="status">Consultando biblioteca…</p>
+    @if (updating()) {
+      <span class="tc-updating-badge" role="status">
+        <tc-spinner size="inline" message="Actualizando…" />
+      </span>
     }
   </ng-container>
 
-  <div
-    listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
-    <table>
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Propietario</th>
-          <th>Clasificación</th>
-          <th>Estado</th>
-          <th>Expediente</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.document.uuid) {
+  @if (initialLoading()) {
+    <tc-skeleton
+      listTable
+      variant="table"
+      [rows]="5"
+      [columns]="5"
+      label="Consultando biblioteca…"
+    />
+  } @else {
+    <div
+      listTable
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla de registros; desplazamiento horizontal"
+    >
+      <table>
+        <thead>
           <tr>
-            <td>
-              {{ row.document.title }}<small>{{ row.document.uuid }}</small>
-            </td>
-            <td>{{ row.ownerLabel }}</td>
-            <td>
-              {{ row.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }}
-            </td>
-            <td>{{ row.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}</td>
-            <td><a [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
+            <th>Título</th>
+            <th>Propietario</th>
+            <th>Clasificación</th>
+            <th>Estado</th>
+            <th>Expediente</th>
           </tr>
-        }
-      </tbody>
-    </table>
-    @if (!loading() && !error() && !rows().length) {
-      <p>Sin documentos autorizados para estos filtros.</p>
-    }
-  </div>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.document.uuid) {
+            <tr>
+              <td>
+                {{ row.document.title }}<small>{{ row.document.uuid }}</small>
+              </td>
+              <td>{{ row.ownerLabel }}</td>
+              <td>
+                {{ row.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }}
+              </td>
+              <td>{{ row.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}</td>
+              <td><a [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (!loading() && !error() && !rows().length) {
+        <p>Sin documentos autorizados para estos filtros.</p>
+      }
+    </div>
+  }
 
   <tc-pagination
     listPagination

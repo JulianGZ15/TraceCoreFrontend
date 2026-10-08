@@ -3,7 +3,12 @@
   section="EXPEDIENTE DOCUMENTAL"
   description="Documento lógico, número de archivo y versiones de concurrencia se mantienen separados."
 >
-  <button actions class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+  <button actions class="btn secondary tc-btn-busy" (click)="load()" [disabled]="loading()">
+    @if (updating()) {
+      <tc-spinner size="sm" />
+    }
+    Actualizar
+  </button>
   <tc-page-nav
     nav
     ariaLabel="Secciones del expediente documental"
@@ -13,8 +18,14 @@
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
-@if (loading()) {
-  <p role="status">Consultando documento…</p>
+@if (updating()) {
+  <div class="tc-updating-badge" role="status">
+    <tc-spinner size="sm" />
+    <span>Actualizando documento…</span>
+  </div>
+}
+@if (initialLoading()) {
+  <tc-skeleton variant="dossier" />
 }
 @if (summary(); as s) {
   <section class="panel">

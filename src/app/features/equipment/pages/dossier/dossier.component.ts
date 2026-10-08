@@ -31,7 +31,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { Feedback, Pagination, PageHeading, Status } from '../../../../shared/ui/page';
+import { Feedback, Pagination, PageHeading, Status, Skeleton } from '../../../../shared/ui/page';
 
 import { EquipmentApi } from '../../equipment-api';
 
@@ -103,7 +103,7 @@ import { SectionNavigationComponent } from '../../components/section-navigation/
 @Component({
   selector: 'tc-equipment-dossier',
   providers: [AssetStore],
-  imports: [ContextualLinksComponent,Feedback, RouterLink, RouterOutlet, AssetHeaderComponent, SectionNavigationComponent],
+  imports: [ContextualLinksComponent, Feedback, RouterLink, RouterOutlet, AssetHeaderComponent, SectionNavigationComponent, Skeleton],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
 })

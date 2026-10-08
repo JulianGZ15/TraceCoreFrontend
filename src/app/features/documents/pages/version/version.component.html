@@ -5,14 +5,25 @@
 >
   <div actions class="actions">
     <a class="btn secondary" [routerLink]="['/documentos', id, 'versiones']">Volver a versiones</a>
-    <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+    <button class="btn secondary tc-btn-busy" (click)="load()" [disabled]="loading()">
+      @if (updating()) {
+        <tc-spinner size="sm" />
+      }
+      Actualizar
+    </button>
   </div>
 </tc-page-heading>
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
-@if (loading()) {
-  <p role="status">Consultando versión…</p>
+@if (updating()) {
+  <div class="tc-updating-badge" role="status">
+    <tc-spinner size="sm" />
+    <span>Actualizando versión…</span>
+  </div>
+}
+@if (initialLoading()) {
+  <tc-skeleton variant="dossier" />
 }
 @if (version(); as v) {
   @if (summary(); as s) {

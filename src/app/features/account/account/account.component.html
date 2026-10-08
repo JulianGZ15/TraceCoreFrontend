@@ -46,8 +46,12 @@
           </small>
         </div>
       }
-      <button class="btn primary" [disabled]="busy()">
-        {{ busy() ? 'Actualizando…' : 'Actualizar contraseña' }}
+      <button class="btn primary" [class.tc-btn-busy]="busy()" [disabled]="busy()">
+        @if (busy()) {
+          <tc-spinner size="sm" [light]="true" message="Actualizando…" />
+        } @else {
+          Actualizar contraseña
+        }
       </button>
     </form>
   </section>

@@ -7,7 +7,12 @@
     @if (links()) {
       <a class="btn secondary" [routerLink]="links()">Abrir módulo de origen</a>
     }
-    <button class="btn secondary" (click)="load()" [disabled]="loading()">Actualizar</button>
+    <button class="btn secondary tc-btn-busy" (click)="load()" [disabled]="loading()">
+      @if (updating()) {
+        <tc-spinner size="sm" />
+      }
+      Actualizar
+    </button>
   </div>
   @if (summary()) {
     <tc-page-nav
@@ -20,8 +25,14 @@
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
-@if (loading()) {
-  <p role="status">Consultando expediente…</p>
+@if (updating()) {
+  <div class="tc-updating-badge" role="status">
+    <tc-spinner size="sm" />
+    <span>Actualizando expediente…</span>
+  </div>
+}
+@if (initialLoading()) {
+  <tc-skeleton variant="dossier" />
 }
 @if (summary(); as s) {
   <header class="panel">

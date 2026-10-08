@@ -26,18 +26,24 @@
     @if (error()) {
       <tc-feedback [message]="error()" />
     }
-    @if (loading()) {
-      <p role="status">Consultando soporte…</p>
+    @if (updating()) {
+      <div class="tc-updating-badge" role="status">
+        <tc-spinner size="sm" />
+        <span>Actualizando registros…</span>
+      </div>
     }
   </ng-container>
 
-  <div
-    listTable
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Tabla de registros; desplazamiento horizontal"
-  >
+  @if (initialLoading()) {
+    <tc-skeleton listTable variant="table" />
+  } @else {
+    <div
+      listTable
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Tabla de registros; desplazamiento horizontal"
+    >
     <table>
       <thead>
         <tr>
@@ -66,6 +72,7 @@
       <p>Sin registros autorizados para estos filtros.</p>
     }
   </div>
+  }
 
   <tc-pagination
     listPagination

@@ -48,6 +48,11 @@
   --tc-space-lg: 24px;
   --tc-space-xl: 32px;
   --tc-shadow: 0 4px 12px rgb(11 12 14 / 2%);
+  --tc-ease-motion: cubic-bezier(0.2, 0, 0, 1);
+  --tc-duration-screen: 160ms;
+  --tc-duration-dialog: 180ms;
+  --tc-duration-drawer: 200ms;
+  --tc-duration-wizard: 160ms;
 }
 @theme inline {
   --color-shell: var(--tc-shell);
@@ -428,6 +433,107 @@ td small {
 tbody tr:hover {
   background: var(--tc-selection);
 }
+/* Motion & Transitions - Etapa 11 */
+@keyframes tcViewEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes tcDialogEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes tcDrawerLeftEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes tcDrawerRightEnter {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes tcWizardForwardEnter {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes tcWizardBackwardEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes tcTabEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.tc-view-enter {
+  animation: tcViewEnter var(--tc-duration-screen) var(--tc-ease-motion) both;
+}
+.tc-tab-enter {
+  animation: tcTabEnter 140ms var(--tc-ease-motion) both;
+}
+.tc-wizard-forward-enter {
+  animation: tcWizardForwardEnter var(--tc-duration-wizard) var(--tc-ease-motion) both;
+}
+.tc-wizard-backward-enter {
+  animation: tcWizardBackwardEnter var(--tc-duration-wizard) var(--tc-ease-motion) both;
+}
+.btn.tc-btn-busy,
+button.tc-btn-busy {
+  position: relative;
+  pointer-events: none;
+  cursor: wait;
+  opacity: 0.85;
+}
+.tc-updating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--tc-text-muted);
+  background: var(--tc-surface-muted);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius-control);
+  padding: 2px 8px;
+}
 .empty-state {
   text-align: center;
   padding: 32px;
@@ -438,6 +544,7 @@ tbody tr:hover {
   background: var(--tc-panel);
   border-radius: 8px;
   box-shadow: 0 16px 48px rgb(11 12 14 / 16%);
+  animation: tcDialogEnter var(--tc-duration-dialog) var(--tc-ease-motion) both;
 }
 .cdk-overlay-dark-backdrop {
   background: rgb(11 12 14 / 40%);
@@ -483,6 +590,7 @@ tbody tr:hover {
 .drawer-overlay .cdk-dialog-container {
   border-radius: 0;
   height: 100dvh;
+  animation: tcDrawerRightEnter var(--tc-duration-drawer) var(--tc-ease-motion) both;
 }
 .filter-drawer-overlay {
   width: 480px;
@@ -496,6 +604,7 @@ tbody tr:hover {
   border-radius: 0;
   height: 100dvh;
   box-shadow: -4px 0 24px rgba(11, 12, 14, 0.16);
+  animation: tcDrawerRightEnter var(--tc-duration-drawer) var(--tc-ease-motion) both;
 }
 .pill-group {
   display: flex;
@@ -574,6 +683,7 @@ tbody tr:hover {
   border-radius: 0;
   background: var(--tc-shell);
   overflow: auto;
+  animation: tcDrawerLeftEnter var(--tc-duration-drawer) var(--tc-ease-motion) both;
 }
 @media (max-width: 1023px) {
   .btn,
@@ -616,6 +726,18 @@ tbody tr:hover {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+  .tc-skeleton-cell,
+  .tc-skeleton-line,
+  .tc-skeleton-input,
+  .tc-skeleton-label,
+  .tc-skeleton-badge,
+  .tc-skeleton-title,
+  .tc-skeleton-subtitle,
+  .tc-skeleton-card-title,
+  .tc-skeleton-card-line {
+    animation: none !important;
+    background: #eaedf1 !important;
   }
 }
 .page-description {

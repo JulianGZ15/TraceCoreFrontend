@@ -15,7 +15,7 @@
   </tc-equipment-asset-header>
   <router-outlet />
 } @else if (!error()) {
-  <p role="status">Cargando expediente…</p>
+  <tc-skeleton variant="dossier" />
 }
 
 @if (store.profile()?.asset?.uuid; as documentSubjectUuid) { <tc-contextual-links kind="ASSET" [uuid]="documentSubjectUuid"/> }

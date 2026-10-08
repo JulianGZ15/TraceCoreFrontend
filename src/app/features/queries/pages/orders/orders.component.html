@@ -37,10 +37,15 @@
       @if (canExport()) {
         <button
           class="btn secondary"
+          [class.tc-btn-busy]="csv.busy()"
           [disabled]="csv.busy() || loading()"
           (click)="export()"
         >
-          Exportar CSV
+          @if (csv.busy()) {
+            <tc-spinner size="sm" message="Exportando CSV…" />
+          } @else {
+            Exportar CSV
+          }
         </button>
         @if (csv.next() !== null) {
           <button
@@ -62,28 +67,34 @@
     @if (csv.error()) {
       <tc-feedback [message]="csv.error()" />
     }
-    @if (loading()) {
-      <p role="status">Consultando resultados…</p>
+    @if (updating()) {
+      <span class="tc-updating-badge" role="status">
+        <tc-spinner size="inline" message="Actualizando órdenes…" />
+      </span>
     }
     @if (csv.at()) {
       <p class="small-muted">Última exportación generada {{ csv.at() }}</p>
     }
   </ng-container>
 
-  <div listTable class="orders-list">
-    @for (row of rows(); track row['uuid']) {
-      <article class="panel">
-        <tc-record-values
-          [timezone]="session.context()?.company?.timezone ?? 'UTC'"
-          [value]="row"
-        />
-        <a [routerLink]="['/comercial/ordenes', row['uuid']]">Abrir orden comercial</a>
-      </article>
-    }
-    @if (!loading() && !error() && !rows().length) {
-      <p>Sin resultados para estos filtros.</p>
-    }
-  </div>
+  @if (initialLoading()) {
+    <tc-skeleton listTable variant="cards" [rows]="4" label="Consultando órdenes…" />
+  } @else {
+    <div listTable class="orders-list">
+      @for (row of rows(); track row['uuid']) {
+        <article class="panel">
+          <tc-record-values
+            [timezone]="session.context()?.company?.timezone ?? 'UTC'"
+            [value]="row"
+          />
+          <a [routerLink]="['/comercial/ordenes', row['uuid']]">Abrir orden comercial</a>
+        </article>
+      }
+      @if (!loading() && !error() && !rows().length) {
+        <p>Sin resultados para estos filtros.</p>
+      }
+    </div>
+  }
 
   <tc-pagination
     listPagination

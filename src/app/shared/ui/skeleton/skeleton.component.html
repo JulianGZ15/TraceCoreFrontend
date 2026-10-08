@@ -1,0 +1,75 @@
+<div class="tc-skeleton-root" role="status" aria-live="polite">
+  <span class="sr-only">{{ label() }}</span>
+  <div class="tc-skeleton-content" aria-hidden="true">
+    @switch (variant()) {
+      @case ('table') {
+        <div class="tc-skeleton-table">
+          <div class="tc-skeleton-table-header">
+            @for (col of columnList(); track col) {
+              <div class="tc-skeleton-cell tc-skeleton-header-cell"></div>
+            }
+          </div>
+          <div class="tc-skeleton-table-body">
+            @for (row of rowList(); track row) {
+              <div class="tc-skeleton-row">
+                @for (col of columnList(); track col) {
+                  <div class="tc-skeleton-cell"></div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+      @case ('form') {
+        <div class="tc-skeleton-form">
+          @for (row of rowList(); track row) {
+            <div class="tc-skeleton-form-group">
+              <div class="tc-skeleton-label"></div>
+              <div class="tc-skeleton-input"></div>
+            </div>
+          }
+        </div>
+      }
+      @case ('dossier') {
+        <div class="tc-skeleton-dossier">
+          <div class="tc-skeleton-dossier-hero">
+            <div class="tc-skeleton-badge"></div>
+            <div class="tc-skeleton-title"></div>
+            <div class="tc-skeleton-subtitle"></div>
+          </div>
+          <div class="tc-skeleton-cards">
+            @for (row of rowList(); track row) {
+              <div class="tc-skeleton-card">
+                <div class="tc-skeleton-card-title"></div>
+                <div class="tc-skeleton-card-line"></div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      @case ('cards') {
+        <div class="tc-skeleton-cards">
+          @for (row of rowList(); track row) {
+            <div class="tc-skeleton-card">
+              <div class="tc-skeleton-card-title"></div>
+              <div class="tc-skeleton-card-line"></div>
+            </div>
+          }
+        </div>
+      }
+      @case ('text') {
+        <div class="tc-skeleton-text-block">
+          @for (row of rowList(); track row) {
+            <div
+              class="tc-skeleton-line"
+              [style.width]="row === rowList().length - 1 ? '60%' : '100%'"
+            ></div>
+          }
+        </div>
+      }
+      @default {
+        <div class="tc-skeleton-line"></div>
+      }
+    }
+  </div>
+</div>

@@ -14,7 +14,11 @@
             [disabled]="busy()"
             aria-label="Buscar"
           >
-            <tc-icon name="search" />
+            @if (busy()) {
+              <tc-spinner size="inline" message="" />
+            } @else {
+              <tc-icon name="search" />
+            }
           </button>
 
           <input

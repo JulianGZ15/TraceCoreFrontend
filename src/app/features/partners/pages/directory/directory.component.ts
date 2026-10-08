@@ -19,6 +19,7 @@ import {
   FilterChip,
   chipsFor,
   activeCount,
+  Spinner,
 } from '../../../../shared/ui/page';
 import { Party, partyRoles } from '../../models';
 import { label } from '../../rules';
@@ -38,6 +39,7 @@ import { openPartnerEditor } from '../../editor-view';
     ListContainer,
     SearchToolbar,
     FilterSection,
+    Spinner,
   ],
   templateUrl: './directory.component.html',
   styleUrl: './directory.component.scss',

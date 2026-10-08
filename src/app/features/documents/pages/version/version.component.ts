@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { ReadPage } from '../../../../shared/ui/read-page';
-import { PageHeading, Feedback } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, Skeleton, Spinner } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
 import { Summary, VersionView } from '../../models';
 import { decisionAllowed } from '../../rules';
@@ -10,7 +10,7 @@ import { DecisionEditorComponent } from '../../editors/decision-editor/decision-
 import { workspaceError as errorMessage } from '../../../../core/http/workspace-api';
 @Component({
   selector: 'tc-document-version',
-  imports: [RouterLink, PageHeading, Feedback, RecordValuesComponent],
+  imports: [RouterLink, PageHeading, Feedback, RecordValuesComponent, Skeleton, Spinner],
   templateUrl: './version.component.html',
   styleUrl: './version.component.scss',
 })

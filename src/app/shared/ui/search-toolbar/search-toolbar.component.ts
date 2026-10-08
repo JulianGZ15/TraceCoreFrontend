@@ -2,11 +2,12 @@ import { Component, input, output, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Icon } from '../icon/icon.component';
+import { Spinner } from '../spinner/spinner.component';
 import { FilterChip } from '../filter-model';
 
 @Component({
   selector: 'tc-search-toolbar',
-  imports: [CommonModule, FormsModule, Icon],
+  imports: [CommonModule, FormsModule, Icon, Spinner],
   templateUrl: './search-toolbar.component.html',
   styleUrl: './search-toolbar.component.scss',
 })

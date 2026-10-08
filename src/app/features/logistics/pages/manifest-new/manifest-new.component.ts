@@ -8,7 +8,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { FieldsComponent } from '../../shared/fields/fields.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { MovementRootComponent } from '../../components/movement-root/movement-root.component';
-import { PageHeading, Feedback } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, Spinner } from '../../../../shared/ui/page';
 import { form, message, label } from '../../rules';
 import { Entity, Field, MovementDetail } from '../../models';
 @Component({
@@ -21,6 +21,7 @@ import { Entity, Field, MovementDetail } from '../../models';
     MovementRootComponent,
     PageHeading,
     Feedback,
+    Spinner,
   ],
   templateUrl: './manifest-new.component.html',
   styleUrl: './manifest-new.component.scss',
@@ -29,6 +30,7 @@ export class ManifestNewComponent extends LogisticsPage {
   readonly pending = inject(LogisticsPending);
   readonly root = viewChild(MovementRootComponent);
   readonly step = signal(1);
+  readonly direction = signal<'forward' | 'backward'>('forward');
   readonly saved = signal<
     { movement: Entity; root: string; allocation: string; line: string; reference: string }[]
   >([]);
@@ -216,10 +218,18 @@ export class ManifestNewComponent extends LogisticsPage {
       !window.confirm('¿Descartar la captura de la raíz que aún no se ha guardado?')
     )
       return;
+    if (n > this.step()) this.direction.set('forward');
+    else if (n < this.step()) this.direction.set('backward');
     this.step.set(n);
+    setTimeout(() => {
+      document.querySelector<HTMLElement>('.wizard-step-heading')?.focus();
+    }, 0);
   }
   next() {
     this.go(Math.min(4, this.step() + 1));
+  }
+  prev() {
+    this.go(Math.max(1, this.step() - 1));
   }
   async save() {
     if (this.submitting()) return;

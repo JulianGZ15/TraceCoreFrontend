@@ -9,8 +9,14 @@
   [message]="success()"
   kind="success"
 />
-@if (busy()) {
-  <p role="status">Cargando…</p>
+@if (busy() && !record()) {
+  <tc-skeleton variant="dossier" />
+}
+@if (busy() && record()) {
+  <div class="tc-updating-badge" role="status">
+    <tc-spinner size="sm" />
+    <span>Actualizando expediente…</span>
+  </div>
 }
 <tc-quality-pending />
 @if (record(); as r) {

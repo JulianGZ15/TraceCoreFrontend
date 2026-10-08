@@ -26,8 +26,13 @@
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
-@if (loading()) {
-  <p role="status">Consultando patio…</p>
+@if (updating()) {
+  <span class="tc-updating-badge" role="status">
+    <tc-spinner size="inline" message="Actualizando métricas…" />
+  </span>
+}
+@if (initialLoading() && yard && access.dashboard(yard)) {
+  <tc-skeleton variant="dossier" [rows]="4" label="Consultando métricas del patio…" />
 }
 @if (!access.dashboard(yard)) {
   <p class="feedback info">

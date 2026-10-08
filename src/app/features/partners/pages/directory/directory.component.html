@@ -13,7 +13,10 @@
   <ng-container listFeedback>
     <tc-feedback [message]="error()" />
     @if (busy()) {
-      <span role="status">Cargando…</span>
+      <div class="tc-updating-badge" role="status">
+        <tc-spinner size="sm" />
+        <span>Actualizando terceros…</span>
+      </div>
     }
   </ng-container>
 
@@ -30,7 +33,12 @@
     (remove)="onRemoveChip($event)"
     (clear)="onClearAll()"
   >
-    <button toolbarAction class="btn secondary" (click)="load()" [disabled]="busy()">Actualizar</button>
+    <button toolbarAction class="btn secondary tc-btn-busy" (click)="load()" [disabled]="busy()">
+      @if (busy()) {
+        <tc-spinner size="sm" />
+      }
+      Actualizar
+    </button>
   </tc-search-toolbar>
 
   <ng-template #filterDrawerTpl>

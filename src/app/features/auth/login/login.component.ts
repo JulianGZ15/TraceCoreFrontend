@@ -5,10 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Session, safeReturn } from '../../../core/auth/session';
 import { errorMessage } from '../../../core/http/api';
 import { BrandLogo } from '../../../shared/ui/brand-logo';
-import { Feedback } from '../../../shared/ui/page';
+import { Feedback, Spinner } from '../../../shared/ui/page';
 @Component({
   selector: 'tc-login',
-  imports: [ReactiveFormsModule, BrandLogo, Feedback],
+  imports: [ReactiveFormsModule, BrandLogo, Feedback, Spinner],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

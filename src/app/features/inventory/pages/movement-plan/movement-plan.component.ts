@@ -15,6 +15,8 @@ import { YardPickerComponent } from '../../components/yard-picker/yard-picker.co
 import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
 import { ObservationEditorComponent } from '../../components/observation-editor/observation-editor.component';
 
+import { Spinner } from '../../../../shared/ui/page';
+
 @Component({
   selector: 'tc-inventory-movement-plan',
   imports: [
@@ -25,6 +27,7 @@ import { ObservationEditorComponent } from '../../components/observation-editor/
     YardPickerComponent,
     InventoryNavComponent,
     ObservationEditorComponent,
+    Spinner,
   ],
   templateUrl: './movement-plan.component.html',
   styleUrl: './movement-plan.component.scss',
@@ -37,6 +40,24 @@ export class MovementPlanComponent extends InventoryForm {
   readonly previousStep = (n: number) => n - 1;
   readonly proposal = signal(false);
   readonly step = signal(1);
+  readonly direction = signal<'forward' | 'backward'>('forward');
+
+  goStep(n: number) {
+    if (n > this.step()) this.direction.set('forward');
+    else if (n < this.step()) this.direction.set('backward');
+    this.step.set(n);
+    setTimeout(() => {
+      document.querySelector<HTMLElement>('.wizard-step-heading')?.focus();
+    }, 0);
+  }
+
+  prevStep() {
+    this.direction.set('backward');
+    this.step.update(this.previousStep);
+    setTimeout(() => {
+      document.querySelector<HTMLElement>('.wizard-step-heading')?.focus();
+    }, 0);
+  }
   observations: M.Observation[] = [];
   readonly roots = new FormArray<FormGroup>([]);
   readonly form = new FormGroup({
@@ -121,7 +142,7 @@ export class MovementPlanComponent extends InventoryForm {
   }
   async save() {
     if (this.step() < 4) {
-      this.step.update((n) => n + 1);
+      this.goStep(this.step() + 1);
       return;
     }
     this.form.markAllAsTouched();
