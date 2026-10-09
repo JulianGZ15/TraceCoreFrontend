@@ -1,91 +1,292 @@
-<div class="navigation">
+<div class="navigation" [class.collapsed]="collapsed()">
   @if (ref) {
     <button class="icon-button nav-close" aria-label="Cerrar navegación" (click)="close()">
       ×
     </button>
   }
-  <a routerLink="/inicio" aria-label="Ir al inicio de TraceCore" (click)="close()"
-    ><tc-brand-logo
+  <a class="nav-brand" routerLink="/inicio" aria-label="Ir al inicio de TraceCore" (click)="close()"
+    ><tc-brand-logo variant="isotype" [decorative]="true"
   /></a>
-  <div class="nav-label">Espacio de trabajo</div>
-  <nav aria-label="Principal">
-    @if (session.documentRead()) { <a routerLink="/documentos" routerLinkActive="active" (click)="close()"><tc-icon name="domain" />Biblioteca documental</a> }
-    @if (session.queryRead()) { <a routerLink="/consultas" routerLinkActive="active" (click)="close()"><tc-icon name="home" />Consultas operativas</a> }
-    @if (session.supportRead()) { <a routerLink="/soporte" routerLinkActive="active" (click)="close()"><tc-icon name="history" />Soporte y trazabilidad</a> }
+  @if (!ref) {
+    <button
+      class="sidebar-toggle"
+      type="button"
+      (click)="toggleCollapsed.emit()"
+      [attr.aria-label]="collapsed() ? 'Expandir menú lateral' : 'Minimizar menú lateral'"
+      [attr.aria-expanded]="!collapsed()"
+      [tcNavTooltip]="collapsed() ? 'Expandir menú lateral' : 'Minimizar menú lateral'"
+    >
+      <tc-icon name="menu" />
+    </button>
+  }
+  <div class="nav-label" [class.sr-only]="collapsed()">Espacio de trabajo</div>
+  <nav aria-label="Principal" cdkScrollable>
+    @if (session.documentRead()) {
+      <a
+        routerLink="/documentos"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Biblioteca documental"
+        tcNavTooltip="Biblioteca documental"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="domain" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Biblioteca documental</span
+        ></a
+      >
+    }
+    @if (session.queryRead()) {
+      <a
+        routerLink="/consultas"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Consultas operativas"
+        tcNavTooltip="Consultas operativas"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="home" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Consultas operativas</span
+        ></a
+      >
+    }
+    @if (session.supportRead()) {
+      <a
+        routerLink="/soporte"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Soporte y trazabilidad"
+        tcNavTooltip="Soporte y trazabilidad"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="history" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Soporte y trazabilidad</span
+        ></a
+      >
+    }
     @if (session.financeRead()) {
-      <a routerLink="/finanzas" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="domain" />Finanzas</a
+      <a
+        routerLink="/finanzas"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Finanzas"
+        tcNavTooltip="Finanzas"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="domain" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Finanzas</span
+        ></a
       >
     }
     @if (session.logisticsRead()) {
-      <a routerLink="/logistica" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="warehouse" />Logística y despacho</a
+      <a
+        routerLink="/logistica"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Logística y despacho"
+        tcNavTooltip="Logística y despacho"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="warehouse" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Logística y despacho</span
+        ></a
       >
     }
     @if (session.commerceRead()) {
-      <a routerLink="/comercial" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="domain" />Centro comercial</a
+      <a
+        routerLink="/comercial"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Centro comercial"
+        tcNavTooltip="Centro comercial"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="domain" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Centro comercial</span
+        ></a
       >
     }
     @if (session.rfidRead()) {
-      <a routerLink="/rfid" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="history" />RFID y dispositivos</a
+      <a
+        routerLink="/rfid"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="RFID y dispositivos"
+        tcNavTooltip="RFID y dispositivos"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="history" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >RFID y dispositivos</span
+        ></a
       >
     }
     @if (session.qualityRead()) {
-      <a routerLink="/calidad" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="shield" />Calidad y mantenimiento</a
+      <a
+        routerLink="/calidad"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Calidad y mantenimiento"
+        tcNavTooltip="Calidad y mantenimiento"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="shield" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Calidad y mantenimiento</span
+        ></a
       >
     }
-    <a routerLink="/inicio" routerLinkActive="active" (click)="close()"
-      ><tc-icon name="home" />Inicio</a
+    <a
+      routerLink="/inicio"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="close()"
+      aria-label="Inicio"
+      tcNavTooltip="Inicio"
+      [tooltipEnabled]="collapsed()"
+      ><tc-icon name="home" /><span class="nav-text" [class.sr-only]="collapsed()">Inicio</span></a
     >
     @if (session.can('ORGANIZATION_READ')) {
-      <a routerLink="/organizacion/empresa" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="domain" />Empresa</a
+      <a
+        routerLink="/organizacion/empresa"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Empresa"
+        tcNavTooltip="Empresa"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="domain" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Empresa</span
+        ></a
       >
     }
     @if (session.can('YARD_MANAGE')) {
-      <a routerLink="/organizacion/patios" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="warehouse" />Patios</a
+      <a
+        routerLink="/organizacion/patios"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Patios"
+        tcNavTooltip="Patios"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="warehouse" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Patios</span
+        ></a
       >
     }
     @if (session.can('ACCESS_MANAGE')) {
-      <a routerLink="/acceso/usuarios" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="group" />Usuarios</a
-      ><a routerLink="/acceso/roles" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="shield" />Roles y permisos</a
+      <a
+        routerLink="/acceso/usuarios"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Usuarios"
+        tcNavTooltip="Usuarios"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="group" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Usuarios</span
+        ></a
+      ><a
+        routerLink="/acceso/roles"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Roles y permisos"
+        tcNavTooltip="Roles y permisos"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="shield" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Roles y permisos</span
+        ></a
       >
     }
     @if (session.can('AUDIT_READ')) {
-      <a routerLink="/auditoria" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="history" />Auditoría</a
+      <a
+        routerLink="/auditoria"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Auditoría"
+        tcNavTooltip="Auditoría"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="history" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Auditoría</span
+        ></a
       >
     }
     @if (session.can('PARTY_READ')) {
-      <a routerLink="/terceros" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="group" />Terceros y AVL</a
+      <a
+        routerLink="/terceros"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Terceros y AVL"
+        tcNavTooltip="Terceros y AVL"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="group" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Terceros y AVL</span
+        ></a
       >
     }
     @if (session.can('EQUIPMENT_READ')) {
-      <a routerLink="/catalogo" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="domain" />Catálogo técnico</a
+      <a
+        routerLink="/catalogo"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Catálogo técnico"
+        tcNavTooltip="Catálogo técnico"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="domain" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Catálogo técnico</span
+        ></a
       >
-      <a routerLink="/equipos" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="warehouse" />Equipos</a
+      <a
+        routerLink="/equipos"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Equipos"
+        tcNavTooltip="Equipos"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="warehouse" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Equipos</span
+        ></a
       >
     }
     @if (session.inventoryRead()) {
-      <a routerLink="/inventario" routerLinkActive="active" (click)="close()"
-        ><tc-icon name="warehouse" />Inventario y patios</a
+      <a
+        routerLink="/inventario"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+        aria-label="Inventario y patios"
+        tcNavTooltip="Inventario y patios"
+        [tooltipEnabled]="collapsed()"
+        ><tc-icon name="warehouse" /><span class="nav-text" [class.sr-only]="collapsed()"
+          >Inventario y patios</span
+        ></a
       >
     }
   </nav>
   <div class="nav-footer">
-    <a routerLink="/mi-cuenta" routerLinkActive="active" (click)="close()"
-      ><tc-icon name="person" />Mi cuenta</a
-    ><button class="nav-logout" (click)="close(); session.logout()">
-      <tc-icon name="logout" />Cerrar sesión</button
+    <a
+      routerLink="/mi-cuenta"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="close()"
+      aria-label="Mi cuenta"
+      tcNavTooltip="Mi cuenta"
+      [tooltipEnabled]="collapsed()"
+      ><tc-icon name="person" /><span class="nav-text" [class.sr-only]="collapsed()"
+        >Mi cuenta</span
+      ></a
+    ><button
+      class="nav-logout"
+      (click)="close(); session.logout()"
+      aria-label="Cerrar sesión"
+      tcNavTooltip="Cerrar sesión"
+      [tooltipEnabled]="collapsed()"
+    >
+      <tc-icon name="logout" /><span class="nav-text" [class.sr-only]="collapsed()"
+        >Cerrar sesión</span
+      ></button
     ><small>Administración · TraceCore</small>
   </div>
 </div>

@@ -1,5 +1,7 @@
 <a class="skip-link" href="#main-content">Saltar al contenido</a>
-<aside class="desktop-sidebar"><tc-navigation /></aside>
+<aside class="desktop-sidebar">
+  <tc-navigation [collapsed]="collapsed()" (toggleCollapsed)="toggleSidebar()" />
+</aside>
 <div class="workspace">
   <tc-progress-bar [active]="navigating()" />
   <header class="topbar">

@@ -5,6 +5,6 @@ import { Component, input } from '@angular/core';
   styleUrl: './brand-logo.component.scss',
 })
 export class BrandLogo {
-  readonly variant = input<'login' | 'sidebar' | 'compact'>('sidebar');
+  readonly variant = input<'login' | 'sidebar' | 'compact' | 'isotype'>('sidebar');
   readonly decorative = input(false);
 }

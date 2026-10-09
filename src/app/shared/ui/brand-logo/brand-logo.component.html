@@ -1,7 +1,11 @@
 <img
-  src="assets/brand/tracecore-colores-planos.svg"
+  [src]="
+    variant() === 'isotype'
+      ? 'assets/brand/tracecore-isotipo.svg'
+      : 'assets/brand/tracecore-colores-planos.svg'
+  "
   [alt]="decorative() ? '' : 'TraceCore'"
-  width="1300"
-  height="710"
+  [attr.width]="variant() === 'isotype' ? 730 : 1300"
+  [attr.height]="variant() === 'isotype' ? 490 : 710"
   [class]="'brand-logo ' + variant()"
 />

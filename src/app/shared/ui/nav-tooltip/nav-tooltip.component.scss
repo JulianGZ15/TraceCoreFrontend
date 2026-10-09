@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+[role='tooltip'] {
+  max-width: 240px;
+  padding: 8px 12px;
+  background: var(--tc-shell);
+  color: var(--tc-on-shell);
+  border: 1px solid var(--tc-shell-border);
+  border-radius: var(--tc-radius-control);
+  font: 14px/20px var(--font-body);
+  overflow-wrap: anywhere;
+}

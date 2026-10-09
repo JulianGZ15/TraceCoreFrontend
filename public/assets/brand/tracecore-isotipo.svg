@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="730" height="490" viewBox="330 130 730 490" role="img" aria-labelledby="title desc">
+<title id="title">Isotipo TraceCore</title>
+<desc id="desc">Monograma TC con torre y órbita. Fondo transparente y colores planos.</desc>
+<defs>
+<path id="monogram-t" d="M404 189 L790 184 L717 257 L642 257 L642 456 L546 475 L548 258 L478 260 Z" fill-rule="evenodd"/>
+<path id="monogram-t-foot" d="M540 510 L643 490 L643 604 Z" fill-rule="evenodd"/>
+<path id="c-upper-left" d="M817 235 L810 307 C755 324 719 377 730 434 L657 455 C641 352 709 258 817 235 Z" fill-rule="evenodd"/>
+<path id="c-upper-right" d="M882 231 C949 235 1007 269 1042 319 L979 358 C960 330 927 307 890 300 Z" fill-rule="evenodd"/>
+<path id="c-lower-left" d="M667 486 L741 466 C761 506 799 530 845 531 L845 601 C760 601 693 557 667 486 Z" fill-rule="evenodd"/>
+<path id="c-lower-right" d="M860 531 C909 530 954 505 979 466 L1043 502 C1008 563 939 599 860 601 Z" fill-rule="evenodd"/>
+<path id="tower-cap" d="M833 188 V175 C836 169 841 164 848 161 C855 163 861 168 864 175 V188 Z M842 178 H856 V188 H842 Z" fill-rule="evenodd"/>
+<path id="tower-tip" d="M846 160 V150 C846 146 852 146 852 150 V160 Z" fill-rule="evenodd"/>
+<path id="tower-collar" d="M825 189 H873 V203 H825 Z" fill-rule="evenodd"/>
+<path id="tower-left" d="M831 203 H841 L805 504 H792 Z" fill-rule="evenodd"/>
+<path id="tower-right" d="M856 203 H867 L909 504 H895 Z" fill-rule="evenodd"/>
+<path id="tower-inner-left" d="M842 203 H847 L834 505 H827 Z" fill-rule="evenodd"/>
+<path id="tower-inner-right" d="M850 203 H855 L872 505 H865 Z" fill-rule="evenodd"/>
+<path id="tower-base" d="M797 398 H809 L807 414 H795 Z M782 504 H924 V519 C878 526 829 525 782 513 Z" fill-rule="evenodd"/>
+<path id="orbit" d="M543 315 C478 344 405 385 371 421 C344 448 345 477 365 492 C406 521 539 507 658 480 C771 455 874 417 916 385 C941 367 937 348 923 340 C914 336 902 333 890 332 C911 336 925 343 923 352 C919 365 890 383 853 400 C756 444 574 490 450 482 C412 480 395 471 393 453 C390 423 461 367 543 315 Z" fill-rule="evenodd"/>
+</defs>
+<g id="emblema" aria-label="Monograma TC con torre y órbita"><use xlink:href="#monogram-t" fill="#a4a4a4"/><use xlink:href="#monogram-t-foot" fill="#a4a4a4"/><use xlink:href="#c-upper-left" fill="#ad8b4d"/><use xlink:href="#c-upper-right" fill="#ad8b4d"/><use xlink:href="#c-lower-left" fill="#a4a4a4"/><use xlink:href="#c-lower-right" fill="#ad8b4d"/><g id="torre"><use xlink:href="#tower-tip" fill="#ad8b4d"/><use xlink:href="#tower-cap" fill="#ad8b4d"/><use xlink:href="#tower-left" fill="#ad8b4d"/><use xlink:href="#tower-right" fill="#ad8b4d"/><use xlink:href="#tower-inner-left" fill="#ad8b4d"/><use xlink:href="#tower-inner-right" fill="#ad8b4d"/><path d="M837 249 H871 M830 298 H878 M822 355 H884 M814 410 H891 M808 446 H897" fill="none" stroke="#ad8b4d" stroke-width="6.2" stroke-linejoin="round"/><path d="M838 252 L870 294 M866 252 L832 294" fill="none" stroke="#ad8b4d" stroke-width="2.5" stroke-linejoin="round"/><path d="M831 302 L876 351 M873 303 L825 350" fill="none" stroke="#ad8b4d" stroke-width="2.5" stroke-linejoin="round"/><path d="M823 361 L884 404 M879 361 L816 404" fill="none" stroke="#ad8b4d" stroke-width="2.5" stroke-linejoin="round"/><path d="M815 417 L889 443 M888 417 L811 442" fill="none" stroke="#ad8b4d" stroke-width="2.5" stroke-linejoin="round"/><path d="M811 451 L893 502 M890 451 L806 502" fill="none" stroke="#ad8b4d" stroke-width="2.5" stroke-linejoin="round"/><use xlink:href="#tower-collar" fill="#ad8b4d"/><use xlink:href="#tower-base" fill="#ad8b4d"/></g><use xlink:href="#orbit" fill="#ad8b4d"/></g>
+</svg>

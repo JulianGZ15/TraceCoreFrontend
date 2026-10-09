@@ -13,6 +13,8 @@
   --tc-shell-border: #1e2229;
   --tc-on-shell: #f0f1f2;
   --tc-on-shell-muted: #bcc7dd;
+  --tc-nav-accent: #d4af37;
+  --tc-nav-selection: #2a2412;
   --tc-canvas: #f8f9fa;
   --tc-panel: #fff;
   --tc-surface-muted: #f3f4f5;
@@ -40,7 +42,9 @@
   --tc-neutral-bg: #f3f4f5;
   --tc-radius-control: 4px;
   --tc-radius-panel: 8px;
-  --tc-sidebar: 280px;
+  --tc-sidebar-expanded: 280px;
+  --tc-sidebar-collapsed: 72px;
+  --tc-sidebar: var(--tc-sidebar-expanded);
   --tc-header: 64px;
   --tc-space-xs: 4px;
   --tc-space-sm: 8px;
@@ -738,7 +742,7 @@ button.tc-btn-busy {
   margin-top: 32px;
 }
 .nav-overlay {
-  width: 280px;
+  width: var(--tc-sidebar-expanded);
   position: absolute !important;
   left: 0;
   top: 0;
@@ -748,7 +752,7 @@ button.tc-btn-busy {
   height: 100dvh;
   border-radius: 0;
   background: var(--tc-shell);
-  overflow: auto;
+  overflow: hidden;
   animation: tcDrawerLeftEnter var(--tc-duration-drawer) var(--tc-ease-motion) both;
 }
 @media (max-width: 1023px) {
