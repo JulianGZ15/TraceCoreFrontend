@@ -5,5 +5,8 @@ describe('LookupComponent', () => {
     const fixture = await renderOperation(LookupComponent, {});
     expect(fixture.componentInstance).toBeTruthy();
     expect(fixture.nativeElement.childNodes.length).toBeGreaterThan(0);
+    expect(fixture.nativeElement.textContent).not.toContain('Anterior');
+    expect(fixture.nativeElement.textContent).not.toContain('Siguiente');
+    expect(fixture.nativeElement.textContent).not.toContain('Filas');
   });
 });

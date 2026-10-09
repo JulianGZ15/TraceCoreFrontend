@@ -6,6 +6,7 @@
       <button
         type="button"
         class="chip-clear-btn"
+        #clearButton
         (click)="clearSelection()"
         [disabled]="disabled()"
         [attr.aria-label]="'Quitar selección ' + currentLabel()"
@@ -17,15 +18,22 @@
     <div class="search-box">
       <tc-icon name="search" class="search-icon" />
       <input
+        #searchInput
+        [id]="controlId() || inputId"
         type="text"
+        [attr.aria-label]="label()"
         [placeholder]="placeholder()"
         [disabled]="disabled()"
         [ngModel]="query()"
         (ngModelChange)="onInput($event)"
+        (focus)="onFocus()"
+        maxlength="100"
         (keydown)="onKeydown($event)"
         autocomplete="off"
         role="combobox"
         [attr.aria-expanded]="open()"
+        [attr.aria-controls]="listId"
+        [attr.aria-activedescendant]="activeIndex() >= 0 ? listId + '-option-' + activeIndex() : null"
         aria-autocomplete="list"
       />
       @if (busy()) {
@@ -34,11 +42,14 @@
     </div>
 
     @if (open()) {
-      <ul class="dropdown-list" role="listbox">
+      <ul class="dropdown-list" [id]="listId" role="listbox">
         @for (opt of options(); track opt.value; let i = $index) {
           <li
             role="option"
+            [id]="listId + '-option-' + i"
             [class.active]="i === activeIndex()"
+            [class.disabled]="opt.disabled"
+            [attr.aria-disabled]="opt.disabled || null"
             [attr.aria-selected]="i === activeIndex()"
             (click)="selectOption(opt)"
           >

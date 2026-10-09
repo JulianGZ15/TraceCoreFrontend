@@ -3,6 +3,7 @@ import {
   input,
   inject,
   signal,
+  computed,
   effect,
   forwardRef,
   output,
@@ -12,12 +13,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { CommerceApi } from '../../commerce-api';
 import { Option } from '../../models';
+import { EntityOption, EntitySearchComponent } from '../../../../shared/ui/entity-search/entity-search.component';
 @Component({
   selector: 'tc-commerce-lookup',
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LookupComponent), multi: true },
   ],
-  imports: [],
+  imports: [EntitySearchComponent],
   templateUrl: './lookup.component.html',
   styleUrl: './lookup.component.scss',
 })
@@ -35,8 +37,8 @@ export class LookupComponent implements ControlValueAccessor, OnDestroy {
   readonly disabled = signal(false);
   readonly selected = signal('');
   readonly selectedLabel = signal('');
-  search = '';
-  offset = 0;
+  readonly suggestions = computed(() => this.options().map((option) => ({ value: option.uuid, label: option.label })));
+  private search = '';
   private seq = 0;
   private stop = new Subject<void>();
   private change: (v: string) => void = () => {};
@@ -50,15 +52,18 @@ export class LookupComponent implements ControlValueAccessor, OnDestroy {
       this.resource();
       this.params();
       this.yard();
-      this.offset = 0;
-      void this.load();
+      this.search = '';
+      void this.load('');
     });
   }
-  async load() {
+  readonly searchOptions = (query: string): Promise<EntityOption[]> => this.load(query);
+
+  async load(query = this.search): Promise<EntityOption[]> {
     this.stop.next();
     const seq = ++this.seq,
       epoch = this.api.session.epoch();
-    if (!this.yard() || !this.api.session.valid()) return;
+    if (!this.yard() || !this.api.session.valid()) return [];
+    this.search = query;
     this.busy.set(true);
     this.error.set('');
     try {
@@ -67,15 +72,14 @@ export class LookupComponent implements ControlValueAccessor, OnDestroy {
         {
           ...this.params(),
           yardUuid: this.yard(),
-          search: this.search,
-          offset: this.offset,
+          search: query,
+          offset: 0,
           limit: 25,
         },
         this.stop,
       );
-      if (seq === this.seq && epoch === this.api.session.epoch())
-        this.options.set(
-          rows.map((v: Option) => {
+      if (seq === this.seq && epoch === this.api.session.epoch()) {
+        const options = rows.map((v: Option) => {
             const row = v as unknown as {
               record?: { uuid: string; concept?: string; filename?: string; folio?: string };
               label?: string;
@@ -91,29 +95,27 @@ export class LookupComponent implements ControlValueAccessor, OnDestroy {
                     row.record.uuid,
                 }
               : v;
-          }),
-        );
+          });
+        this.options.set(options);
+        if (this.selected()) {
+          this.selectedLabel.set(options.find((o) => o.uuid === this.selected())?.label ?? this.selected());
+        }
+        return options.map((option) => ({ value: option.uuid, label: option.label }));
+      }
     } catch {
       if (seq === this.seq) this.error.set('No se pudo consultar el selector.');
     } finally {
       if (seq === this.seq) this.busy.set(false);
     }
+    return [];
   }
-  move(step: number) {
-    this.offset = Math.max(0, this.offset + step);
-    void this.load();
-  }
-  query(v: string) {
-    this.search = v;
-    this.offset = 0;
-    void this.load();
-  }
-  choose(v: string) {
-    this.selectedLabel.set(this.options().find((o) => o.uuid === v)?.label ?? '');
-    this.selected.set(v);
-    this.change(v);
+  choose(option: EntityOption | null) {
+    const value = option?.value ?? '';
+    this.selectedLabel.set(option?.label ?? '');
+    this.selected.set(value);
+    this.change(value);
     this.touch();
-    this.selectedChange.emit(v);
+    this.selectedChange.emit(value);
   }
   writeValue(v: string | null) {
     this.selected.set(v ?? '');

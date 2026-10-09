@@ -447,6 +447,22 @@ tc-data-table td.mono {
 tc-data-table td p {
   margin: 4px 0 0;
 }
+tc-data-table tbody td[colspan] {
+  padding: 32px 16px;
+  color: var(--tc-text-muted);
+  text-align: center;
+  white-space: normal;
+}
+tc-data-table tbody td[colspan]::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto 10px;
+  background-color: currentColor;
+  -webkit-mask: url('/assets/icons/inbox.svg') center / contain no-repeat;
+  mask: url('/assets/icons/inbox.svg') center / contain no-repeat;
+}
 tc-data-table tbody tr:hover,
 tc-data-table tbody tr:focus-within {
   background: var(--tc-selection);

@@ -1,13 +1,12 @@
-import { Component, input, output, signal, effect, untracked } from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
+import { Component, input, output, signal, effect, untracked, computed } from '@angular/core';
 
 import { Feedback } from '../../../../shared/ui/page';
+import { EntityOption, EntitySearchComponent } from '../../../../shared/ui/entity-search/entity-search.component';
 import { InventoryPage } from '../../page-base';
 
 @Component({
   selector: 'tc-inventory-lookup',
-  imports: [FormsModule, Feedback],
+  imports: [Feedback, EntitySearchComponent],
   templateUrl: './lookup.component.html',
   styleUrl: './lookup.component.scss',
 })
@@ -20,39 +19,45 @@ export class LookupComponent extends InventoryPage {
   readonly title = input('Seleccionar');
   readonly picked = output<string>();
   readonly choices = signal<{ uuid: string; label: string; disabled: boolean }[]>([]);
-  readonly cursor = signal(0);
-  term = '';
+  readonly suggestions = computed(() => this.choices().map((choice) => ({ value: choice.uuid, label: choice.label, disabled: choice.disabled })));
   readonly selected = signal('');
   readonly selectedId = signal('');
   private signature = '';
+  private searchSequence = 0;
   constructor() {
     super();
+    effect(() => {
+      const value = this.value();
+      this.selectedId.set(value);
+      if (!value) this.selected.set('');
+    });
     effect(() => {
       const signature = JSON.stringify([this.kind(), this.filters()]);
       if (signature === this.signature) return;
       this.signature = signature;
       untracked(() => {
-        this.cursor.set(0);
-        void this.load();
+        void this.load('');
       });
     });
   }
-  async load() {
+  readonly searchOptions = (query: string): Promise<EntityOption[]> => this.load(query);
+
+  async load(query = ''): Promise<EntityOption[]> {
     const k = this.kind();
     const path = k === 'parties' ? '/party-options' : '/' + k;
-    await this.request(
-      () =>
-        this.api.get<Record<string, unknown>[]>(path, {
-          ...this.filters(),
-          offset: this.cursor(),
-          limit: 25,
-          ...(['assets', 'parties'].includes(k) && this.term.trim()
-            ? { search: this.term.trim() }
-            : {}),
-        }),
-      (rows) =>
-        this.choices.set(
-          rows.map((r) => ({
+    const request = ++this.searchSequence;
+    const epoch = this.session.epoch();
+    this.busy.set(true);
+    this.error.set('');
+    try {
+      const rows = await this.api.get<Record<string, unknown>[]>(path, {
+        ...this.filters(),
+        offset: 0,
+        limit: 25,
+        ...(query.trim() ? { search: query.trim() } : {}),
+      });
+      if (!this.alive || request !== this.searchSequence || epoch !== this.session.epoch()) return [];
+      const choices = rows.map((r) => ({
             uuid: String(r['uuid']),
             label:
               String(
@@ -70,21 +75,20 @@ export class LookupComponent extends InventoryPage {
               r['active'] === false ||
               r['lifecycle'] === 'RETIRED' ||
               (k === 'reservations' && r['state'] !== 'CONFIRMED'),
-          })),
-        ),
-    );
+          }));
+      this.choices.set(choices);
+      if (this.selectedId()) this.selected.set(choices.find((c) => c.uuid === this.selectedId())?.label ?? this.selectedId());
+      return this.suggestions();
+    } catch (error) {
+      if (request === this.searchSequence) this.error.set(error instanceof Error ? error.message : 'No se pudieron consultar las opciones.');
+      return [];
+    } finally {
+      if (request === this.searchSequence) this.busy.set(false);
+    }
   }
-  search() {
-    this.cursor.set(0);
-    void this.load();
-  }
-  move(delta: number) {
-    this.cursor.update((n) => Math.max(0, n + delta));
-    void this.load();
-  }
-  choose(c: { uuid: string; label: string }) {
-    this.selectedId.set(c.uuid);
-    this.selected.set(c.label);
-    this.picked.emit(c.uuid);
+  choose(c: EntityOption | null) {
+    this.selectedId.set(c?.value ?? '');
+    this.selected.set(c?.label ?? '');
+    this.picked.emit(c?.value ?? '');
   }
 }

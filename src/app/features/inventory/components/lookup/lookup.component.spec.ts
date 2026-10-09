@@ -13,6 +13,9 @@ describe('LookupComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.textContent.trim().length).toBeGreaterThan(0);
+    expect(fixture.nativeElement.textContent).not.toContain('Anterior');
+    expect(fixture.nativeElement.textContent).not.toContain('Siguiente');
+    expect(fixture.nativeElement.textContent).not.toContain('Filas');
     fixture.destroy();
   });
 });

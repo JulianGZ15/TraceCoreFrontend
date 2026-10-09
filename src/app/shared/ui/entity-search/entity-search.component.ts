@@ -1,5 +1,6 @@
 import {
   Component,
+  OnDestroy,
   input,
   output,
   signal,
@@ -16,6 +17,7 @@ export interface EntityOption {
   value: string;
   label: string;
   meta?: string;
+  disabled?: boolean;
 }
 
 @Component({
@@ -24,13 +26,15 @@ export interface EntityOption {
   templateUrl: './entity-search.component.html',
   styleUrl: './entity-search.component.scss',
 })
-export class EntitySearchComponent {
+export class EntitySearchComponent implements OnDestroy {
   readonly label = input<string>('Buscar entidad');
   readonly placeholder = input<string>('Escribe para buscar…');
   readonly value = input<string>('');
   readonly selectedLabel = input<string>('');
+  readonly optionsList = input<EntityOption[]>([]);
   readonly searchFn = input<(query: string) => Promise<EntityOption[]>>();
   readonly disabled = input<boolean>(false);
+  readonly controlId = input<string>('');
 
   readonly select = output<EntityOption | null>();
 
@@ -42,9 +46,15 @@ export class EntitySearchComponent {
   readonly currentLabel = signal<string>('');
 
   private debounceTimer?: ReturnType<typeof setTimeout>;
+  private searchSequence = 0;
   private readonly containerRef = viewChild<ElementRef>('container');
+  readonly listId = 'entity-search-list-' + crypto.randomUUID();
+  readonly inputId = 'entity-search-input-' + crypto.randomUUID();
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  private readonly clearButton = viewChild<ElementRef<HTMLButtonElement>>('clearButton');
 
   constructor() {
+    effect(() => this.options.set(this.optionsList()));
     effect(() => {
       const val = this.value();
       const lbl = this.selectedLabel();
@@ -59,12 +69,19 @@ export class EntitySearchComponent {
   onInput(text: string): void {
     this.query.set(text);
     this.activeIndex.set(-1);
+    ++this.searchSequence;
+    this.busy.set(false);
+    this.options.set([]);
+    this.open.set(false);
 
     if (this.debounceTimer) clearTimeout(this.debounceTimer);
 
     if (!text.trim()) {
-      this.options.set([]);
-      this.open.set(false);
+      if (this.searchFn()) void this.performSearch('');
+      else {
+        this.options.set([]);
+        this.open.set(false);
+      }
       return;
     }
 
@@ -73,27 +90,37 @@ export class EntitySearchComponent {
     }, 280);
   }
 
+  onFocus(): void {
+    this.open.set(true);
+  }
+
   async performSearch(text: string): Promise<void> {
     const fn = this.searchFn();
     if (!fn) return;
+    const sequence = ++this.searchSequence;
 
     this.busy.set(true);
     try {
       const results = await fn(text);
+      if (sequence !== this.searchSequence) return;
       this.options.set(results);
       this.open.set(true);
     } catch {
+      if (sequence !== this.searchSequence) return;
       this.options.set([]);
+      this.open.set(true);
     } finally {
-      this.busy.set(false);
+      if (sequence === this.searchSequence) this.busy.set(false);
     }
   }
 
   selectOption(option: EntityOption): void {
+    if (option.disabled) return;
     this.currentLabel.set(option.label);
     this.query.set('');
     this.open.set(false);
     this.select.emit(option);
+    setTimeout(() => this.clearButton()?.nativeElement.focus(), 0);
   }
 
   clearSelection(): void {
@@ -101,6 +128,7 @@ export class EntitySearchComponent {
     this.query.set('');
     this.open.set(false);
     this.select.emit(null);
+    setTimeout(() => this.searchInput()?.nativeElement.focus(), 0);
   }
 
   onKeydown(event: KeyboardEvent): void {
@@ -109,10 +137,10 @@ export class EntitySearchComponent {
 
     if (event.key === 'ArrowDown') {
       event.preventDefault();
-      this.activeIndex.update((i) => (i + 1 < opts.length ? i + 1 : 0));
+      this.activeIndex.update((i) => this.nextEnabled(i, 1));
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      this.activeIndex.update((i) => (i - 1 >= 0 ? i - 1 : opts.length - 1));
+      this.activeIndex.update((i) => this.nextEnabled(i, -1));
     } else if (event.key === 'Enter') {
       event.preventDefault();
       const idx = this.activeIndex();
@@ -124,11 +152,25 @@ export class EntitySearchComponent {
     }
   }
 
+  private nextEnabled(from: number, direction: 1 | -1): number {
+    const opts = this.options();
+    if (from < 0) from = direction === 1 ? -1 : 0;
+    for (let step = 1; step <= opts.length; step++) {
+      const index = (from + direction * step + opts.length) % opts.length;
+      if (!opts[index].disabled) return index;
+    }
+    return -1;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const container = this.containerRef()?.nativeElement as HTMLElement | undefined;
     if (container && !container.contains(event.target as Node)) {
       this.open.set(false);
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
   }
 }

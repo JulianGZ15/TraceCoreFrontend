@@ -4,6 +4,9 @@ describe('LookupComponent', () => {
   it('permite consultar la plantilla externa sin ejecutar escrituras', async () => {
     const { fixture, api } = await renderFinance(LookupComponent, {});
     expect(fixture.nativeElement.textContent.length).toBeGreaterThan(0);
+    expect(fixture.nativeElement.textContent).not.toContain('Anterior');
+    expect(fixture.nativeElement.textContent).not.toContain('Siguiente');
+    expect(fixture.nativeElement.textContent).not.toContain('Filas');
     expect(
       fixture.nativeElement.querySelectorAll('button[type=submit]:not(:disabled)').length,
     ).toBe(0);
