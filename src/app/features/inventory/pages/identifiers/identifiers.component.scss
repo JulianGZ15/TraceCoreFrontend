@@ -1,0 +1,27 @@
+:host { display: block; min-width: 0; }
+.panel { padding: 20px; margin: 16px 0; background: var(--tc-panel); border: 1px solid var(--tc-border); border-radius: var(--tc-radius-panel); }
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; align-items: end; }
+.field { display: grid; gap: 6px; }
+.field input { min-height: 44px; padding: 8px 12px; border: 1px solid var(--tc-border); border-radius: var(--tc-radius-control); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.asset-list { display: grid; gap: 8px; margin-top: 16px; }
+.asset-row { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--tc-border); border-radius: var(--tc-radius-control); overflow-wrap: anywhere; }
+.asset-row input { width: 20px; height: 20px; flex: 0 0 auto; }
+.asset-row small { display: block; }
+.label-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 14px; }
+.asset-label { display: grid; justify-items: center; gap: 4px; padding: 14px; border: 1px dashed var(--tc-border); border-radius: var(--tc-radius-control); text-align: center; overflow-wrap: anywhere; break-inside: avoid; }
+.codes { width: 100%; display: grid; justify-items: center; gap: 4px; }
+.codes img { width: 150px; height: 150px; object-fit: contain; }
+.codes .barcode { width: 100%; height: auto; max-height: 70px; }
+.mono { font-family: var(--tc-font-mono); font-size: 11px; }
+.retired { color: var(--tc-danger); font-weight: 600; }
+@media print {
+  :host { color: #111; }
+  tc-page-heading, tc-feedback, .filters, .actions, .asset-list, .preview h2 { display: none !important; }
+  .panel.preview { margin: 0; padding: 0; border: 0; }
+  .label-grid { grid-template-columns: repeat(2, 1fr); gap: 6mm; }
+  .asset-label { min-height: 42mm; border: 1px solid #555; color: #111; }
+  .codes img { width: 28mm; height: 28mm; }
+  .codes .barcode { height: 12mm; max-height: 12mm; }
+}
+@media (max-width: 767px) { .panel { padding: 16px; } }

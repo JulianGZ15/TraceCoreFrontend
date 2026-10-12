@@ -181,6 +181,7 @@ export async function inventoryFixture(page: Page, scoped = false) {
       });
     if (req.method() !== 'GET') state.requests.push({ path, body: body ?? {} });
     if (path === '/inventory/assets') return reply([root]);
+    if (path === '/inventory/assets/identifiers') return reply([root]);
     if (path === '/inventory/locations/overview')
       return reply({
         path: [],

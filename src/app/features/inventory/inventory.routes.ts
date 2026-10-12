@@ -27,6 +27,16 @@ export const inventoryRoutes: Routes = [
     loadComponent: () => import('./pages/site/site.component').then((m) => m.SiteComponent),
   },
   {
+    path: 'identificacion/escanear',
+    canActivate: [inventoryGuard],
+    loadComponent: () => import('./pages/identifier-scan/identifier-scan.component').then((m) => m.IdentifierScanComponent),
+  },
+  {
+    path: 'identificacion',
+    canActivate: [inventoryGuard],
+    loadComponent: () => import('./pages/identifiers/identifiers.component').then((m) => m.IdentifiersComponent),
+  },
+  {
     path: 'equipos',
     canActivate: [inventoryGuard],
     loadComponent: () => import('./pages/assets/assets.component').then((m) => m.AssetsComponent),

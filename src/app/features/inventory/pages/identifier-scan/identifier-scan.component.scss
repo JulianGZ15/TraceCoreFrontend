@@ -1,0 +1,7 @@
+:host { display: block; min-width: 0; }
+.panel { margin: 16px 0; padding: 20px; background: var(--tc-panel); border: 1px solid var(--tc-border); border-radius: var(--tc-radius-panel); }
+video { display: block; width: min(100%, 620px); min-height: 220px; max-height: 65vh; margin: 12px auto; background: #111; object-fit: contain; border-radius: var(--tc-radius-control); }
+.actions, .manual { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+form { display: grid; gap: 8px; }
+input { flex: 1 1 280px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--tc-border); border-radius: var(--tc-radius-control); }
+@media (max-width: 767px) { .panel { padding: 16px; } video { min-height: 180px; } }

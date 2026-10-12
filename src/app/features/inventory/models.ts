@@ -76,6 +76,18 @@ export interface AssetRow {
   transitMovementUuid: string | null;
   placementState: Placement;
 }
+export interface IdentifierLabel {
+  asset: IdentifierAsset;
+  qr: string;
+  barcode: string;
+  url: string;
+}
+export interface IdentifierAsset {
+  uuid: string;
+  internalCode: string;
+  serialNumber: string | null;
+  lifecycle: string;
+}
 export interface Asset extends Versioned {
   internalCode: string;
   serialNumber: string | null;

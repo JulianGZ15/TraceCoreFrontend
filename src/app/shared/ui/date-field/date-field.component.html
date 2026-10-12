@@ -1,0 +1,14 @@
+<input
+  [id]="id()"
+  [type]="mode() === 'date' ? 'date' : 'datetime-local'"
+  [value]="inputValue()"
+  [attr.aria-label]="label() || null"
+  [attr.aria-required]="required() || null"
+  [attr.min]="min() || null"
+  [attr.max]="max() || null"
+  [readonly]="readonly()"
+  [disabled]="disabled()"
+  [attr.aria-invalid]="conversionError() || null"
+  (input)="onInput($any($event.target).value)"
+  (blur)="onBlur()"
+/>

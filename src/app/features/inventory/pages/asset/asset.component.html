@@ -10,6 +10,7 @@
   <section class="panel">
     <h2>{{ p.asset.internalCode }}</h2>
     <p class="mono">{{ p.asset.uuid }}</p>
+    <a class="btn secondary" [routerLink]="'/inventario/identificacion'" [queryParams]="{ assetUuid: p.asset.uuid }">Generar QR y código de barras</a>
     @if (session.qualityRead()) {
       <a class="btn secondary" [routerLink]="['/calidad/equipos', p.asset.uuid, 'resumen']"
         >Consultar preparación técnica</a

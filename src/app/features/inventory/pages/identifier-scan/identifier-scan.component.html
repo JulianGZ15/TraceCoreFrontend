@@ -1,0 +1,29 @@
+<tc-page-heading section="Inventario y patios" title="Escanear código de activo">
+  <tc-inventory-inventory-nav />
+</tc-page-heading>
+<tc-feedback [message]="cameraError()" />
+@if (status()) { <p role="status">{{ status() }}</p> }
+
+<section class="panel">
+  <h2>Escáner de cámara</h2>
+  <p>Apunta la cámara al QR o al código de barras Code 128. El navegador pedirá permiso para usarla.</p>
+  <video #preview aria-label="Vista previa de cámara" muted playsinline></video>
+  <div class="actions">
+    <button class="btn primary" type="button" (click)="startCamera()" [disabled]="resolving()">Iniciar cámara</button>
+    <button class="btn secondary" type="button" (click)="stopCamera()">Detener cámara</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Ingresar código</h2>
+  <p>También puedes usar un lector de mano configurado como teclado.</p>
+  <form (ngSubmit)="resolve()">
+    <label for="scanned-identifier">UUID o enlace del QR</label>
+    <div class="manual">
+      <input id="scanned-identifier" name="identifier" [ngModel]="scanned" (ngModelChange)="scanned = $event" autocomplete="off" required />
+      <button class="btn primary" type="submit" [disabled]="resolving()">Abrir activo</button>
+    </div>
+  </form>
+</section>
+
+<a routerLink="/inventario/identificacion">Generar o imprimir códigos</a>

@@ -1,0 +1,55 @@
+<tc-page-heading section="Inventario y patios" title="Identificación con QR y código de barras">
+  <tc-inventory-inventory-nav />
+</tc-page-heading>
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+
+<section class="panel filters" aria-label="Filtros de activos">
+  <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
+  <div class="field">
+    <label for="identifier-search">Código interno o número de serie</label>
+    <input id="identifier-search" [value]="search" (input)="search = $any($event.target).value" (keyup.enter)="load()" />
+  </div>
+  <tc-inventory-lookup kind="locations" title="Ubicación del patio" [filters]="{ yardUuid: yard() }" [value]="locationUuid" (picked)="setLocation($event)" />
+  <button class="btn secondary" type="button" (click)="load()" [disabled]="busy()">Buscar</button>
+</section>
+
+<section class="panel">
+  <div class="actions">
+    <p role="status">{{ selected().size }} de 100 activos seleccionados</p>
+    <button class="btn primary" type="button" (click)="generate()" [disabled]="busy()">Generar vista previa</button>
+    <button class="btn secondary" type="button" (click)="clearSelection()">Limpiar selección</button>
+    <button class="btn secondary" type="button" (click)="print()" [disabled]="!labels().length">Imprimir etiquetas</button>
+    <a class="btn secondary" routerLink="/inventario/identificacion/escanear">Escanear un código</a>
+  </div>
+  <div class="asset-list">
+    @for (row of rows(); track row.uuid) {
+      <label class="asset-row">
+        <input type="checkbox" [checked]="selected().has(row.uuid)" [disabled]="!selected().has(row.uuid) && selected().size >= 100" (change)="toggle(row, $any($event.target).checked)" />
+        <span><strong>{{ row.internalCode }}</strong> · {{ row.serialNumber ?? 'Sin serial' }} · {{ row.lifecycle === 'RETIRED' ? 'Retirado' : 'Activo' }}<small class="mono">{{ row.uuid }}</small></span>
+      </label>
+    } @empty {
+      <p>No hay activos para los filtros seleccionados.</p>
+    }
+  </div>
+</section>
+
+@if (labels().length) {
+  <section class="panel preview" aria-label="Vista previa de etiquetas">
+    <h2>Vista previa · {{ labels().length }} etiquetas</h2>
+    <div class="label-grid">
+      @for (label of labels(); track label.asset.uuid) {
+        <article class="asset-label">
+          <strong>{{ label.asset.internalCode }}</strong>
+          <span>{{ label.asset.serialNumber ?? 'Sin serial' }}</span>
+          @if (label.asset.lifecycle === 'RETIRED') { <span class="retired">Activo retirado</span> }
+          <div class="codes">
+            <img [src]="label.qr" alt="Código QR del activo" />
+            <img class="barcode" [src]="label.barcode" alt="Código de barras Code 128 del activo" />
+          </div>
+          <small class="mono">{{ label.asset.uuid }}</small>
+        </article>
+      }
+    </div>
+  </section>
+}

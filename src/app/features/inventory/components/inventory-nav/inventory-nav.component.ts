@@ -16,6 +16,8 @@ export class InventoryNavComponent {
     return [
       { label: 'Patios', route: '/inventario/patios' },
       { label: 'Situación física', route: '/inventario/equipos' },
+      { label: 'Identificadores QR / barras', route: '/inventario/identificacion' },
+      { label: 'Escanear código', route: '/inventario/identificacion/escanear' },
       { label: 'Movimientos', route: '/inventario/movimientos' },
       { label: 'Reservas', route: '/inventario/reservas' },
       { label: 'Propuestas', route: '/inventario/propuestas' },
