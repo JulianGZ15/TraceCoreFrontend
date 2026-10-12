@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { confirm } from '../../../../shared/ui/editor';
 
 import { Component, inject, signal, input, output, computed, OnInit, OnDestroy, OnChanges, SimpleChanges, forwardRef } from '@angular/core';
@@ -32,7 +33,7 @@ import { SpecificationsComponent } from '../../components/specifications/specifi
 
 
 
-@Component({selector:"tc-equipment-sheet",imports:[Feedback,RouterLink,ReactiveFormsModule,SpecificationsComponent],templateUrl:"./sheet.component.html",styleUrl:"./sheet.component.scss"})
+@Component({selector:"tc-equipment-sheet",imports: [Feedback,RouterLink,ReactiveFormsModule,SpecificationsComponent, DateFieldComponent],templateUrl:"./sheet.component.html",styleUrl:"./sheet.component.scss"})
 
 export class SheetComponent extends EquipmentFormPage {
 

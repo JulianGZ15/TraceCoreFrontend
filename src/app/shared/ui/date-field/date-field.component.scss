@@ -2,3 +2,15 @@
   display: block;
   min-width: 0;
 }
+
+.date-field-control {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.date-field-zone {
+  color: var(--tc-text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}

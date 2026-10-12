@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { confirm } from '../../../../shared/ui/editor';
 
 import { Component, inject, signal, input, output, computed, OnInit, OnDestroy, OnChanges, SimpleChanges, forwardRef } from '@angular/core';
@@ -34,7 +35,7 @@ import { SpecificationsComponent } from '../../components/specifications/specifi
 
 
 
-@Component({selector:"tc-equipment-registration",imports:[Feedback,RouterLink,ReactiveFormsModule,LookupComponent,SpecificationsComponent,Spinner],templateUrl:"./registration.component.html",styleUrl:"./registration.component.scss"})
+@Component({selector:"tc-equipment-registration",imports: [Feedback,RouterLink,ReactiveFormsModule,LookupComponent,SpecificationsComponent,Spinner, DateFieldComponent],templateUrl:"./registration.component.html",styleUrl:"./registration.component.scss"})
 
 export class RegistrationComponent extends EquipmentFormPage {
 

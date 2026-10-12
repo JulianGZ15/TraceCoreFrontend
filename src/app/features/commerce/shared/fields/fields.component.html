@@ -27,6 +27,20 @@
             rows="3"
           ></textarea>
         }
+        @case ('instant') {
+          <tc-date-field
+            [id]="'commerce-' + f.key"
+            [label]="f.label"
+            mode="datetime"
+            valueFormat="iso"
+            [timeZone]="timeZone"
+            [required]="f.required ?? false"
+            [readonly]="f.readonly ?? false"
+            [invalid]="!!(form().get(f.key)?.invalid && form().get(f.key)?.touched)"
+            [describedBy]="!!(form().get(f.key)?.invalid && form().get(f.key)?.touched) ? 'commerce-' + f.key + '-error' : ''"
+            [formControlName]="f.key"
+          />
+        }
         @case ('select') {
           <select [id]="'commerce-' + f.key" [attr.aria-label]="f.label" [formControlName]="f.key">
             @for (c of f.choices ?? []; track c) {
@@ -42,12 +56,11 @@
             [attr.aria-required]="f.required ?? false"
             [readonly]="f.readonly ?? false"
             [attr.inputmode]="f.type === 'decimal' || f.type === 'integer' ? 'decimal' : null"
-            [placeholder]="f.type === 'instant' ? '2026-10-05T12:00:00-06:00' : ''"
           />
         }
       }
       @if (form().get(f.key)?.invalid && form().get(f.key)?.touched) {
-        <small class="field-error">Revisa {{ f.label.toLowerCase() }}.</small>
+        <small class="field-error" [id]="'commerce-' + f.key + '-error'">Revisa {{ f.label.toLowerCase() }}.</small>
       }
     </div>
   }

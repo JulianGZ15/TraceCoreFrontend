@@ -27,12 +27,13 @@ import { Ref, Category, Model, Sheet, Asset, Profile, Grade, Heat, Trace, Lot, L
 import { label, localError, numberText, quantityText, decimal, decimalValidator, scaled, exact, specsForm, readSpecs, writeSpecs, approvalMissing, toInstant, instantInput, units, uuidPattern, calendarValid } from '../../rules';
 
 import { errorMessage } from '../../../../core/http/api';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 
 import { LookupComponent } from '../../components/lookup/lookup.component';
 
 
 
-@Component({selector:"tc-equipment-catalog-editor",imports:[ReactiveFormsModule,LookupComponent,Feedback],templateUrl:"./catalog-editor.component.html",styleUrl:"./catalog-editor.component.scss",host:{"(keydown.escape)":"escape($event)"}})
+@Component({selector:"tc-equipment-catalog-editor",imports:[ReactiveFormsModule,LookupComponent,Feedback,DateFieldComponent],templateUrl:"./catalog-editor.component.html",styleUrl:"./catalog-editor.component.scss",host:{"(keydown.escape)":"escape($event)"}})
 
 export class CatalogEditorComponent extends EquipmentEditor {
 

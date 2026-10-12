@@ -1,4 +1,5 @@
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject, signal, computed, TemplateRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
@@ -28,6 +29,7 @@ import { SectionNavComponent } from '../../components/section-nav/section-nav.co
   selector: 'tc-support-receipts',
   imports: [
     DataTable,
+    DateFieldComponent,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

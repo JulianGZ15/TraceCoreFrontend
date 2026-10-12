@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
 import { ReadPage } from '../../../../shared/ui/read-page';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import {
   PageHeading,
   Feedback,
@@ -30,6 +31,7 @@ import { SectionNavComponent } from '../../components/section-nav/section-nav.co
   selector: 'tc-query-orders',
   imports: [
     RouterLink,
+    DateFieldComponent,
     ReactiveFormsModule,
     PageHeading,
     Feedback,

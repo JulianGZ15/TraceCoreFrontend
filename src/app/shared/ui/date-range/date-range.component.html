@@ -2,9 +2,10 @@
   <div class="date-fields">
     <div class="field">
       <label [for]="'date-range-from'">{{ fromLabel() }}</label>
-      <input
+      <tc-date-field
         id="date-range-from"
-        type="datetime-local"
+        mode="datetime"
+        [label]="fromLabel()"
         [ngModel]="localFrom()"
         (ngModelChange)="onFromChange($event)"
       />
@@ -12,9 +13,10 @@
 
     <div class="field">
       <label [for]="'date-range-to'">{{ toLabel() }}</label>
-      <input
+      <tc-date-field
         id="date-range-to"
-        type="datetime-local"
+        mode="datetime"
+        [label]="toLabel()"
         [ngModel]="localTo()"
         (ngModelChange)="onToChange($event)"
       />

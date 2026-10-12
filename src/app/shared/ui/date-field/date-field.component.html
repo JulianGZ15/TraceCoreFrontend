@@ -1,14 +1,21 @@
-<input
-  [id]="id()"
-  [type]="mode() === 'date' ? 'date' : 'datetime-local'"
-  [value]="inputValue()"
-  [attr.aria-label]="label() || null"
-  [attr.aria-required]="required() || null"
-  [attr.min]="min() || null"
-  [attr.max]="max() || null"
-  [readonly]="readonly()"
-  [disabled]="disabled()"
-  [attr.aria-invalid]="conversionError() || null"
-  (input)="onInput($any($event.target).value)"
-  (blur)="onBlur()"
-/>
+<div class="date-field-control">
+  <input
+    [id]="id()"
+    [type]="mode() === 'date' ? 'date' : 'datetime-local'"
+    [value]="inputValue()"
+    [attr.aria-label]="label() || null"
+    [attr.aria-required]="required() || null"
+    [attr.aria-describedby]="describedBy() || null"
+    [attr.min]="min() || null"
+    [attr.max]="max() || null"
+    [readonly]="readonly()"
+    [required]="required()"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="invalid() || conversionError() || null"
+    (input)="onInput($any($event.target).value)"
+    (blur)="onBlur()"
+  />
+  @if (mode() === 'datetime' && valueFormat() === 'iso' && timeZone()) {
+    <small class="date-field-zone">Zona horaria: {{ timeZone() }}</small>
+  }
+</div>

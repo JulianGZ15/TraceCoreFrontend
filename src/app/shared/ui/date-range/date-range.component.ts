@@ -2,40 +2,29 @@ import { Component, input, output, signal, effect, inject } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Session } from '../../../core/auth/session';
+import { DateFieldComponent } from '../date-field/date-field.component';
+import { isoToLocalDateTime, localDateTimeToIso } from '../date-field/date-time';
 
 export function toIsoWithZone(localDateTime: string, timeZone: string): string {
-  if (!localDateTime) return '';
-  if (localDateTime.includes('Z') || /[+-]\d{2}:\d{2}$/.test(localDateTime)) {
-    return localDateTime;
-  }
   try {
-    const d = new Date(localDateTime);
-    if (isNaN(d.getTime())) return localDateTime;
-    const tz = timeZone || 'America/Mexico_City';
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: tz,
-      timeZoneName: 'longOffset',
-    });
-    const parts = formatter.formatToParts(d);
-    const tzPart = parts.find((p) => p.type === 'timeZoneName')?.value;
-    const match = tzPart?.match(/GMT([+-]\d{2}:\d{2})/);
-    const offset = match ? match[1] : '+00:00';
-    const seconds = localDateTime.length === 16 ? ':00' : '';
-    return `${localDateTime}${seconds}${offset}`;
+    return localDateTime ? localDateTimeToIso(localDateTime, timeZone || 'America/Mexico_City') : '';
   } catch {
     return localDateTime;
   }
 }
 
-export function fromIsoToLocal(isoString: string): string {
+export function fromIsoToLocal(isoString: string, timeZone = 'America/Mexico_City'): string {
   if (!isoString) return '';
-  const match = isoString.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
-  return match ? match[1] : isoString;
+  try {
+    return isoToLocalDateTime(isoString, timeZone);
+  } catch {
+    return isoString;
+  }
 }
 
 @Component({
   selector: 'tc-date-range',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DateFieldComponent],
   templateUrl: './date-range.component.html',
   styleUrl: './date-range.component.scss',
 })
@@ -64,10 +53,10 @@ export class DateRangeComponent {
 
   constructor() {
     effect(() => {
-      this.localFrom.set(fromIsoToLocal(this.from()));
+      this.localFrom.set(fromIsoToLocal(this.from(), this.activeTimeZone));
     });
     effect(() => {
-      this.localTo.set(fromIsoToLocal(this.to()));
+      this.localTo.set(fromIsoToLocal(this.to(), this.activeTimeZone));
     });
   }
 

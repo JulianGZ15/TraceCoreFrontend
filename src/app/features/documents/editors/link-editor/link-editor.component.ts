@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
@@ -11,7 +12,7 @@ import { toInstant } from '../../../access/assignment-time';
 import { DocumentPending, PendingDocument, definiteFailure } from '../../pending';
 @Component({
   selector: 'tc-document-link-editor',
-  imports: [ReactiveFormsModule, Feedback, Pagination, SubjectPickerComponent],
+  imports: [ReactiveFormsModule, Feedback, Pagination, SubjectPickerComponent, DateFieldComponent],
   templateUrl: './link-editor.component.html',
   styleUrl: './link-editor.component.scss',
 })

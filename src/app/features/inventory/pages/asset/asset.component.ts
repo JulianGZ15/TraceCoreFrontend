@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
@@ -22,8 +23,7 @@ import { CustodyEditorComponent } from '../../editors/custody-editor/custody-edi
     PageHeading,
     Feedback,
     Pagination,
-    InventoryNavComponent,
-  ],
+    InventoryNavComponent, DateFieldComponent],
   templateUrl: './asset.component.html',
   styleUrl: './asset.component.scss',
 })

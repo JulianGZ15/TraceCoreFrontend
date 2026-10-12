@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DIALOG_DATA } from '@angular/cdk/dialog';
@@ -12,7 +13,7 @@ export interface PeriodContext extends EditContext {
 }
 @Component({
   selector: 'tc-period-editor',
-  imports: [ReactiveFormsModule, Feedback],
+  imports: [ReactiveFormsModule, Feedback, DateFieldComponent],
   templateUrl: './period-editor.component.html',
   styleUrl: './period-editor.component.scss',
   host: { '(keydown.escape)': 'escape($event)' },

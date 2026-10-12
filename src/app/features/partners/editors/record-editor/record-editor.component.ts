@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DIALOG_DATA } from '@angular/cdk/dialog';
@@ -13,7 +14,7 @@ export interface RecordContext extends EditContext {
 }
 @Component({
   selector: 'tc-party-record-editor',
-  imports: [ReactiveFormsModule, Feedback, EvidencePickerComponent],
+  imports: [ReactiveFormsModule, Feedback, EvidencePickerComponent, DateFieldComponent],
   templateUrl: './record-editor.component.html',
   styleUrl: './record-editor.component.scss',
   host: { '(keydown.escape)': 'escape($event)' },

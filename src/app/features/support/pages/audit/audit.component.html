@@ -125,11 +125,11 @@
     <tc-filter-section title="Rango de fechas" description="Instante ISO con desplazamiento UTC">
       <div class="field">
         <label for="audit-from">Desde (ISO con offset)</label>
-        <input id="audit-from" formControlName="from" placeholder="2026-10-01T00:00:00-06:00" />
+        <tc-date-field id="audit-from" mode="datetime" valueFormat="iso" [timeZone]="session.context()?.company?.timezone ?? 'UTC'" formControlName="from" />
       </div>
       <div class="field">
         <label for="audit-to">Hasta, excluido (ISO con offset)</label>
-        <input id="audit-to" formControlName="to" placeholder="2026-11-01T00:00:00-06:00" />
+        <tc-date-field id="audit-to" mode="datetime" valueFormat="iso" [timeZone]="session.context()?.company?.timezone ?? 'UTC'" formControlName="to" />
       </div>
     </tc-filter-section>
   </form>

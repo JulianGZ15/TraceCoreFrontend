@@ -1,17 +1,28 @@
-import { Component, input } from '@angular/core';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
+import { Component, inject, input } from '@angular/core';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { LookupComponent } from '../lookup/lookup.component';
 import { Field } from '../../models';
 import { label } from '../../rules';
+import { Session } from '../../../../core/auth/session';
 @Component({
   selector: 'tc-commerce-fields',
-  imports: [ReactiveFormsModule, LookupComponent],
+  imports: [ReactiveFormsModule, LookupComponent, DateFieldComponent],
   templateUrl: './fields.component.html',
   styleUrl: './fields.component.scss',
 })
 export class FieldsComponent {
+  private readonly session = inject(Session);
   readonly form = input.required<FormGroup>();
   readonly fields = input<Field[]>([]);
   readonly yard = input('');
   readonly label = label;
+  get timeZone(): string {
+    return (
+      String(this.form().get('timezone')?.value ?? '') ||
+      this.session.context()?.yards.find((yard) => yard.uuid === this.yard())?.timezone ||
+      this.session.context()?.company.timezone ||
+      'UTC'
+    );
+  }
 }

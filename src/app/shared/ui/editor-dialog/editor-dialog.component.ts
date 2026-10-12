@@ -7,6 +7,7 @@ import { Feedback, Spinner } from '../page';
 import { errorMessage } from '../../../core/http/api';
 import { EditorData } from '../editor-model';
 import { confirm } from '../confirm-dialog/confirm-dialog.component';
+import { DateFieldComponent } from '../date-field/date-field.component';
 export function edit(dialog: Dialog, data: EditorData) {
   return firstValueFrom(
     dialog.open(EditorDialog, {
@@ -22,7 +23,7 @@ export function edit(dialog: Dialog, data: EditorData) {
 @Component({
   selector: 'tc-editor',
   host: { '(keydown.escape)': 'escape($event)' },
-  imports: [ReactiveFormsModule, Feedback, Spinner],
+  imports: [ReactiveFormsModule, Feedback, Spinner, DateFieldComponent],
   templateUrl: './editor-dialog.component.html',
   styleUrl: './editor-dialog.component.scss',
 })

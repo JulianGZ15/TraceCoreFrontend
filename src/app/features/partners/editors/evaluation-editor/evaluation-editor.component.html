@@ -54,9 +54,8 @@
       </div>
       <div class="field">
         <label for="nextReviewAt">Próxima revisión *</label
-        ><input
-          id="nextReviewAt"
-          type="datetime-local"
+        ><tc-date-field
+          id="nextReviewAt" mode="datetime"
           formControlName="nextReviewAt"
           [attr.aria-invalid]="
             form.controls.nextReviewAt.touched && form.controls.nextReviewAt.invalid

@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject } from '@angular/core';
 
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +11,7 @@ import { LookupComponent } from '../../components/lookup/lookup.component';
 
 @Component({
   selector: 'tc-inventory-reservation-editor',
-  imports: [ReactiveFormsModule, Feedback, LookupComponent],
+  imports: [ReactiveFormsModule, Feedback, LookupComponent, DateFieldComponent],
   templateUrl: './reservation-editor.component.html',
   styleUrl: './reservation-editor.component.scss',
 })

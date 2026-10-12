@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PartnerEditor } from '../../editor-base';
@@ -6,7 +7,7 @@ import { Feedback } from '../../../../shared/ui/page';
 import { toInstant, scorePattern } from '../../rules';
 @Component({
   selector: 'tc-evaluation-editor',
-  imports: [ReactiveFormsModule, Feedback],
+  imports: [ReactiveFormsModule, Feedback, DateFieldComponent],
   templateUrl: './evaluation-editor.component.html',
   styleUrl: './evaluation-editor.component.scss',
   host: { '(keydown.escape)': 'escape($event)' },

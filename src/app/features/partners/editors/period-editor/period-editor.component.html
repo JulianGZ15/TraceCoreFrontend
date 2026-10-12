@@ -97,9 +97,8 @@
       @if (data.mode !== 'close') {
         <div class="field">
           <label for="validFrom">Inicio</label
-          ><input
-            id="validFrom"
-            type="datetime-local"
+          ><tc-date-field
+            id="validFrom" mode="datetime"
             formControlName="validFrom"
             [attr.aria-invalid]="form.controls.validFrom.touched && form.controls.validFrom.invalid"
             aria-describedby="validFrom-help"
@@ -108,9 +107,8 @@
       }
       <div class="field">
         <label for="validTo">Fin exclusivo</label
-        ><input
-          id="validTo"
-          type="datetime-local"
+        ><tc-date-field
+          id="validTo" mode="datetime"
           formControlName="validTo"
           [attr.aria-invalid]="form.controls.validTo.touched && form.controls.validTo.invalid"
           aria-describedby="validTo-help"

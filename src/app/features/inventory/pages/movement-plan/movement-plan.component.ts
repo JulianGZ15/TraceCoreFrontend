@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import {movementInput} from '../../movement-input';
 import { Component, signal, input, inject } from '@angular/core';
 import { RfidPending } from '../../../rfid/pending';
@@ -27,8 +28,7 @@ import { Spinner } from '../../../../shared/ui/page';
     YardPickerComponent,
     InventoryNavComponent,
     ObservationEditorComponent,
-    Spinner,
-  ],
+    Spinner, DateFieldComponent],
   templateUrl: './movement-plan.component.html',
   styleUrl: './movement-plan.component.scss',
 })

@@ -51,9 +51,9 @@
     <div class="form-grid">
       <label>UUID del destino<input formControlName="subjectUuid" /></label
       ><label>Rol del vínculo<input formControlName="role" /></label
-      ><label>Inicio de vigencia<input type="datetime-local" formControlName="validFrom" /></label
+      ><label for="link-valid-from">Inicio de vigencia<tc-date-field id="link-valid-from" mode="datetime" formControlName="validFrom" /></label
       ><label
-        >Fin de vigencia · opcional<input type="datetime-local" formControlName="validTo" /></label
+        >Fin de vigencia · opcional<tc-date-field id="link-valid-to" mode="datetime" formControlName="validTo" /></label
       ><label>Desplazamiento UTC<input formControlName="offset" placeholder="+00:00" /></label>
     </div>
     <div class="dialog-actions">

@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PartnerEditor } from '../../editor-base';
@@ -8,7 +9,7 @@ import { toInstant, uuidPattern } from '../../rules';
 import { errorMessage } from '../../../../core/http/api';
 @Component({
   selector: 'tc-quota-editor',
-  imports: [ReactiveFormsModule, Feedback, Pagination],
+  imports: [ReactiveFormsModule, Feedback, Pagination, DateFieldComponent],
   templateUrl: './quota-editor.component.html',
   styleUrl: './quota-editor.component.scss',
   host: { '(keydown.escape)': 'escape($event)' },

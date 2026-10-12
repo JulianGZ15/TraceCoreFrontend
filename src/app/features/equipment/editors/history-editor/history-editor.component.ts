@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { confirm } from '../../../../shared/ui/editor';
 
 import { Component, inject, signal, input, output, computed, OnInit, OnDestroy, OnChanges, SimpleChanges, forwardRef } from '@angular/core';
@@ -32,7 +33,7 @@ import { LookupComponent } from '../../components/lookup/lookup.component';
 
 
 
-@Component({selector:"tc-equipment-history-editor",imports:[ReactiveFormsModule,Feedback,LookupComponent],templateUrl:"./history-editor.component.html",styleUrl:"./history-editor.component.scss",host:{"(keydown.escape)":"escape($event)"}})
+@Component({selector:"tc-equipment-history-editor",imports: [ReactiveFormsModule,Feedback,LookupComponent, DateFieldComponent],templateUrl:"./history-editor.component.html",styleUrl:"./history-editor.component.scss",host:{"(keydown.escape)":"escape($event)"}})
 
 export class HistoryEditorComponent extends EquipmentEditor {
 

@@ -32,10 +32,18 @@
                   <option [value]="option.value">{{ option.label }}</option>
                 }
               </select>
+            } @else if (field.type === 'date' || field.type === 'datetime') {
+              <tc-date-field
+                [id]="'editor-' + field.key"
+                [label]="field.label"
+                [mode]="field.type === 'date' ? 'date' : 'datetime'"
+                [required]="field.required ?? false"
+                [formControlName]="field.key"
+              />
             } @else {
               <input
                 [id]="'editor-' + field.key"
-                [type]="field.type === 'datetime' ? 'datetime-local' : (field.type ?? 'text')"
+                [type]="field.type ?? 'text'"
                 [formControlName]="field.key"
                 [attr.autocomplete]="
                   field.type === 'password'

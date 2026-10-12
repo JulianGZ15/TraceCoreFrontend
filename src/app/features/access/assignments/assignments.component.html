@@ -58,13 +58,13 @@
         }
         <div class="field">
           <label for="valid-from">Inicio (opcional)</label
-          ><input id="valid-from" type="datetime-local" formControlName="validFrom" /><small
+          ><tc-date-field id="valid-from" mode="datetime" formControlName="validFrom" /><small
             >Vacío: desde ahora, según el servidor.</small
           >
         </div>
         <div class="field">
           <label for="valid-to">Fin (opcional)</label
-          ><input id="valid-to" type="datetime-local" formControlName="validTo" /><small
+          ><tc-date-field id="valid-to" mode="datetime" formControlName="validTo" /><small
             >Vacío: sin vencimiento. El instante final es exclusivo.</small
           >
         </div>

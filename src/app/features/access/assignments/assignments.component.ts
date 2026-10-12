@@ -1,3 +1,4 @@
+import { DateFieldComponent } from '../../../shared/ui/date-field/date-field.component';
 import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
@@ -9,7 +10,7 @@ import { assignmentState, toInstant } from '../assignment-time';
 @Component({
   selector: 'tc-assignments',
   host: { '(keydown.escape)': 'escape($event)' },
-  imports: [ReactiveFormsModule, Feedback],
+  imports: [ReactiveFormsModule, Feedback, DateFieldComponent],
   templateUrl: './assignments.component.html',
   styleUrl: './assignments.component.scss',
 })
