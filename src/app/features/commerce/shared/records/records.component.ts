@@ -25,6 +25,12 @@ export class RecordsComponent {
   readonly columns = input<{ key: string; label: string }[]>([]);
   readonly selected = output<Entity>();
   readonly label = label;
+  identity(row: Entity) {
+    if (row['series'] && row['folio'] && ['OC', 'OV', 'OR'].includes(String(row['type'])))
+      return `${row['series']}-${row['type']}-${row['folio']}`;
+    if (row['series'] && row['folio']) return `${row['series']}-${row['folio']}`;
+    return row['folio'] || row['concept'] || row['filename'] || 'Registro';
+  }
   value(row: Entity, key: string) {
     const v = row[key];
     if (key.endsWith('Exact')) return numberText(v);

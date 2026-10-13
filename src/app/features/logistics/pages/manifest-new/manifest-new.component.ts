@@ -74,7 +74,6 @@ export class ManifestNewComponent extends LogisticsPage {
     { key: 'reason', label: 'Motivo del movimiento', type: 'textarea', required: true, max: 1000 },
     { key: 'sourceReference', label: 'Referencia de origen', required: true, max: 500 },
     { key: 'ownerAuthorizationReference', label: 'Autorización del propietario', max: 500 },
-    { key: 'folio', label: 'Folio del manifiesto', required: true, max: 80 },
   ];
   readonly form = form(this.fields, { type: 'OUTBOUND', destinationCustodyMode: 'STORAGE' });
   readonly candidate = signal('');
@@ -235,7 +234,7 @@ export class ManifestNewComponent extends LogisticsPage {
     if (this.submitting()) return;
     this.form.markAllAsTouched();
     if (this.form.invalid || !this.saved().length) {
-      this.error.set('Completa el contexto, el folio y al menos una raíz.');
+      this.error.set('Completa el contexto y selecciona al menos una raíz.');
       return;
     }
     try {
@@ -243,7 +242,6 @@ export class ManifestNewComponent extends LogisticsPage {
       this.submitting.set(true);
       const r = await this.pending.create<Entity>('MANIFEST', '/manifests', {
         requestKey: crypto.randomUUID(),
-        folio: this.form.getRawValue()['folio'],
         gateUuid: this.gate || null,
         loads: this.saved().map((r) => ({
           movementUuid: r.movement.uuid,

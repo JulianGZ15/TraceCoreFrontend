@@ -8,6 +8,7 @@ export interface User {
   name: string;
   email: string;
   active: boolean;
+  folioPrefix: string;
   version: number;
 }
 export interface Company {

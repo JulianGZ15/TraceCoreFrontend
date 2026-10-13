@@ -27,6 +27,10 @@ export class RecordsComponent {
   readonly selected = output<Entity>();
   readonly selectable = input(true);
   readonly label = label;
+  identity(row: Entity) {
+    if (row['series'] && row['folio']) return `${row['series']}-${row['folio']}`;
+    return row['folio'] || row['concept'] || row['filename'] || 'Registro';
+  }
   value(row: Entity, key: string) {
     const v = row[key];
     if (key.endsWith('Exact')) {

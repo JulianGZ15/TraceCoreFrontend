@@ -14,7 +14,7 @@ export class CancelComponent extends FinanceEditor {
   override title = 'Cancelar factura borrador';
   override resource = 'invoices';
   override hint =
-    'La cancelación conserva el historial y permite reutilizar serie/folio en un nuevo UUID. No se edita este borrador.';
+    'La cancelación conserva el folio asignado y el historial. Un nuevo borrador recibirá el siguiente consecutivo.';
   protected setup() {
     this.bind([{ key: 'reason', label: 'Motivo', required: true, type: 'textarea', max: 500 }]);
   }

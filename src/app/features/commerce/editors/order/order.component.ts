@@ -31,8 +31,6 @@ export class OrderComponent extends CommerceEditor {
         readonly: !!o,
         required: true,
       },
-      { key: 'series', label: 'Serie', required: true, readonly: !!o },
-      { key: 'folio', label: 'Folio', required: true, readonly: !!o },
       {
         key: 'partyUuid',
         label: 'Contraparte',
@@ -61,8 +59,6 @@ export class OrderComponent extends CommerceEditor {
     ];
     this.build({
       type: this.type,
-      series: o?.series ?? 'MAIN',
-      folio: o?.folio ?? '',
       partyUuid: o?.partyUuid ?? '',
       currency: o?.currency ?? 'MXN',
       orderedAt: o?.['orderedAt'] ?? new Date().toISOString(),
@@ -247,8 +243,6 @@ export class OrderComponent extends CommerceEditor {
           ...detail,
           uuid: this.uuid,
           type: this.type,
-          series: v['series'],
-          folio: v['folio'],
           partyUuid: v['partyUuid'],
           yardUuid: this.data.yard,
           currency: v['currency'],

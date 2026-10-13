@@ -67,6 +67,13 @@ export class OrganizationDetail {
           required: true,
           help: 'Ejemplo: America/Mexico_City',
         },
+        {
+          key: 'folioPrefix',
+          label: 'Prefijo de folios',
+          required: true,
+          validators: [Validators.maxLength(12), Validators.pattern(/^[A-Za-z0-9]{1,12}$/)],
+          help: 'De 1 a 12 letras o números. Los folios existentes conservarán su prefijo.',
+        },
       ];
   readonly form = new FormGroup<Record<string, FormControl>>({ active: new FormControl(true) });
   readonly loaded = signal<Company | Yard | null>(null);
@@ -90,6 +97,22 @@ export class OrganizationDetail {
   }
   canEdit() {
     return this.session.can(this.isYard ? 'YARD_MANAGE' : 'ORGANIZATION_MANAGE');
+  }
+  suggestFolioPrefix() {
+    const name = String(this.form.get('name')?.value ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, ' ')
+      .replace(/\bS\s*A\s*P\s*I(?:\s+DE)?\s+C\s*V\b/g, ' ')
+      .replace(/\bS\s+DE\s+R\s*L(?:\s+DE)?\s+C\s*V\b/g, ' ')
+      .replace(/\bS\s*A(?:\s+DE)?\s+C\s*V\b/g, ' ')
+      .replace(/\bS\s*R\s*L\b|\bS\s*A\s*S\b|\bL\s*L\s*C\b|\bI\s*N\s*C\b/g, ' ');
+    const ignored = new Set(['DE', 'DEL', 'LA', 'LAS', 'LOS', 'Y', 'E', 'THE', 'AND', 'SA', 'SAPI', 'SAS', 'SC', 'AC', 'CV', 'RL', 'SRL', 'LLC', 'INC', 'CORP', 'COMPANY', 'COMPANIA', 'CO', 'S', 'A', 'C', 'V']);
+    const words = name.match(/[A-Z0-9]+/g)?.filter((word) => !ignored.has(word)) ?? [];
+    const suggestion = words.length > 1 ? words.slice(0, 4).map((word) => word[0]).join('') : (words[0] ?? '').slice(0, 4);
+    this.form.get('folioPrefix')?.setValue(suggestion.slice(0, 12));
+    this.form.get('folioPrefix')?.markAsDirty();
   }
   async load() {
     const generation = ++this.generation;
@@ -126,7 +149,8 @@ export class OrganizationDetail {
     const generation = this.generation;
     const path = this.path;
     const version = this.loaded()?.version;
-    const value = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const value = this.isYard ? raw : { ...raw, folioPrefix: String(raw['folioPrefix'] ?? '').trim().toUpperCase() };
     if (
       value['active'] === false &&
       this.loaded()?.active &&

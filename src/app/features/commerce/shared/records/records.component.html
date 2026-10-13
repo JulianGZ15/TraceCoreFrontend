@@ -27,13 +27,7 @@
       @for (row of rows(); track row.record.uuid) {
         <tr>
           <td>
-            <strong>{{
-              row.record.folio ||
-                row.record.concept ||
-                row.record.filename ||
-                row.label ||
-                'Registro'
-            }}</strong>
+            <strong>{{ identity(row.record) }}</strong>
             @if (row.label && row.record.folio) {
               <small>{{ row.label }}</small>
             }

@@ -40,7 +40,6 @@ export class ReturnCreateComponent extends CommercePage {
   override async afterLoad() {
     if (this.form.dirty) return;
     this.fields = [
-      { key: 'folio', label: 'Folio de devolución', required: true },
       {
         key: 'receiptUuid',
         label: 'Recepción administrativa del cliente final',
@@ -111,7 +110,6 @@ export class ReturnCreateComponent extends CommercePage {
       const result = await this.pending.create<{ returned: Entity }>('RETURN', '/returns', {
         requestKey: this.key,
         agreementUuid: this.id,
-        folio: v['folio'],
         receiptUuid: this.receipt()!.receipt.uuid,
         reference: v['reference'],
         pieces,

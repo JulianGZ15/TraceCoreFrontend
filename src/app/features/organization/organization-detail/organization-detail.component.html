@@ -31,6 +31,7 @@
               [attr.aria-invalid]="
                 form.controls[field.key].touched && form.controls[field.key].invalid
               "
+              [attr.maxlength]="field.key === 'folioPrefix' ? 12 : null"
               [attr.aria-describedby]="field.key + '-help'"
             /><small [id]="field.key + '-help'"
               >{{ field.help ?? '' }}
@@ -38,6 +39,9 @@
                 <span class="field-error">Revisa este campo.</span>
               }
             </small>
+            @if (field.key === 'folioPrefix' && canEdit()) {
+              <button type="button" class="btn secondary" (click)="suggestFolioPrefix()">Sugerir desde el nombre</button>
+            }
           </div>
         }
         <label class="checkbox full"

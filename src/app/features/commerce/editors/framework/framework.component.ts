@@ -24,7 +24,6 @@ export class FrameworkComponent extends CommerceEditor {
     this.title = r ? 'Editar contrato marco' : 'Nuevo contrato marco';
     this.make(
       [
-        { key: 'folio', label: 'Folio', required: true, readonly: !!r },
         {
           key: 'partyUuid',
           label: 'Contraparte',
@@ -39,7 +38,6 @@ export class FrameworkComponent extends CommerceEditor {
         { key: 'terms', label: 'Términos', type: 'textarea', required: true },
       ],
       {
-        folio: r?.folio,
         partyUuid: r?.partyUuid,
         from: r?.validFrom,
         to: r?.validTo,
@@ -54,7 +52,6 @@ export class FrameworkComponent extends CommerceEditor {
     const framework = {
       ...v,
       uuid: this.uuid,
-      folio: r?.folio ?? v['folio'],
       partyUuid: r?.partyUuid ?? v['partyUuid'],
       from: instant(v['from']),
       to: instant(v['to']),

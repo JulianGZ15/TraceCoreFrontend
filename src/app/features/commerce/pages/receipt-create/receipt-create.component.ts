@@ -54,7 +54,6 @@ export class ReceiptCreateComponent extends CommercePage {
     if (this.form.dirty) return;
     const orderUuid = this.route.snapshot.queryParamMap.get('orderUuid') ?? '';
     this.fields = [
-      { key: 'folio', label: 'Folio de recepción', required: true },
       {
         key: 'originPartyUuid',
         label: 'Origen',
@@ -174,7 +173,6 @@ export class ReceiptCreateComponent extends CommercePage {
         throw new Error('Documenta una observación por cada pieza de los grupos seleccionados.');
       const result = await this.pending.create<ReceiptDetail>('RECEIPT', '/receipts', {
         requestKey: this.key,
-        folio: v['folio'],
         orderUuid: v['orderUuid'] || null,
         originPartyUuid: v['originPartyUuid'],
         yardUuid: this.yard,

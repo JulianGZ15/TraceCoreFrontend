@@ -4,6 +4,9 @@
     Guarda primero esta cabecera. Después completa partidas, tarifas y documentos. El alta no
     aprueba ni reserva equipos.
   </p>
+  @if (!data.summary) {
+    <p class="small-muted">El folio se asignará automáticamente: PREFIJO-{{ type }}-número.</p>
+  }
   <form [formGroup]="form" (ngSubmit)="save()">
     <tc-commerce-fields [form]="form" [fields]="fields" [yard]="data.yard" /><tc-feedback
       [message]="error()"

@@ -1,7 +1,7 @@
 <section class="editor">
   <h2>{{ title }}</h2>
   <p class="small-muted">
-    Cada operación se guarda por separado. Las referencias se validan nuevamente en el servidor.
+    Cada operación se guarda por separado. El folio se asignará automáticamente. Las referencias se validan nuevamente en el servidor.
   </p>
   <form [formGroup]="form" (ngSubmit)="save()">
     <tc-commerce-fields [form]="form" [fields]="fields" [yard]="data.yard" /><tc-feedback

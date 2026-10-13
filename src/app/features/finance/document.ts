@@ -35,6 +35,7 @@ export abstract class FinanceDocument implements OnInit, OnDestroy {
   private seq = 0;
   private frozen: Record<string, unknown> | null = null;
   abstract setup(): void;
+  protected afterReferenceLoaded(_invoice: InvoiceDetail) {}
   ngOnInit() {
     this.setup();
     this.session.ended.pipe(takeUntil(this.ended)).subscribe(() => {
@@ -64,6 +65,7 @@ export abstract class FinanceDocument implements OnInit, OnDestroy {
         const i = await this.api.get<InvoiceDetail>('/invoices/' + id + '/summary');
         if (!this.session.valid()) return;
         this.referenceInvoice.set(i);
+        this.afterReferenceLoaded(i);
         this.sourceResource = 'invoices/' + id + '/lines';
         this.sourceParams = {};
         if (i.invoice.state !== 'POSTED' || i.reversed)
@@ -132,10 +134,12 @@ export abstract class FinanceDocument implements OnInit, OnDestroy {
   }
   protected payload() {
     const v = this.form.getRawValue();
-    if (this.kind === 'INVOICE')
+    if (this.kind === 'INVOICE') {
+      const { series, folio, ...business } = v;
       return {
         uuid: this.uuid,
-        ...v,
+        ...business,
+        ...(v.direction === 'PAYABLE' ? { series, folio } : {}),
         currency: String(v.currency).toUpperCase(),
         issuedAt: instant(v.issuedAt),
         dueAt: instant(v.dueAt),
@@ -143,10 +147,11 @@ export abstract class FinanceDocument implements OnInit, OnDestroy {
           .getRawValue()
           .map((p) => ({ chargeUuid: p['sourceUuid'], netAmount: p['netAmount'] })),
       };
+    }
     return {
       uuid: this.uuid,
       invoiceUuid: this.referenceInvoice()?.invoice.uuid,
-      folio: v.folio,
+      ...(this.referenceInvoice()?.invoice.direction === 'PAYABLE' ? { folio: v.folio } : {}),
       reason: v.reason,
       evidenceUuid: optional(v.evidenceUuid),
       parts: this.parts
