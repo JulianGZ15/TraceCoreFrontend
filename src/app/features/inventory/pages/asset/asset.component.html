@@ -47,7 +47,15 @@
       </p>
       <p class="long">
         Custodio:
-        {{ p.custody?.companyUuid ?? p.custody?.partyUuid ?? 'Sin custodia registrada' }} ·
+        @if (p.custody?.companyUuid || p.custody?.partyUuid) {
+          <tc-entity-reference
+            [kind]="p.custody?.companyUuid ? 'company' : 'party'"
+            [uuid]="p.custody?.companyUuid ?? p.custody?.partyUuid"
+          />
+        } @else {
+          Sin custodia registrada
+        }
+        ·
         {{ label(p.custody?.mode ?? '') }}
       </p>
       @if (p.transit) {
@@ -132,7 +140,12 @@
           <tbody>
             @for (r of custodians(); track r.uuid) {
               <tr>
-                <td class="mono long">{{ r.companyUuid ?? r.partyUuid }}</td>
+                <td class="long">
+                  <tc-entity-reference
+                    [kind]="r.companyUuid ? 'company' : 'party'"
+                    [uuid]="r.companyUuid ?? r.partyUuid"
+                  />
+                </td>
                 <td>{{ label(r.mode) }}</td>
                 <td>{{ date(r.validFrom) }} — {{ r.validTo ? date(r.validTo) : 'Vigente' }}</td>
                 <td>{{ r.agreementReference }}<br />{{ r.reason }}</td>

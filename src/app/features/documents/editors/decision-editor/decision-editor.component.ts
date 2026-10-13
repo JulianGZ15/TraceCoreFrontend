@@ -4,6 +4,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { WorkspaceApi } from '../../../../core/http/workspace-api';
 import { Feedback } from '../../../../shared/ui/page';
 import { workspaceError as errorMessage } from '../../../../core/http/workspace-api';
+import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 export interface DecisionData {
   title: string;
   path: string;
@@ -21,6 +22,7 @@ export class DecisionEditorComponent {
   readonly api = inject(WorkspaceApi);
   readonly data = inject<DecisionData>(DIALOG_DATA);
   readonly ref = inject(DialogRef);
+  readonly unsaved = inject(UnsavedChanges);
   readonly reason = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.maxLength(500)],
@@ -29,12 +31,12 @@ export class DecisionEditorComponent {
   readonly busy = signal(false);
   readonly reviewed = signal(true);
   version = this.data.version;
-  close() {
+  async close() {
     if (
       !this.busy() &&
       (!this.reason.dirty ||
         !this.api.session.valid() ||
-        window.confirm('¿Descartar el motivo sin guardar?'))
+        await this.unsaved.confirmDiscard(this.reason.dirty))
     )
       this.ref.close();
   }

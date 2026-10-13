@@ -7,6 +7,7 @@ import { CommerceAccess } from './access';
 import { CommerceEditor } from './editor';
 import { Entity, Row, Summary, EditorContext } from './models';
 import { message, label, numberText, prettyDate } from './rules';
+import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
 export const orderSections = [
   { key: 'general', label: 'Resumen' },
   { key: 'partidas', label: 'Partidas' },
@@ -33,6 +34,7 @@ export abstract class CommercePage implements OnInit, OnDestroy {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   readonly dialog = inject(Dialog);
+  readonly unsaved = inject(UnsavedChanges);
   readonly loading = signal(false);
   readonly error = signal('');
   readonly rows = signal<Row[]>([]);
@@ -135,8 +137,10 @@ export abstract class CommercePage implements OnInit, OnDestroy {
   async reload() {
     const draft = this as unknown as { dirty?: () => boolean };
     if (
-      draft.dirty?.() &&
-      !window.confirm('Recargar datos? Revisa o guarda el borrador antes de descartarlo.')
+      !(await this.unsaved.confirmDiscard(
+        !!draft.dirty?.(),
+        'Recargar datos descartará los cambios sin guardar.',
+      ))
     )
       return;
     this.stop.next();

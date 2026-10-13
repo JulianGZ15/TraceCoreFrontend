@@ -100,10 +100,11 @@ import { errorMessage } from '../../../../core/http/api';
 import { AssetSection } from '../../asset-section';
 
 import { HistoryEditorComponent } from '../../editors/history-editor/history-editor.component';
+import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 
 @Component({
   selector: 'tc-equipment-ownership',
-  imports: [Skeleton, DataTable, Feedback, Pagination],
+  imports: [Skeleton, DataTable, Feedback, Pagination, EntityReferenceComponent],
   templateUrl: './ownership.component.html',
   styleUrl: './ownership.component.scss',
 })

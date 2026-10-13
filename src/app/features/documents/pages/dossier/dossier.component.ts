@@ -13,6 +13,7 @@ import {
   Spinner,
 } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
+import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 import { Page } from '../../../../core/http/workspace-api';
 import { Summary, VersionView, Linked } from '../../models';
 import { linkState } from '../../rules';
@@ -31,6 +32,7 @@ import {
     Feedback,
     Pagination,
     RecordValuesComponent,
+    EntityReferenceComponent,
     PageNav,
     Skeleton,
     Spinner,

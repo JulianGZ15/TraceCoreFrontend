@@ -7,6 +7,7 @@ import { EvidencePickerComponent } from '../../shared/evidence-picker/evidence-p
 import { Summary, EvidenceOption, DocumentVersion } from '../../models';
 import { DocumentPending, PendingDocument, definiteFailure } from '../../pending';
 import { validateFile } from '../../rules';
+import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 @Component({
   selector: 'tc-document-upload-editor',
   imports: [Feedback, EvidencePickerComponent],
@@ -27,6 +28,7 @@ export class UploadEditorComponent implements OnDestroy {
   }>(DIALOG_DATA);
   readonly ref = inject(DialogRef);
   readonly pending = inject(DocumentPending);
+  readonly unsaved = inject(UnsavedChanges);
   readonly summary = signal(this.data.summary);
   readonly file = signal<File | null>(null);
   readonly evidence = signal<EvidenceOption | null>(null);
@@ -45,12 +47,15 @@ export class UploadEditorComponent implements OnDestroy {
       this.error.set(errorMessage(e));
     }
   }
-  close() {
+  async close() {
     if (
       !this.busy() &&
       ((!this.file() && !this.evidence()) ||
         !this.api.session.valid() ||
-        window.confirm('¿Descartar esta captura? La solicitud pendiente conservará su UUID.'))
+        await this.unsaved.confirmDiscard(
+          !!this.file() || !!this.evidence(),
+          'La captura se descartará; la solicitud pendiente conservará su UUID.',
+        ))
     )
       this.ref.close();
   }

@@ -11,6 +11,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { RecordsComponent } from '../../shared/records/records.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 interface SelectedRoot {
   uuid: string;
   form: FormGroup;
@@ -33,6 +34,7 @@ interface SelectedRoot {
   styleUrl: './reception.component.scss',
 })
 export class ReceptionComponent extends LogisticsPage {
+  readonly unsaved = inject(UnsavedChanges);
   protected override resourceChanged() {
     this.form.reset();
     this.chosen.set([]);
@@ -125,8 +127,8 @@ export class ReceptionComponent extends LogisticsPage {
       this.selecting.set(false);
     }
   }
-  remove(id: string) {
-    if (window.confirm('¿Descartar la captura de esta raíz?'))
+  async remove(id: string) {
+    if (await this.unsaved.confirmDiscard(true, 'Se descartará la captura de esta raíz.'))
       this.chosen.update((rows) => rows.filter((r) => r.uuid !== id));
   }
   apply(root: SelectedRoot, condition: string, observation: string) {

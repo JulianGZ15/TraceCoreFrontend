@@ -29,7 +29,13 @@
       {{ s.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }} ·
       {{ s.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}
     </p>
-    <p>{{ s.ownerLabel }} · {{ s.document.owner.uuid }}</p>
+    <p>
+      @if (s.document.owner.kind === 'PARTY') {
+        <tc-entity-reference kind="party" [uuid]="s.document.owner.uuid" [label]="s.ownerLabel" />
+      } @else {
+        {{ s.ownerLabel }}
+      }
+    </p>
     <p>Consulta: {{ time(s.evaluatedAt) }}</p>
     <div class="actions">
       @if (s.actions.manage) {

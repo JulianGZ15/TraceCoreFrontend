@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Session, safeReturn } from '../../core/auth/session';
+import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
 @Injectable({ providedIn: 'root' })
 export class CommerceAccess {
   readonly session = inject(Session);
@@ -32,5 +33,4 @@ export const commerceGuard: CanActivateFn = async (route, state) => {
 };
 export const commerceDiscard = (component: { dirty?: () => boolean; session?: Session }) =>
   !component.session?.valid() ||
-  !component.dirty?.() ||
-  window.confirm('¿Descartar los cambios sin guardar?');
+  inject(UnsavedChanges).confirmDiscard(!!component.dirty?.());

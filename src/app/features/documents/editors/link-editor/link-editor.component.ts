@@ -10,6 +10,7 @@ import { Summary, VersionView, SubjectOption, subjectKinds, subjectNames } from 
 import { uuidPattern } from '../../rules';
 import { toInstant } from '../../../access/assignment-time';
 import { DocumentPending, PendingDocument, definiteFailure } from '../../pending';
+import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 @Component({
   selector: 'tc-document-link-editor',
   imports: [ReactiveFormsModule, Feedback, Pagination, SubjectPickerComponent, DateFieldComponent],
@@ -21,6 +22,7 @@ export class LinkEditorComponent {
   readonly data = inject<Summary>(DIALOG_DATA);
   readonly ref = inject(DialogRef);
   readonly pending = inject(DocumentPending);
+  readonly unsaved = inject(UnsavedChanges);
   readonly names = subjectNames;
   readonly kinds = subjectKinds;
   readonly busy = signal(false);
@@ -83,12 +85,12 @@ export class LinkEditorComponent {
     this.form.controls.subjectUuid.setValue(row.uuid);
     this.form.markAsDirty();
   }
-  close() {
+  async close() {
     if (
       !this.busy() &&
       (!this.form.dirty ||
         !this.api.session.valid() ||
-        window.confirm('¿Descartar los cambios sin guardar?'))
+        await this.unsaved.confirmDiscard(this.form.dirty))
     )
       this.ref.close();
   }

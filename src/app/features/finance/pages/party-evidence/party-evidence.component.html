@@ -19,9 +19,9 @@
 @if (party(); as p) {
   <section class="panel">
     <p class="eyebrow">EXPEDIENTE FINANCIERO</p>
-    <h2>{{ p.party['legalName'] }}</h2>
+    <h2><tc-entity-reference kind="party" [uuid]="p.party.uuid" [label]="p.party['legalName']" /></h2>
     <p class="mono long">
-      {{ p.party.uuid }} · {{ p.currency }} · {{ p.fractionDigits }} decimales
+      {{ p.currency }} · {{ p.fractionDigits }} decimales
     </p>
     <label
       >Divisa<select #cur [value]="currency" (change)="update('currency', cur.value)">

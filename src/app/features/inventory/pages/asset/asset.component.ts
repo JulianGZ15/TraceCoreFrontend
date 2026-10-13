@@ -12,6 +12,7 @@ import * as M from '../../models';
 
 import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
 import { CustodyEditorComponent } from '../../editors/custody-editor/custody-editor.component';
+import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 
 @Component({
   selector: 'tc-inventory-asset',
@@ -23,7 +24,7 @@ import { CustodyEditorComponent } from '../../editors/custody-editor/custody-edi
     PageHeading,
     Feedback,
     Pagination,
-    InventoryNavComponent, DateFieldComponent],
+    InventoryNavComponent, DateFieldComponent, EntityReferenceComponent],
   templateUrl: './asset.component.html',
   styleUrl: './asset.component.scss',
 })

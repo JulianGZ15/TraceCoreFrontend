@@ -6,7 +6,7 @@
       placeholder="Nombre, código o folio" /></label
   ><button type="button" class="btn secondary" (click)="apply()" [disabled]="busy()">Buscar</button>
   @if (chosen()) {
-    <p role="status">Seleccionado: {{ chosen()?.label }} · {{ chosen()?.uuid }}</p>
+    <p role="status">Seleccionado: {{ chosen()?.label }}</p>
   }
   @if (error()) {
     <tc-feedback [message]="error()" />
@@ -18,7 +18,7 @@
     @for (row of rows(); track row.uuid) {
       <li>
         <button type="button" class="btn secondary" (click)="choose(row)">
-          {{ row.label }}<small>{{ row.uuid }}</small>
+          {{ row.label }}
         </button>
       </li>
     }

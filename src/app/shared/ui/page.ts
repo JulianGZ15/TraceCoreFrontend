@@ -34,6 +34,8 @@ export {
 } from './entity-search/entity-search.component';
 export * from './filter-model';
 export { EntityLabelResolver } from './entity-label-resolver';
+export { EntityReferenceComponent } from './entity-reference/entity-reference.component';
+export { UnsavedChanges } from './unsaved-changes';
 export { Spinner, SpinnerComponent } from './spinner/spinner.component';
 export { Skeleton, SkeletonComponent } from './skeleton/skeleton.component';
 export { ProgressBar, ProgressBarComponent } from './progress-bar/progress-bar.component';

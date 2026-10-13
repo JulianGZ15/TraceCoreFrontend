@@ -27,12 +27,13 @@ import { Ref, Category, Model, Sheet, Asset, Profile, Grade, Heat, Trace, Lot, L
 import { label, localError, numberText, quantityText, decimal, decimalValidator, scaled, exact, specsForm, readSpecs, writeSpecs, approvalMissing, toInstant, instantInput, units, uuidPattern, calendarValid } from '../../rules';
 
 import { errorMessage } from '../../../../core/http/api';
+import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 
 import {AssetEditorComponent} from '../../editors/asset-editor/asset-editor.component';
 
 
 
-@Component({selector:"tc-equipment-asset-general",imports:[Feedback,RouterLink],templateUrl:"./asset-general.component.html",styleUrl:"./asset-general.component.scss"})
+@Component({selector:"tc-equipment-asset-general",imports:[Feedback,RouterLink,EntityReferenceComponent],templateUrl:"./asset-general.component.html",styleUrl:"./asset-general.component.scss"})
 
 export class AssetGeneralComponent extends EquipmentPage {
 

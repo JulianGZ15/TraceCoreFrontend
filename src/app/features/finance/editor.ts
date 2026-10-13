@@ -7,8 +7,10 @@ import { FinancePending } from './pending';
 import { FinanceAccess } from './access';
 import { EditorData, Entity, Field, Operation } from './models';
 import { form, message, entity } from './rules';
+import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
 @Directive()
 export abstract class FinanceEditor implements OnInit, OnDestroy {
+  readonly unsaved = inject(UnsavedChanges);
   readonly api = inject(FinanceApi);
   readonly session = this.api.session;
   readonly access = inject(FinanceAccess);
@@ -102,9 +104,8 @@ export abstract class FinanceEditor implements OnInit, OnDestroy {
       this.busy.set(false);
     }
   }
-  cancel() {
-    if (!this.form.dirty || window.confirm('¿Descartar los cambios sin guardar?'))
-      this.ref?.close();
+  async cancel() {
+    if (await this.unsaved.confirmDiscard(this.form.dirty)) this.ref?.close();
   }
   protected create(operation: Operation, path: string, payload: Record<string, unknown>) {
     return this.pending.create(operation, path, payload);

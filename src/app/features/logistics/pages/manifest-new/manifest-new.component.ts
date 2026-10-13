@@ -11,6 +11,7 @@ import { MovementRootComponent } from '../../components/movement-root/movement-r
 import { PageHeading, Feedback, Spinner } from '../../../../shared/ui/page';
 import { form, message, label } from '../../rules';
 import { Entity, Field, MovementDetail } from '../../models';
+import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 @Component({
   selector: 'tc-logistics-manifest-new',
   imports: [
@@ -27,6 +28,7 @@ import { Entity, Field, MovementDetail } from '../../models';
   styleUrl: './manifest-new.component.scss',
 })
 export class ManifestNewComponent extends LogisticsPage {
+  readonly unsaved = inject(UnsavedChanges);
   readonly pending = inject(LogisticsPending);
   readonly root = viewChild(MovementRootComponent);
   readonly step = signal(1);
@@ -210,11 +212,14 @@ export class ManifestNewComponent extends LogisticsPage {
     this.form.markAsDirty();
     this.persist();
   }
-  go(n: number) {
+  async go(n: number) {
     if (
       this.step() === 2 &&
       this.root()?.dirty() &&
-      !window.confirm('¿Descartar la captura de la raíz que aún no se ha guardado?')
+      !(await this.unsaved.confirmDiscard(
+        true,
+        'Se descartará la captura de la raíz que aún no se ha guardado.',
+      ))
     )
       return;
     if (n > this.step()) this.direction.set('forward');
@@ -225,10 +230,10 @@ export class ManifestNewComponent extends LogisticsPage {
     }, 0);
   }
   next() {
-    this.go(Math.min(4, this.step() + 1));
+    void this.go(Math.min(4, this.step() + 1));
   }
   prev() {
-    this.go(Math.max(1, this.step() - 1));
+    void this.go(Math.max(1, this.step() - 1));
   }
   async save() {
     if (this.submitting()) return;

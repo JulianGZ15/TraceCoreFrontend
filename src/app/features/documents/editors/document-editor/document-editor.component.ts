@@ -15,6 +15,7 @@ import {
 } from '../../models';
 import { DocumentPending, PendingDocument, definiteFailure } from '../../pending';
 import { uuidPattern } from '../../rules';
+import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 @Component({
   selector: 'tc-document-editor',
   imports: [ReactiveFormsModule, Feedback, SubjectPickerComponent],
@@ -26,6 +27,7 @@ export class DocumentEditorComponent {
   readonly ref = inject(DialogRef<Document>);
   readonly data = inject<{ kind?: SubjectKind; uuid?: string }>(DIALOG_DATA, { optional: true });
   readonly pending = inject(DocumentPending);
+  readonly unsaved = inject(UnsavedChanges);
   readonly kinds = subjectKinds;
   readonly names = subjectNames;
   readonly types = documentTypes;
@@ -43,12 +45,12 @@ export class DocumentEditorComponent {
     this.form.controls.ownerUuid.setValue(row.uuid);
     this.form.markAsDirty();
   }
-  close() {
+  async close() {
     if (
       !this.busy() &&
       (!this.form.dirty ||
         !this.api.session.valid() ||
-        window.confirm('¿Descartar los cambios sin guardar?'))
+        await this.unsaved.confirmDiscard(this.form.dirty))
     )
       this.ref.close();
   }

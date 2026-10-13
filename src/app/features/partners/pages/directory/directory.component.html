@@ -122,9 +122,7 @@
         @for (party of rows(); track party.uuid) {
           <tr>
             <td>
-              <strong>{{ party.legalName }}</strong
-              ><small>{{ party.tradeName }}</small
-              ><small class="mono">{{ party.uuid }}</small>
+              <strong>{{ party.legalName }}</strong><small>{{ party.tradeName }}</small>
             </td>
             <td>{{ party.country }}</td>
             <td><tc-status [active]="party.active" /></td>

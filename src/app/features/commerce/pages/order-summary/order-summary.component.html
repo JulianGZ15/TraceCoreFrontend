@@ -24,7 +24,13 @@
       </div>
       <div>
         <dt>Contraparte</dt>
-        <dd class="mono">{{ s.labels?.['counterparty'] || s.order.partyUuid }}</dd>
+        <dd>
+          <tc-entity-reference
+            kind="party"
+            [uuid]="s.order.partyUuid"
+            [label]="s.labels?.['counterparty']"
+          />
+        </dd>
       </div>
       <div>
         <dt>Divisa</dt>

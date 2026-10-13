@@ -19,8 +19,13 @@
       servidor.
     </p>
     <p>Referencia: {{ d.reservation.requestReference }}</p>
-    <p class="mono long">
-      Beneficiario: {{ d.reservation.beneficiaryUuid ?? 'Sin tercero beneficiario' }}
+    <p class="long">
+      Beneficiario:
+      @if (d.reservation.beneficiaryUuid) {
+        <tc-entity-reference kind="party" [uuid]="d.reservation.beneficiaryUuid" />
+      } @else {
+        Sin tercero beneficiario
+      }
     </p>
     @if (d.reservation.consumedMovementUuid) {
       <a [routerLink]="'/inventario/movimientos/' + d.reservation.consumedMovementUuid"

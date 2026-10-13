@@ -7,8 +7,10 @@ import { LogisticsAccess } from './access';
 import { LogisticsPending } from './pending';
 import { EditorContext, Entity, Field } from './models';
 import { form, message } from './rules';
+import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
 @Directive()
 export abstract class LogisticsEditor implements OnInit, OnDestroy {
+  readonly unsaved = inject(UnsavedChanges);
   readonly api = inject(LogisticsApi);
   readonly session = this.api.session;
   readonly access = inject(LogisticsAccess);
@@ -143,9 +145,8 @@ export abstract class LogisticsEditor implements OnInit, OnDestroy {
       this.busy.set(false);
     }
   }
-  cancel() {
-    if (!this.form.dirty || window.confirm('¿Descartar los cambios sin guardar?'))
-      this.ref?.close();
+  async cancel() {
+    if (await this.unsaved.confirmDiscard(this.form.dirty)) this.ref?.close();
   }
   protected create(operation: string, path: string, payload: Record<string, unknown>) {
     return this.pending.create<Entity>(operation, path, payload);

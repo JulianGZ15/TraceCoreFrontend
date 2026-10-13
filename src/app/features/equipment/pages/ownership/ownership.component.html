@@ -34,8 +34,10 @@
         @for (row of rows(); track row.uuid) {
           <tr>
             <td>
-              <span class="mono">{{ row.companyUuid ?? row.partyUuid }}</span
-              ><small
+              <tc-entity-reference
+                [kind]="row.companyUuid ? 'company' : 'party'"
+                [uuid]="row.companyUuid ?? row.partyUuid"
+              /><small
                 >{{ row.companyUuid ? 'Empresa' : 'Tercero' }} ·
                 {{ row.validTo ? 'Histórico' : 'Actual' }}</small
               >

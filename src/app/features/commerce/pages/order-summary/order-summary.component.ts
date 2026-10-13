@@ -21,6 +21,7 @@ import {
 import { form, message, instant, exact } from '../../rules';
 import { OrderComponent } from '../../editors/order/order.component';
 import { TransitionComponent } from '../../editors/transition/transition.component';
+import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 @Component({
   selector: 'tc-commerce-order-summary',
   imports: [ContextualLinksComponent,
@@ -31,6 +32,7 @@ import { TransitionComponent } from '../../editors/transition/transition.compone
     SectionNavComponent,
     PendingRequestsComponent,
     OrderComponent,
+    EntityReferenceComponent,
   ],
   templateUrl: './order-summary.component.html',
   styleUrl: './order-summary.component.scss',

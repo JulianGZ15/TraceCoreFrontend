@@ -149,11 +149,11 @@
               </dd>
               <dt>Propietario</dt>
               <dd>
-                {{
-                  form.controls.ownerType.value === 'COMPANY'
-                    ? session.context()?.company?.name
-                    : ownerLabel() || form.controls.partyUuid.value
-                }}
+                <tc-entity-reference
+                  [kind]="form.controls.ownerType.value === 'COMPANY' ? 'company' : 'party'"
+                  [uuid]="form.controls.ownerType.value === 'COMPANY' ? session.context()?.company?.uuid : form.controls.partyUuid.value"
+                  [label]="form.controls.ownerType.value === 'COMPANY' ? session.context()?.company?.name : ownerLabel()"
+                />
               </dd>
               <dt>Título / motivo</dt>
               <dd>{{ form.controls.titleReference.value }} · {{ form.controls.ownerReason.value }}</dd>

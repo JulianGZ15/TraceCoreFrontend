@@ -1,0 +1,11 @@
+@if (uuid()) {
+  @if (name(); as value) {
+    @if (link(); as target) {
+      <a [routerLink]="target" [attr.aria-label]="'Ver expediente de ' + value">{{ value }}</a>
+    } @else {
+      <span>{{ value }}</span>
+    }
+  } @else {
+    <span role="status">Buscando nombre…</span>
+  }
+}

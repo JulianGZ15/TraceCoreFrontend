@@ -12,6 +12,7 @@ import { confirm } from '../../../../shared/ui/editor';
 import * as M from '../../models';
 
 import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
+import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 
 @Component({
   selector: 'tc-inventory-reservation',
@@ -24,6 +25,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
     Feedback,
     Pagination,
     InventoryNavComponent,
+    EntityReferenceComponent,
   ],
   templateUrl: './reservation.component.html',
   styleUrl: './reservation.component.scss',
