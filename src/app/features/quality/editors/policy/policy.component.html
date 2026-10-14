@@ -48,9 +48,25 @@
         >Intervalo de horas (decimal exacto)<input
           type="text"
           formControlName="hourInterval" /></label
-      ><label>Inicio con desplazamiento UTC<input type="text" formControlName="validFrom" /></label
       ><label
-        >Fin con desplazamiento UTC (opcional)<input type="text" formControlName="validTo" /></label
+        >Inicio de vigencia<tc-date-field
+          id="quality-policy-valid-from"
+          label="Inicio de vigencia"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          [required]="true"
+          formControlName="validFrom"
+        /></label
+      ><label
+        >Fin de vigencia (opcional)<tc-date-field
+          id="quality-policy-valid-to"
+          label="Fin de vigencia (opcional)"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          formControlName="validTo"
+        /></label
       ><label class="check"><input type="checkbox" formControlName="requireMtr" />Exige MTR</label
       ><label class="check"
         ><input type="checkbox" formControlName="requireCertification" />Exige certificación</label
@@ -88,7 +104,7 @@
     </div>
     @if (form.invalid && form.touched) {
       <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales."
       />
     }
     <div class="actions">

@@ -1,35 +1,35 @@
-import { Component, inject, input, signal, effect } from '@angular/core';
-import { ReactiveFormsModule, FormsModule, FormControl, AbstractControl } from '@angular/forms';
-import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { Component, input, signal } from '@angular/core';
+import { FormControl, AbstractControl } from '@angular/forms';
+import { EntitySearchComponent, EntityOption } from '../../../../shared/ui/entity-search/entity-search.component';
+import { Feedback } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import * as M from '../../models';
 @Component({
   selector: 'tc-quality-evidence',
-  imports: [ReactiveFormsModule, Feedback, Pagination],
+  imports: [Feedback, EntitySearchComponent],
   templateUrl: './evidence-picker.component.html',
   styleUrl: './evidence-picker.component.scss',
 })
 export class EvidencePickerComponent extends QualityPage {
   readonly control = input.required<AbstractControl>();
-  readonly rows = signal<M.Evidence[]>([]);
+  readonly selectedLabel = signal('');
+  readonly searchFn = (query: string) => this.searchEvidence(query);
   get field() {
     return this.control() as FormControl;
   }
-  ngOnInit() {
-    if (this.access.global('QUALITY_READ')) void this.load();
+  async searchEvidence(search: string): Promise<EntityOption[]> {
+    if (!this.access.global('QUALITY_READ')) return [];
+    try {
+      const rows = await this.get<M.Evidence[]>('/evidence', { search, offset: 0, limit: 25 });
+      return rows.map((row) => ({ value: row.uuid, label: row.fileName, meta: row.mediaType }));
+    } catch (error) {
+      this.error.set(error instanceof Error ? error.message : 'No se pudo consultar la evidencia.');
+      return [];
+    }
   }
-  async load() {
-    await this.request(
-      () => this.get<M.Evidence[]>('/evidence', { offset: this.offset(), limit: this.limit() }),
-      (r) => this.rows.set(r),
-    );
-  }
-  move(n: number) {
-    this.offset.set(n);
-    void this.load();
-  }
-  select(row: M.Evidence) {
-    this.field.setValue(row.uuid);
+  select(row: EntityOption | null) {
+    this.field.setValue(row?.value ?? '');
     this.field.markAsDirty();
+    this.selectedLabel.set(row?.label ?? '');
   }
 }

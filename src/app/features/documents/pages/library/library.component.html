@@ -226,7 +226,8 @@
       @if (drawerForm.controls.ownerKind.value) {
         <tc-document-subject-picker
           [kind]="drawerKind()"
-          (selected)="drawerForm.controls.ownerUuid.setValue($event.uuid)"
+          [value]="drawerForm.controls.ownerUuid.value"
+          (selected)="drawerForm.controls.ownerUuid.setValue($event?.uuid ?? '')"
         />
       }
     </tc-filter-section>

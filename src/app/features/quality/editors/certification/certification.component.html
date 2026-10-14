@@ -27,15 +27,31 @@
         [nullable]="false"
       /><label>Folio<input type="text" formControlName="number" /></label
       ><label class="wide">Alcance<textarea formControlName="scope" rows="3"></textarea></label
-      ><label>Emisión con desplazamiento UTC<input type="text" formControlName="issuedAt" /></label
       ><label
-        >Vencimiento con desplazamiento UTC<input type="text" formControlName="expiresAt"
-      /></label>
+        >Fecha y hora de emisión<tc-date-field
+          id="quality-certification-issued-at"
+          label="Fecha y hora de emisión"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          [required]="true"
+          formControlName="issuedAt"
+        /></label
+      ><label
+        >Fecha y hora de vencimiento<tc-date-field
+          id="quality-certification-expires-at"
+          label="Fecha y hora de vencimiento"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          [required]="true"
+          formControlName="expiresAt"
+        /></label>
       <div class="wide"><tc-quality-evidence [control]="form.controls['evidenceUuid']" /></div>
     </div>
     @if (form.invalid && form.touched) {
       <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales."
       />
     }
     <div class="actions">

@@ -30,14 +30,20 @@
         [assetUuid]="form.get('assetUuid')?.value ?? data['assetUuid'] ?? ''"
         [nullable]="false"
       /><label
-        >Fecha programada con desplazamiento UTC<input
-          type="text"
-          formControlName="scheduledAt" /></label
+        >Fecha y hora programada<tc-date-field
+          id="quality-inspection-scheduled-at"
+          label="Fecha y hora programada"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          [required]="true"
+          formControlName="scheduledAt"
+        /></label
       ><label>Instalación<input type="text" formControlName="facility" /></label>
     </div>
     @if (form.invalid && form.touched) {
       <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales."
       />
     }
     <div class="actions">

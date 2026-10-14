@@ -8,7 +8,8 @@ import { Validators, FormArray, FormGroup } from '@angular/forms';
 import { QualityPending } from '../../pending';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
-import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '../../rules';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
+import { signedValidator, scaled, optionalExact, uuidPattern } from '../../rules';
 @Component({
   selector: 'tc-quality-mtr-editor',
   imports: [
@@ -17,6 +18,7 @@ import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '
     Feedback,
     OptionPickerComponent,
     EvidencePickerComponent,
+    DateFieldComponent,
   ],
   templateUrl: './mtr.component.html',
   styleUrl: './mtr.component.scss',
@@ -51,7 +53,7 @@ export class MtrComponent extends QualityEditor {
   async save() {
     await this.saveWith(async () => {
       const r = this.form.getRawValue();
-      const payload = { ...r, issuedAt: toInstant(r.issuedAt!) };
+      const payload = { ...r };
       return this.record
         ? this.api.put<M.Mtr>('/mtrs/' + this.record.uuid, {
             ...payload,

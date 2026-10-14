@@ -54,12 +54,14 @@ export class EntitySearchComponent implements OnDestroy {
   private readonly clearButton = viewChild<ElementRef<HTMLButtonElement>>('clearButton');
 
   constructor() {
-    effect(() => this.options.set(this.optionsList()));
+    effect(() => this.options.set(this.optionsList().slice(0, 25)));
     effect(() => {
       const val = this.value();
       const lbl = this.selectedLabel();
       if (val && lbl) {
         this.currentLabel.set(lbl);
+      } else if (val) {
+        this.currentLabel.set('Registro seleccionado');
       } else if (!val) {
         this.currentLabel.set('');
       }
@@ -103,7 +105,7 @@ export class EntitySearchComponent implements OnDestroy {
     try {
       const results = await fn(text);
       if (sequence !== this.searchSequence) return;
-      this.options.set(results);
+      this.options.set(results.slice(0, 25));
       this.open.set(true);
     } catch {
       if (sequence !== this.searchSequence) return;

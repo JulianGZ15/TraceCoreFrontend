@@ -111,21 +111,23 @@
           @for (e of entries.controls; track $index) {
             <section class="panel" [formGroupName]="$index">
               <h3>Recibo {{ $index + 1 }}</h3>
-              <p class="mono">{{ e.get('eventUuid')?.value }}</p>
               <p>
-                Fila existente: {{ e.get('expectedItemUuid')?.value ?? 'Nueva' }} · Versión
+                Fila existente: {{ e.get('expectedItemUuid')?.value ? 'Sí' : 'Nueva' }} · Versión
                 {{ e.get('version')?.value ?? 'Sin fila' }}
               </p>
               @if (e.get('alreadyObserved')?.value) {
                 <p>
                   Ya observado. Ubicación registrada:
-                  {{ e.get('previousLocation')?.value ?? 'Desconocida' }}
+                  {{ e.get('previousLocation')?.value ? 'registrada' : 'Desconocida' }}
                 </p>
               }
-              <label class="field"
-                ><span>UUID de ubicación observada (opcional)</span
-                ><input formControlName="locationUuid"
-              /></label>
+              <tc-rfid-picker
+                kind="LOCATIONS"
+                label="Ubicación observada (opcional)"
+                [yardUuid]="yard()"
+                [value]="e.get('locationUuid')?.value ?? ''"
+                (selected)="e.get('locationUuid')?.setValue($event)"
+              />
             </section>
           }
         </div>

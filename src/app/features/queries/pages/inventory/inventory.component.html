@@ -191,44 +191,34 @@
     </tc-filter-section>
 
     <tc-filter-section title="Modelo y categoría" description="Filtros por catálogo">
-      <div class="field">
-        <label for="inv-model-uuid">UUID de modelo</label>
-        <input
-          id="inv-model-uuid"
-          formControlName="modelUuid"
-          placeholder="UUID o selector inferior…"
-        />
-      </div>
       <tc-query-filter-picker
         query="INVENTORY"
         kind="MODEL"
         [yard]="form.controls.yardUuid.value"
+        [value]="form.controls.modelUuid.value"
         label="Seleccionar modelo"
-        (selected)="drawerForm.controls.modelUuid.setValue($event.uuid)"
+        (selected)="drawerForm.controls.modelUuid.setValue($event?.uuid ?? '')"
       />
 
-      <div class="field mt-3">
-        <label for="inv-cat-uuid">UUID de categoría</label>
-        <input
-          id="inv-cat-uuid"
-          formControlName="categoryUuid"
-          placeholder="UUID o selector inferior…"
-        />
-      </div>
       <tc-query-filter-picker
         query="INVENTORY"
         kind="CATEGORY"
         [yard]="form.controls.yardUuid.value"
+        [value]="form.controls.categoryUuid.value"
         label="Seleccionar categoría"
-        (selected)="drawerForm.controls.categoryUuid.setValue($event.uuid)"
+        (selected)="drawerForm.controls.categoryUuid.setValue($event?.uuid ?? '')"
       />
     </tc-filter-section>
 
-    <tc-filter-section title="Equipo específico" description="Identificador único">
-      <div class="field">
-        <label for="inv-asset-uuid">UUID de equipo</label>
-        <input id="inv-asset-uuid" formControlName="assetUuid" placeholder="UUID de equipo…" />
-      </div>
+    <tc-filter-section title="Equipo específico" description="Buscar por código interno">
+      <tc-query-filter-picker
+        query="INVENTORY"
+        kind="ASSET"
+        [yard]="form.controls.yardUuid.value"
+        [value]="form.controls.assetUuid.value"
+        label="Seleccionar equipo"
+        (selected)="drawerForm.controls.assetUuid.setValue($event?.uuid ?? '')"
+      />
     </tc-filter-section>
   </form>
 </ng-template>

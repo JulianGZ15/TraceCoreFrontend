@@ -16,7 +16,8 @@ import { PendingRequestsComponent } from '../../shared/pending-requests/pending-
 import { TransitionComponent } from '../../editors/transition/transition.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
-import { signedValidator, optionalExact, toInstant } from '../../rules';
+import { signedValidator, optionalExact } from '../../rules';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import * as M from '../../models';
 @Component({
   selector: 'tc-quality-results',
@@ -28,6 +29,7 @@ import * as M from '../../models';
     QualityNavComponent,
     PendingRequestsComponent,
     EvidencePickerComponent,
+    DateFieldComponent,
   ],
   templateUrl: './results.component.html',
   styleUrl: './results.component.scss',
@@ -96,7 +98,7 @@ export class ResultsComponent extends QualityPage {
       () =>
         this.api.post<M.Inspection>('/inspections/' + r.uuid + '/record?version=' + r.version, {
           ...this.form.getRawValue(),
-          performedAt: toInstant(this.form.controls.performedAt.value!),
+          performedAt: this.form.controls.performedAt.value,
         }),
       async () => {
         this.form.markAsPristine();

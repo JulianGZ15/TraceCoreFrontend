@@ -50,4 +50,7 @@ export class DashboardComponent extends ReadPage {
   open(kind: string, uuid: string) {
     void this.router.navigate(['/consultas', kind, uuid]);
   }
+  selectEntity(kind: string, row: import('../../../documents/models').SubjectOption | null) {
+    if (row) this.open(kind, row.uuid);
+  }
 }

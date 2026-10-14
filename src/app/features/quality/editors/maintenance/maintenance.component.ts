@@ -8,10 +8,11 @@ import { Validators, FormArray, FormGroup } from '@angular/forms';
 import { QualityPending } from '../../pending';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
-import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '../../rules';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
+import { signedValidator, scaled, optionalExact, uuidPattern } from '../../rules';
 @Component({
   selector: 'tc-quality-maintenance-editor',
-  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent],
+  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent, DateFieldComponent],
   templateUrl: './maintenance.component.html',
   styleUrl: './maintenance.component.scss',
 })
@@ -37,7 +38,7 @@ export class MaintenanceComponent extends QualityEditor {
       const r = this.form.getRawValue();
       return this.pending.create<M.WorkOrder>('maintenance', {
         ...r,
-        scheduledAt: toInstant(r.scheduledAt!),
+        scheduledAt: r.scheduledAt,
         workshopUuid: r.workshopUuid || null,
         providerUuid: r.providerUuid || null,
       });

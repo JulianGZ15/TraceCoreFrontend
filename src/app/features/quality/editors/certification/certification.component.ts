@@ -8,7 +8,8 @@ import { Validators, FormArray, FormGroup } from '@angular/forms';
 import { QualityPending } from '../../pending';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
-import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '../../rules';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
+import { signedValidator, scaled, optionalExact, uuidPattern } from '../../rules';
 @Component({
   selector: 'tc-quality-certification-editor',
   imports: [
@@ -17,6 +18,7 @@ import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '
     Feedback,
     OptionPickerComponent,
     EvidencePickerComponent,
+    DateFieldComponent,
   ],
   templateUrl: './certification.component.html',
   styleUrl: './certification.component.scss',
@@ -46,8 +48,8 @@ export class CertificationComponent extends QualityEditor {
       return this.api.post<M.Certification>('/certifications', {
         ...r,
         assetUuid: this.data['assetUuid'],
-        issuedAt: toInstant(r.issuedAt!),
-        expiresAt: toInstant(r.expiresAt!),
+        issuedAt: r.issuedAt,
+        expiresAt: r.expiresAt,
       });
     });
   }

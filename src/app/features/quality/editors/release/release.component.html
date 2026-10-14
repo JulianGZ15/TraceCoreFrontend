@@ -18,13 +18,20 @@
           <option value="BOTH">{{ label('BOTH') }}</option>
         </select></label
       ><label
-        >Fin obligatorio con desplazamiento UTC<input type="text" formControlName="validTo"
-      /></label>
+        >Fin de vigencia<tc-date-field
+          id="quality-release-valid-to"
+          label="Fin de vigencia"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          [required]="true"
+          formControlName="validTo"
+        /></label>
       <div class="wide"><tc-quality-evidence [control]="form.controls['evidenceUuid']" /></div>
     </div>
     @if (form.invalid && form.touched) {
       <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales."
       />
     }
     <div class="actions">

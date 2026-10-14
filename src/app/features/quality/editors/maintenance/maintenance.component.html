@@ -25,9 +25,15 @@
         </select></label
       ><label class="wide">Motivo<textarea formControlName="reason" rows="3"></textarea></label
       ><label
-        >Fecha programada con desplazamiento UTC<input
-          type="text"
-          formControlName="scheduledAt" /></label
+        >Fecha y hora programada<tc-date-field
+          id="quality-maintenance-scheduled-at"
+          label="Fecha y hora programada"
+          mode="datetime"
+          valueFormat="iso"
+          [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+          [required]="true"
+          formControlName="scheduledAt"
+        /></label
       ><tc-quality-option
         [control]="form.controls['responsibleUuid']"
         title="Responsable activo"
@@ -50,7 +56,7 @@
     </div>
     @if (form.invalid && form.touched) {
       <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
+        message="Revisa los datos obligatorios, UUID, intervalos y decimales."
       />
     }
     <div class="actions">

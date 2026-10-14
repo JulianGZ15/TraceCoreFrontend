@@ -13,6 +13,7 @@ describe('InspectionComponent · editors', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('tc-date-field input[type="datetime-local"]')).toHaveLength(1);
     fixture.destroy();
   });
 });

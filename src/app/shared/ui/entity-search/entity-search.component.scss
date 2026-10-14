@@ -65,6 +65,7 @@
     flex-direction: column;
     gap: 2px;
     font-size: 14px;
+    min-height: 44px;
     border-bottom: 1px solid var(--tc-border);
 
     &:last-child {
@@ -105,6 +106,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
+  flex-wrap: wrap;
   padding: 6px 12px;
   background: var(--tc-selection);
   border: 1px solid var(--tc-action);
@@ -120,6 +123,7 @@
   .entity-name {
     color: var(--tc-text);
     font-weight: 600;
+    overflow-wrap: anywhere;
   }
 
   .chip-clear-btn {
@@ -129,6 +133,8 @@
     background: none;
     border: none;
     padding: 2px;
+    min-width: 32px;
+    min-height: 32px;
     color: var(--tc-text-muted);
     cursor: pointer;
     border-radius: 2px;

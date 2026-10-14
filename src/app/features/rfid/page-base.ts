@@ -94,7 +94,7 @@ export abstract class RfidPage implements OnDestroy {
     try {
       const r = await save();
       if (this.alive && generation === this.generation && epoch === this.session.epoch()) {
-        this.success.set('OperaciÃ³n confirmada.');
+        this.success.set('Operación confirmada.');
         await after(r);
       }
     } catch (e) {
@@ -142,7 +142,7 @@ export abstract class RfidPage implements OnDestroy {
     }
   }
   async discard() {
-    return confirm(this.dialog, 'Descartar cambios', 'Los cambios sin guardar se perderÃ¡n.');
+    return confirm(this.dialog, 'Descartar cambios', 'Los cambios sin guardar se perderán.');
   }
   ngOnDestroy() {
     this.alive = false;

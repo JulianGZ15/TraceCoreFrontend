@@ -11,7 +11,7 @@ describe('documents/shared/subject-picker/subject-picker', () => {
       expect.objectContaining({ yardUuid: null }),
       expect.anything(),
     );
-    fixture.componentInstance.choose({ uuid: ids.owner, kind: 'PARTY', label: 'Tercero' });
+    fixture.componentInstance.choose({ value: ids.owner, label: 'Tercero' });
     expect(fixture.componentInstance.chosen()?.uuid).toBe(ids.owner);
   });
 });

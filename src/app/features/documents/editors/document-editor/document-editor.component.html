@@ -39,9 +39,10 @@
     </div>
     <tc-document-subject-picker
       [kind]="form.controls.ownerKind.value"
+      [value]="form.controls.ownerUuid.value"
       purpose="MANAGE"
       (selected)="select($event)"
-    /><label>UUID del propietario<input formControlName="ownerUuid" /></label>
+    />
     @if (form.touched && form.invalid) {
       <p role="alert">Completa título, clasificación y propietario válido.</p>
     }

@@ -16,6 +16,12 @@ describe('OptionPickerComponent · selectors', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance).toBeTruthy();
+    const uuid = '1a8a6df8-064a-48e7-b361-7fe599a140aa';
+    fixture.componentInstance.control().setValue(uuid);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain(uuid);
+    expect(fixture.nativeElement.querySelector('tc-pagination')).toBeNull();
+    expect(fixture.nativeElement.querySelector('input[formControl]')).toBeNull();
     fixture.destroy();
   });
 });

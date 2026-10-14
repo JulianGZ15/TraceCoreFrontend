@@ -10,9 +10,17 @@ describe('ResultsComponent · pages', () => {
       providers: setup.providers,
     }).compileComponents();
     const fixture = TestBed.createComponent(ResultsComponent);
+    fixture.componentInstance.record.set({
+      uuid: 'inspection',
+      state: 'PLANNED',
+      version: 0,
+      criteria: [],
+    } as never);
+    fixture.componentInstance.asset.set(testAsset as never);
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('tc-date-field input[type="datetime-local"]')).toHaveLength(1);
     fixture.destroy();
   });
 });

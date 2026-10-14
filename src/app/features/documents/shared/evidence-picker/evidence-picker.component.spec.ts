@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { EvidencePickerComponent } from './evidence-picker.component';
 import { renderWorkspace, ids, testSummary } from '../../testing';
 describe('documents/shared/evidence-picker/evidence-picker', () => {
@@ -11,22 +11,18 @@ describe('documents/shared/evidence-picker/evidence-picker', () => {
 });
 
 describe('Selección de procedencia', () => {
-  it('limpia selección y descarta respuestas anteriores cuando cambia el origen', async () => {
+  it('no muestra UUID editable ni paginación y limpia la evidencia elegida', async () => {
     const { fixture, api } = await renderWorkspace(EvidencePickerComponent, {
       inputs: { document: ids.document },
     });
     const picker = fixture.componentInstance;
-    let resolve!: (value: unknown) => void;
-    api.get.mockImplementationOnce(() => new Promise<any>((done) => (resolve = done)));
-    const emitted = vi.spyOn(picker.selected, 'emit');
-    const pending = picker.load();
-    picker.form.controls.sourceKind.setValue('PARTY');
-    picker.sourceChanged();
-    resolve({ items: [{ uuid: ids.file, filename: 'anterior.pdf' }], hasMore: false });
-    await pending;
-    expect(picker.rows()).toEqual([]);
+    picker.choose({ value: ids.file, label: 'evidencia.pdf' });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain(ids.file);
+    expect(fixture.nativeElement.querySelector('tc-pagination')).toBeNull();
+    expect(fixture.nativeElement.querySelector('input[formControlName="contextUuid"]')).toBeNull();
+    picker.choose(null);
     expect(picker.chosen()).toBeNull();
-    expect(emitted).toHaveBeenLastCalledWith(null);
-    expect(picker.busy()).toBe(false);
+    expect(api.get).not.toHaveBeenCalled();
   });
 });

@@ -81,8 +81,8 @@ export class LinkEditorComponent {
     this.offset = offset;
     void this.load();
   }
-  select(row: SubjectOption) {
-    this.form.controls.subjectUuid.setValue(row.uuid);
+  select(row: SubjectOption | null) {
+    this.form.controls.subjectUuid.setValue(row?.uuid ?? '');
     this.form.markAsDirty();
   }
   async close() {

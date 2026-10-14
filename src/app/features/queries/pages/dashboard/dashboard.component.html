@@ -102,7 +102,7 @@
       source="QUERIES"
       [yard]="yard"
       label="Buscar equipo"
-      (selected)="open('equipos', $event.uuid)"
+      (selected)="selectEntity('equipos', $event)"
     />
   }
   @if (session.can('PARTY_READ') && session.can('QUERY_READ')) {
@@ -110,7 +110,7 @@
       kind="PARTY"
       source="QUERIES"
       label="Buscar tercero"
-      (selected)="open('terceros', $event.uuid)"
+      (selected)="selectEntity('terceros', $event)"
     />
   }
 </section>

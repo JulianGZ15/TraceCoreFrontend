@@ -74,6 +74,19 @@ describe('EntitySearchComponent', () => {
     expect(component.options()).toEqual([{ value: 'new', label: 'Resultado nuevo' }]);
   });
 
+  it('never displays a selected UUID and caps suggestions at 25', async () => {
+    const uuid = '1a8a6df8-064a-48e7-b361-7fe599a140aa';
+    fixture.componentRef.setInput('value', uuid);
+    fixture.componentRef.setInput('searchFn', async () =>
+      Array.from({ length: 30 }, (_, i) => ({ value: `id-${i}`, label: `Registro ${i}` })),
+    );
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain(uuid);
+    expect(component.currentLabel()).toBe('Registro seleccionado');
+    await component.performSearch('registro');
+    expect(component.options()).toHaveLength(25);
+  });
+
   it('skips disabled suggestions during keyboard navigation', () => {
     component.options.set([
       { value: 'disabled', label: 'No disponible', disabled: true },

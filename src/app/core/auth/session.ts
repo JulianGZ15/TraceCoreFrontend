@@ -393,7 +393,7 @@ export class Session implements OnDestroy {
     this.context.set(null);
     return this.refresh();
   }
-  logout(message = 'Cerraste tu sesiÃƒÂ³n.', preserveReturn = false) {
+  logout(message = 'Cerraste tu sesión.', preserveReturn = false) {
     const destination = safeReturn(this.router.url);
     this.dialog.closeAll();
     this.clear();
@@ -428,6 +428,6 @@ export class Session implements OnDestroy {
   }
   checkExpiry() {
     if (this.token() && !this.valid())
-      this.logout('Tu sesiÃƒÂ³n finalizÃƒÂ³. Inicia sesiÃƒÂ³n de nuevo.', true);
+      this.logout('Tu sesión finalizó. Inicia sesión de nuevo.', true);
   }
 }

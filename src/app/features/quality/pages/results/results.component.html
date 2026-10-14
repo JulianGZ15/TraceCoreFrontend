@@ -22,7 +22,16 @@
     <h2>{{ asset()?.internalCode }}</h2>
     <form [formGroup]="form" (ngSubmit)="save()">
       <div class="form-grid">
-        <label>Realizada en (con desplazamiento UTC)<input formControlName="performedAt" /></label
+        <label
+          >Fecha y hora de realización<tc-date-field
+            id="quality-inspection-performed-at"
+            label="Fecha y hora de realización"
+            mode="datetime"
+            valueFormat="iso"
+            [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
+            [required]="true"
+            formControlName="performedAt"
+          /></label
         ><label
           >Dictamen manual<select formControlName="verdict">
             <option value="PASS">Conforme</option>
@@ -52,7 +61,7 @@
       </div>
       @if (form.invalid && form.touched) {
         <tc-feedback
-          message="Completa todos los criterios con hasta 12 enteros y 6 decimales, evidencia y hallazgos."
+          message="Completa la fecha de realización, todos los criterios con hasta 12 enteros y 6 decimales, evidencia y hallazgos."
         />
       }
       <div class="actions">

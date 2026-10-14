@@ -41,8 +41,8 @@ export class DocumentEditorComponent {
     ownerKind: [this.data?.kind ?? 'PARTY', Validators.required],
     ownerUuid: [this.data?.uuid ?? '', [Validators.required, Validators.pattern(uuidPattern)]],
   });
-  select(row: SubjectOption) {
-    this.form.controls.ownerUuid.setValue(row.uuid);
+  select(row: SubjectOption | null) {
+    this.form.controls.ownerUuid.setValue(row?.uuid ?? '');
     this.form.markAsDirty();
   }
   async close() {

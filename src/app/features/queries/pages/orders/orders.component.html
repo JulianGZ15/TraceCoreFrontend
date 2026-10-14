@@ -159,19 +159,12 @@
     </tc-filter-section>
 
     <tc-filter-section title="Tercero y divisa" description="Entidad comercial vinculada">
-      <div class="field">
-        <label for="order-party-uuid">UUID de tercero</label>
-        <input
-          id="order-party-uuid"
-          formControlName="partyUuid"
-          placeholder="UUID o selector inferior…"
-        />
-      </div>
       <tc-query-filter-picker
         query="ORDERS"
         kind="PARTY"
+        [value]="form.controls.partyUuid.value"
         label="Seleccionar tercero"
-        (selected)="drawerForm.controls.partyUuid.setValue($event.uuid)"
+        (selected)="drawerForm.controls.partyUuid.setValue($event?.uuid ?? '')"
       />
 
       <div class="field mt-3">
@@ -181,20 +174,13 @@
     </tc-filter-section>
 
     <tc-filter-section title="Equipo específico" description="Identificador único del equipo">
-      <div class="field">
-        <label for="order-asset-uuid">UUID de equipo</label>
-        <input
-          id="order-asset-uuid"
-          formControlName="assetUuid"
-          placeholder="UUID o selector inferior…"
-        />
-      </div>
       <tc-query-filter-picker
         query="ORDERS"
         kind="ASSET"
         [yard]="form.controls.yardUuid.value"
+        [value]="form.controls.assetUuid.value"
         label="Seleccionar equipo"
-        (selected)="drawerForm.controls.assetUuid.setValue($event.uuid)"
+        (selected)="drawerForm.controls.assetUuid.setValue($event?.uuid ?? '')"
       />
     </tc-filter-section>
 

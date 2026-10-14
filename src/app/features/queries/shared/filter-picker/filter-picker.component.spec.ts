@@ -7,7 +7,7 @@ describe('queries/shared/filter-picker/filter-picker', () => {
       inputs: { query: 'INVENTORY', kind: 'MODEL', label: 'Modelo' },
     });
     expect(api.get).not.toHaveBeenCalled();
-    await fixture.componentInstance.load();
+    await fixture.componentInstance.loadOptions('');
     expect(api.get).toHaveBeenCalledWith(
       '/queries/filter-options',
       expect.objectContaining({ kind: 'MODEL', limit: 25 }),

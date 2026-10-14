@@ -1,14 +1,14 @@
 import { Component, input, output, inject, signal, effect, OnDestroy } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { WorkspaceApi, Page } from '../../../../core/http/workspace-api';
 import { Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Feedback, Pagination } from '../../../../shared/ui/page';
+import { EntityOption, EntitySearchComponent } from '../../../../shared/ui/entity-search/entity-search.component';
+import { Feedback } from '../../../../shared/ui/page';
 import { workspaceError as errorMessage } from '../../../../core/http/workspace-api';
 import { SubjectKind, SubjectOption } from '../../models';
 @Component({
   selector: 'tc-document-subject-picker',
-  imports: [ReactiveFormsModule, Feedback, Pagination],
+  imports: [Feedback, EntitySearchComponent],
   templateUrl: './subject-picker.component.html',
   styleUrl: './subject-picker.component.scss',
 })
@@ -19,14 +19,13 @@ export class SubjectPickerComponent implements OnDestroy {
   readonly source = input<'DOCUMENTS' | 'QUERIES'>('DOCUMENTS');
   readonly yard = input('');
   readonly label = input('Seleccionar propietario');
-  readonly selected = output<SubjectOption>();
+  readonly value = input('');
+  readonly selected = output<SubjectOption | null>();
   readonly chosen = signal<SubjectOption | null>(null);
-  readonly search = new FormControl('', { nonNullable: true });
-  readonly rows = signal<SubjectOption[]>([]);
   readonly error = signal('');
   readonly busy = signal(false);
   readonly hasMore = signal(false);
-  offset = 0;
+  readonly searchFn = (search: string) => this.searchSubjects(search);
   private stop = new Subject<void>();
   private seq = 0;
   constructor() {
@@ -35,18 +34,15 @@ export class SubjectPickerComponent implements OnDestroy {
       this.purpose();
       this.source();
       this.yard();
-      this.offset = 0;
       this.chosen.set(null);
-      void this.load();
     });
     this.api.session.ended.pipe(takeUntilDestroyed()).subscribe(() => {
       this.seq++;
       this.stop.next();
-      this.rows.set([]);
       this.chosen.set(null);
     });
   }
-  async load() {
+  async searchSubjects(search: string): Promise<EntityOption[]> {
     const seq = ++this.seq,
       epoch = this.api.session.epoch();
     this.stop.next();
@@ -64,34 +60,33 @@ export class SubjectPickerComponent implements OnDestroy {
         {
           kind: this.kind(),
           purpose: this.purpose(),
-          search: this.search.value,
+          search,
           yardUuid: this.source() === 'QUERIES' && this.kind() === 'PARTY' ? null : this.yard(),
-          offset: this.offset,
+          offset: 0,
           limit: 25,
         },
         this.stop,
       );
       if (seq === this.seq && epoch === this.api.session.epoch()) {
-        this.rows.set(r.items);
-        this.hasMore.set(r.hasMore);
+        return r.items.map((row) => ({ value: row.uuid, label: row.label }));
       }
+      return [];
     } catch (e) {
       if (seq === this.seq && this.api.session.valid()) this.error.set(errorMessage(e));
+      return [];
     } finally {
       if (seq === this.seq) this.busy.set(false);
     }
   }
-  apply() {
-    this.offset = 0;
-    void this.load();
-  }
-  move(offset: number) {
-    this.offset = offset;
-    void this.load();
-  }
-  choose(row: SubjectOption) {
-    this.chosen.set(row);
-    this.selected.emit(row);
+  choose(row: EntityOption | null) {
+    if (!row) {
+      this.chosen.set(null);
+      this.selected.emit(null);
+      return;
+    }
+    const subject: SubjectOption = { uuid: row.value, kind: this.kind(), label: row.label };
+    this.chosen.set(subject);
+    this.selected.emit(subject);
   }
   ngOnDestroy() {
     this.seq++;

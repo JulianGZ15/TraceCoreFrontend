@@ -44,13 +44,13 @@
       </select></label
     ><tc-document-subject-picker
       [kind]="form.controls.subjectKind.value"
+      [value]="form.controls.subjectUuid.value"
       purpose="MANAGE"
       label="Seleccionar destino"
       (selected)="select($event)"
     />
     <div class="form-grid">
-      <label>UUID del destino<input formControlName="subjectUuid" /></label
-      ><label>Rol del vínculo<input formControlName="role" /></label
+      <label>Rol del vínculo<input formControlName="role" /></label
       ><label for="link-valid-from">Inicio de vigencia<tc-date-field id="link-valid-from" mode="datetime" formControlName="validFrom" /></label
       ><label
         >Fin de vigencia · opcional<tc-date-field id="link-valid-to" mode="datetime" formControlName="validTo" /></label

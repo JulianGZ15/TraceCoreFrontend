@@ -8,10 +8,11 @@ import { Validators, FormArray, FormGroup } from '@angular/forms';
 import { QualityPending } from '../../pending';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
-import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '../../rules';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
+import { signedValidator, scaled, optionalExact, uuidPattern } from '../../rules';
 @Component({
   selector: 'tc-quality-release-editor',
-  imports: [ReactiveFormsModule, PageHeading, Feedback, EvidencePickerComponent],
+  imports: [ReactiveFormsModule, PageHeading, Feedback, EvidencePickerComponent, DateFieldComponent],
   templateUrl: './release.component.html',
   styleUrl: './release.component.scss',
 })
@@ -34,7 +35,7 @@ export class ReleaseComponent extends QualityEditor {
       return this.pending.create<M.Release>('releases', {
         ...r,
         assetUuid: this.data['assetUuid'],
-        validTo: toInstant(r.validTo!),
+        validTo: r.validTo,
       });
     });
   }

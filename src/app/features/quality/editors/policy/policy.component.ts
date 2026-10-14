@@ -8,10 +8,11 @@ import { Validators, FormArray, FormGroup } from '@angular/forms';
 import { QualityPending } from '../../pending';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
-import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '../../rules';
+import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
+import { signedValidator, scaled, optionalExact, uuidPattern } from '../../rules';
 @Component({
   selector: 'tc-quality-policy-editor',
-  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent],
+  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent, DateFieldComponent],
   templateUrl: './policy.component.html',
   styleUrl: './policy.component.scss',
 })
@@ -124,8 +125,8 @@ export class PolicyComponent extends QualityEditor {
         hourInterval: r.hourInterval || null,
         requireMtr: r.requireMtr,
         requireCertification: r.requireCertification,
-        validFrom: toInstant(r.validFrom!),
-        validTo: r.validTo ? toInstant(r.validTo) : null,
+        validFrom: r.validFrom,
+        validTo: r.validTo || null,
         criteria: r.criteria.map((c) => ({
           parameter: c['parameter'],
           unit: c['unit'],
