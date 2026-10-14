@@ -18,7 +18,7 @@
     <p>{{ label(r.type) }} · {{ r.active ? 'Activo' : 'Inactivo' }}</p>
     <p>{{ r.address }}</p>
     @if (r.parentUuid) {
-      <p><a [routerLink]="'/inventario/sitios/' + r.parentUuid">Consultar sitio padre</a></p>
+      <p><a class="btn secondary" [routerLink]="'/inventario/sitios/' + r.parentUuid">Consultar sitio padre</a></p>
     }
     <p>Operador: {{ r.operatorUuid ?? 'Sin operador' }}</p>
     <p>

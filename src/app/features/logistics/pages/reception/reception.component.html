@@ -54,7 +54,7 @@
         [yard]="s.manifest.destinationYardUuid ?? s.manifest.yardUuid"
         [value]="form.getRawValue()['evidenceUuid']"
         (selectedChange)="pick('evidenceUuid', $event)"
-      /><a [routerLink]="['/logistica/manifiestos', id, 'evidencias']"
+      /><a class="btn secondary" [routerLink]="['/logistica/manifiestos', id, 'evidencias']"
         >Cargar evidencia de recepción</a
       >
       @for (root of chosen(); track root.uuid) {

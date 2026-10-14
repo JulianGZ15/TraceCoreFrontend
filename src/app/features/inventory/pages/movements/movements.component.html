@@ -67,7 +67,7 @@
               {{ r.destinationYardUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
             </td>
             <td>{{ date(r.createdOn) }}</td>
-            <td><a [routerLink]="'/inventario/movimientos/' + r.uuid">Abrir</a></td>
+            <td><a class="btn secondary" [routerLink]="'/inventario/movimientos/' + r.uuid">Abrir</a></td>
           </tr>
         } @empty {
           <tr>

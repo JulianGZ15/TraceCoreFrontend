@@ -72,7 +72,7 @@
       <section class="panel">
         <h3>Raíz {{ r.root }}</h3>
         <p class="long mono">Movimiento: {{ r.movement.uuid }}</p>
-        <a [routerLink]="['/inventario/movimientos', r.movement.uuid]"
+        <a class="btn secondary" [routerLink]="['/inventario/movimientos', r.movement.uuid]"
           >Consultar movimiento guardado</a
         >
         @if (step() === 3 && form.getRawValue()['type'] !== 'TRANSFER') {

@@ -8,7 +8,7 @@
 <tc-commerce-pending-requests /><tc-feedback [message]="error()" />
 <div class="toolbar">
   @if (can('COMMERCIAL_FULFILL')) {
-    <a [routerLink]="'/comercial/rentas/' + id + '/devoluciones/nueva'">Registrar devolución</a>
+    <a class="btn secondary" [routerLink]="'/comercial/rentas/' + id + '/devoluciones/nueva'">Registrar devolución</a>
   }
   <button class="btn secondary" [disabled]="loading()" (click)="reload()">Recargar datos</button>
 </div>
@@ -32,7 +32,7 @@
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
     <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
     <div class="toolbar">
-      <a [routerLink]="'/comercial/devoluciones/' + row.uuid">Consultar devolución</a>
+      <a class="btn secondary" [routerLink]="'/comercial/devoluciones/' + row.uuid">Consultar devolución</a>
     </div>
   </section>
 }

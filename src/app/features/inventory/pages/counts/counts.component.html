@@ -72,7 +72,7 @@
             <td>{{ label(r.method) }} · {{ label(r.state) }}</td>
             <td>{{ r.expectedCount }} piezas</td>
             <td>{{ date(r.openedAt) }}</td>
-            <td><a [routerLink]="'/inventario/conteos/' + r.uuid">Abrir</a></td>
+            <td><a class="btn secondary" [routerLink]="'/inventario/conteos/' + r.uuid">Abrir</a></td>
           </tr>
         } @empty {
           <tr>

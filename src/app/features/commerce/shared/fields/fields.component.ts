@@ -17,6 +17,16 @@ export class FieldsComponent {
   readonly fields = input<Field[]>([]);
   readonly yard = input('');
   readonly label = label;
+  private readonly paramsCache = new Map<string, { party: string; value: Record<string, string> }>();
+  lookupParams(field: Field): Record<string, string> {
+    if (!field.relatedPartyKey) return field.params ?? {};
+    const party = String(this.form().get(field.relatedPartyKey)?.value ?? '');
+    const cached = this.paramsCache.get(field.key);
+    if (cached?.party === party) return cached.value;
+    const value = { ...(field.params ?? {}), partyUuid: party };
+    this.paramsCache.set(field.key, { party, value });
+    return value;
+  }
   get timeZone(): string {
     return (
       String(this.form().get('timezone')?.value ?? '') ||

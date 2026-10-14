@@ -4,7 +4,7 @@
 />
 @if (model(); as item) {
   <section class="panel">
-    <a routerLink="/catalogo/modelos">← Modelos</a>
+    <a class="btn secondary" routerLink="/catalogo/modelos">← Modelos</a>
     <div class="panel-heading">
       <h1>{{ item.code }}</h1>
       @if (session.can('EQUIPMENT_MANAGE')) {

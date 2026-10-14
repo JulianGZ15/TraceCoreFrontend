@@ -8,7 +8,7 @@
 }
 @if (selected(); as r) {
   <section class="panel">
-    <a [routerLink]="['/logistica/manifiestos', r.manifestUuid]">Volver al manifiesto</a>
+    <a class="btn secondary" [routerLink]="['/logistica/manifiestos', r.manifestUuid]">Volver al manifiesto</a>
     <p>{{ r.reference }}</p>
     <p class="long mono">{{ r.uuid }}</p>
     <p>{{ label(r['method']) }} · Coincide: {{ label(r.approved) }}</p>

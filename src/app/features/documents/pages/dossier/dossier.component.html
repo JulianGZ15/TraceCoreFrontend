@@ -101,7 +101,7 @@
                 <td>{{ v.metadata.state }}</td>
                 <td>{{ v.current ? 'Sí' : 'No' }}</td>
                 <td>
-                  <a [routerLink]="['/documentos', id, 'versiones', v.metadata.uuid]"
+                  <a class="btn secondary" [routerLink]="['/documentos', id, 'versiones', v.metadata.uuid]"
                     >Abrir versión</a
                   >
                 </td>

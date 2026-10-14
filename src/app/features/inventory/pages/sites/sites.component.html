@@ -53,7 +53,7 @@
             <td>{{ r.code }} · {{ r.name }}</td>
             <td>{{ label(r.type) }}</td>
             <td>{{ r.active ? 'Activo' : 'Inactivo' }}</td>
-            <td><a [routerLink]="'/inventario/sitios/' + r.uuid">Abrir</a></td>
+            <td><a class="btn secondary" [routerLink]="'/inventario/sitios/' + r.uuid">Abrir</a></td>
           </tr>
         } @empty {
           <tr>

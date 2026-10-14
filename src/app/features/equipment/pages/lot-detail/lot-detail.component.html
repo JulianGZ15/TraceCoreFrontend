@@ -1,7 +1,7 @@
 <tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
 @if (lot(); as item) {
   <section class="panel">
-    <a routerLink="/catalogo/lotes">← Lotes</a>
+    <a class="btn secondary" routerLink="/catalogo/lotes">← Lotes</a>
     <div class="panel-heading">
       <h1>{{ item.code }}</h1>
       @if (session.can('EQUIPMENT_MANAGE')) {

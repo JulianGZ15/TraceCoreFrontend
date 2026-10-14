@@ -64,7 +64,7 @@
                 r.locationUuid ?? r.siteUuid ?? 'Sin posición'
               }}
             </td>
-            <td><a [routerLink]="'/inventario/equipos/' + r.uuid">Abrir</a></td>
+            <td><a class="btn secondary" [routerLink]="'/inventario/equipos/' + r.uuid">Abrir</a></td>
           </tr>
         } @empty {
           <tr>

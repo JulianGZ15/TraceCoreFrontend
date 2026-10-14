@@ -66,7 +66,7 @@
             session.can('LOGISTICS_READ', d.movement.sourceYardUuid ?? undefined) ||
             session.can('LOGISTICS_READ', d.movement.destinationYardUuid ?? undefined))
         ) {
-          <a [routerLink]="['/logistica/manifiestos', d.manifestUuid]">Abrir manifiesto</a>
+          <a class="btn secondary" [routerLink]="['/logistica/manifiestos', d.manifestUuid]">Abrir manifiesto</a>
         }
       </p>
     }

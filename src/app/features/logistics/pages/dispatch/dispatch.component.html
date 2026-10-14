@@ -20,7 +20,7 @@
     } @else {
       <p class="feedback info">Falta una comprobación aprobada vigente.</p>
     }
-    <a [routerLink]="['/logistica/manifiestos', id, 'verificacion']">Volver a comprobar carga</a>
+    <a class="btn secondary" [routerLink]="['/logistica/manifiestos', id, 'verificacion']">Volver a comprobar carga</a>
     <form [formGroup]="form" (ngSubmit)="save()">
       <tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" />
       <div class="actions">

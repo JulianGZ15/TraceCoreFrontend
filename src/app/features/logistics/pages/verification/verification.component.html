@@ -7,7 +7,7 @@
   <p role="status">Cargando…</p>
 }
 @if (summary(); as s) {
-  <a [routerLink]="['/logistica/manifiestos', id]">Volver al manifiesto {{ s.manifest.folio }}</a>
+  <a class="btn secondary" [routerLink]="['/logistica/manifiestos', id]">Volver al manifiesto {{ s.manifest.folio }}</a>
   <section class="panel">
     <p>
       La comprobación compara piezas; no constituye liberación técnica. Una comprobación aprobada

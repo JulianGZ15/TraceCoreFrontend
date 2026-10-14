@@ -32,7 +32,7 @@
       </div>
     </div>
     <p>Método {{ d.payment['method'] }} · {{ date(d.payment['paidAt']) }}</p>
-    <a
+    <a class="btn secondary"
       [routerLink]="['/finanzas/terceros', d.payment['partyUuid']]"
       [queryParams]="{ currency: d.payment['currency'] }"
       >Expediente del tercero</a

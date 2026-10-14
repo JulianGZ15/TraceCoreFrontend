@@ -55,6 +55,8 @@ export interface Address extends Resource {
   postalCode: string | null;
   country: string;
   active: boolean;
+  externalDeliveryEnabled: boolean;
+  operationalSiteUuid: string | null;
 }
 export interface Tax extends Resource {
   partyUuid: string;
@@ -148,6 +150,7 @@ export const sections = [
   ['roles', 'Roles'],
   ['contactos', 'Contactos'],
   ['domicilios', 'Domicilios'],
+  ['sitios-entrega', 'Sitios de entrega'],
   ['fiscal', 'Identificaciones fiscales'],
   ['certificaciones', 'Certificaciones'],
   ['evidencias', 'Evidencias'],

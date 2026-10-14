@@ -29,7 +29,7 @@
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
     <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
     <div class="toolbar">
-      <a [routerLink]="'/comercial/cortes/' + row.uuid">Ver desglose inmutable</a>
+      <a class="btn secondary" [routerLink]="'/comercial/cortes/' + row.uuid">Ver desglose inmutable</a>
     </div>
   </section>
 }

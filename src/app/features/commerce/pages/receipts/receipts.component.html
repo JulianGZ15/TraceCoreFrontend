@@ -105,7 +105,7 @@
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
     <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
     <div class="toolbar">
-      <a [routerLink]="'/comercial/recepciones/' + row.uuid">Abrir recepción</a>
+      <a class="btn secondary" [routerLink]="'/comercial/recepciones/' + row.uuid">Abrir recepción</a>
     </div>
   </section>
 }

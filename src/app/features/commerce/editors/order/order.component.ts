@@ -5,6 +5,7 @@ import { FieldsComponent } from '../../shared/fields/fields.component';
 import { Feedback } from '../../../../shared/ui/page';
 import { Field, Entity } from '../../models';
 import { instant } from '../../rules';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'tc-commerce-order-editor',
   imports: [ReactiveFormsModule, FieldsComponent, Feedback],
@@ -16,6 +17,7 @@ export class OrderComponent extends CommerceEditor {
   uuid = '';
   type = 'OC';
   common: Field[] = [];
+  private siteDependency?: Subscription;
   setup() {
     const s = this.data.summary,
       o = s?.order;
@@ -70,6 +72,7 @@ export class OrderComponent extends CommerceEditor {
             promisedAt: s.purchase['promisedAt'],
             deliveryTerms: s.purchase['deliveryTerms'],
             supplierReference: s.purchase['supplierReference'],
+            supplierSiteUuid: s.purchase['supplierSiteUuid'] ?? '',
           }
         : {}),
       ...(s?.sale
@@ -89,6 +92,13 @@ export class OrderComponent extends CommerceEditor {
         ? [
             { key: 'promisedAt', label: 'Fecha prometida', type: 'instant', required: true },
             {
+              key: 'supplierSiteUuid',
+              label: 'Sitio del proveedor (opcional)',
+              type: 'lookup',
+              resource: 'site-options',
+              relatedPartyKey: 'partyUuid',
+            },
+            {
               key: 'deliveryTerms',
               label: 'Condiciones de entrega',
               type: 'textarea',
@@ -105,6 +115,7 @@ export class OrderComponent extends CommerceEditor {
                 type: 'lookup',
                 resource: 'site-options',
                 required: true,
+                relatedPartyKey: 'partyUuid',
               },
               {
                 key: 'deliveryTerms',
@@ -157,6 +168,7 @@ export class OrderComponent extends CommerceEditor {
                 type: 'lookup',
                 resource: 'site-options',
                 required: true,
+                relatedPartyKey: 'endCustomerUuid',
               },
               { key: 'plannedFrom', label: 'Inicio previsto', type: 'instant', required: true },
               { key: 'plannedTo', label: 'Fin previsto', type: 'instant', required: true },
@@ -169,6 +181,12 @@ export class OrderComponent extends CommerceEditor {
               },
             ];
     this.make([...this.common, ...detail], values);
+    this.siteDependency?.unsubscribe();
+    const partyKey = this.type === 'OR' ? 'endCustomerUuid' : 'partyUuid';
+    const siteKey = this.type === 'OC' ? 'supplierSiteUuid' : this.type === 'OV' ? 'destinationSiteUuid' : 'siteUuid';
+    this.siteDependency = this.form.get(partyKey)?.valueChanges.subscribe(() => {
+      this.form.get(siteKey)?.setValue('', { emitEvent: false });
+    });
     this.form.get('type')?.valueChanges.subscribe((v) => {
       if (v === this.type) return;
       const raw = this.form.getRawValue();
@@ -201,6 +219,7 @@ export class OrderComponent extends CommerceEditor {
             promisedAt: instant(v['promisedAt']),
             deliveryTerms: v['deliveryTerms'],
             supplierReference: v['supplierReference'] || null,
+            supplierSiteUuid: v['supplierSiteUuid'] || null,
           }
         : null;
     const sale =

@@ -24,7 +24,7 @@
       {{ d.invoice.uuid }} · {{ label(d.invoice.state) }}{{ d.reversed ? ' · Revertida' : '' }} ·
       {{ d.invoice.currency }}
     </p>
-    <a
+    <a class="btn secondary"
       [routerLink]="['/finanzas/terceros', d.invoice.partyUuid]"
       [queryParams]="{ currency: d.invoice.currency }"
       >Expediente financiero del tercero</a

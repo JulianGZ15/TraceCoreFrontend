@@ -45,11 +45,11 @@
       @if (access.can('INVENTORY_MANAGE', l.yardUuid)) {
         <button class="btn primary" (click)="edit()">Editar</button>
       }
-      <a
+      <a class="btn secondary"
         routerLink="/inventario/patios"
         [queryParams]="{ yardUuid: l.yardUuid, parentUuid: l.uuid }"
         >Explorar hijos</a
-      ><a
+      ><a class="btn secondary"
         routerLink="/inventario/equipos"
         [queryParams]="{ yardUuid: l.yardUuid, locationUuid: l.uuid }"
         >Equipos del subárbol</a

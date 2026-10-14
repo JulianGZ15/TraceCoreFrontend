@@ -18,7 +18,7 @@
   </div>
   <tc-data-table label="Domicilios" appearance="embedded" [busy]="busy()">
     @if (busy() && !rows().length) {
-      <tc-skeleton variant="table" [columns]="4" label="Cargando registros…" />
+      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
     }
     <table [hidden]="busy() && !rows().length">
       <caption class="sr-only">
@@ -29,6 +29,7 @@
           <th scope="col">Tipo</th>
           <th scope="col">Dirección</th>
           <th scope="col">Estado</th>
+          <th scope="col">Sitio externo</th>
           <th scope="col">Acciones</th>
         </tr>
       </thead>
@@ -43,6 +44,9 @@
               ><small class="mono">{{ r.uuid }}</small>
             </td>
             <td>{{ r.active ? 'Activo' : 'Inactivo' }}</td>
+            <td>{{ r.externalDeliveryEnabled ? (r.active ? 'Habilitado' : 'Domicilio inactivo') : 'No habilitado' }}
+              @if (r.operationalSiteUuid) { <small class="mono">{{ r.operationalSiteUuid }}</small> }
+            </td>
             <td class="table-actions">
               @if (session.can('PARTY_MANAGE')) {
                 <button class="btn secondary" (click)="edit(r)">Editar domicilio</button>
@@ -52,7 +56,7 @@
         } @empty {
           @if (!busy() && !error()) {
             <tr>
-              <td class="empty-state" colspan="4">Todavía no hay registros en esta sección.</td>
+              <td class="empty-state" colspan="5">Todavía no hay registros en esta sección.</td>
             </tr>
           }
         }

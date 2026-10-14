@@ -1,9 +1,9 @@
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { SectionPage } from '../../section-page';
-import { Evaluation } from '../../models';
+import { Address, Evaluation } from '../../models';
 import { Feedback, Pagination } from '../../../../shared/ui/page';
 
 import { EvaluationEditorComponent } from '../../editors/evaluation-editor/evaluation-editor.component';
@@ -16,6 +16,29 @@ import { EvaluationEditorComponent } from '../../editors/evaluation-editor/evalu
 })
 export class AvlComponent extends SectionPage<Evaluation> {
   readonly kind = 'avl-evaluations' as const;
+  readonly deliverySites = signal<Address[]>([]);
+  readonly deliverySitesError = signal('');
+  override ngOnInit() {
+    super.ngOnInit();
+    void this.loadDeliverySites();
+  }
+  async loadDeliverySites() {
+    const uuid = this.uuid;
+    const epoch = this.session.epoch();
+    try {
+      const rows: Address[] = [];
+      const limit = 100;
+      for (let offset = 0; ; offset += limit) {
+        if (uuid !== this.uuid || epoch !== this.session.epoch()) return;
+        const page = await this.api.deliverySites(uuid, offset, limit);
+        rows.push(...page);
+        if (page.length < limit) break;
+      }
+      if (uuid === this.uuid && epoch === this.session.epoch()) this.deliverySites.set(rows);
+    } catch {
+      if (uuid === this.uuid && epoch === this.session.epoch()) this.deliverySitesError.set('No se pudieron consultar los sitios del proveedor.');
+    }
+  }
   endTime(value: string) {
     return Date.parse(value);
   }

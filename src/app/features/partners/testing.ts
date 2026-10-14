@@ -45,6 +45,7 @@ export async function renderPartner<T>(
     party: vi.fn(async (..._args: unknown[]) => testParty),
     directory: vi.fn(async (..._args: unknown[]) => [testParty]),
     list: vi.fn(async (..._args: unknown[]) => options.rows ?? []),
+    deliverySites: vi.fn(async (..._args: unknown[]) => options.rows ?? []),
     yards: vi.fn(async (..._args: unknown[]) => []),
     find: vi.fn(async (..._args: unknown[]) => testParty),
     create: vi.fn(async (..._args: unknown[]) => testParty),

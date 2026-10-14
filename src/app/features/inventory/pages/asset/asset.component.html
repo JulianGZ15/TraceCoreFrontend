@@ -59,10 +59,10 @@
         {{ label(p.custody?.mode ?? '') }}
       </p>
       @if (p.transit) {
-        <a [routerLink]="'/inventario/movimientos/' + p.transit.uuid">Ver movimiento en tránsito</a>
+        <a class="btn secondary" [routerLink]="'/inventario/movimientos/' + p.transit.uuid">Ver movimiento en tránsito</a>
       }
       @if (session.can('EQUIPMENT_READ')) {
-        <a [routerLink]="'/equipos/' + id()">Expediente técnico</a>
+        <a class="btn secondary" [routerLink]="'/equipos/' + id()">Expediente técnico</a>
       }
     }
     @if (section === 'ubicacion') {

@@ -46,6 +46,12 @@ export const partnerRoutes: Routes = [
           import('./pages/addresses/addresses.component').then((m) => m.AddressesComponent),
       },
       {
+        path: 'sitios-entrega',
+        data: { permission: 'PARTY_READ' },
+        loadComponent: () =>
+          import('./pages/delivery-sites/delivery-sites.component').then((m) => m.DeliverySitesComponent),
+      },
+      {
         path: 'fiscal',
         data: { permission: 'PARTY_READ' },
         loadComponent: () => import('./pages/tax/tax.component').then((m) => m.TaxComponent),

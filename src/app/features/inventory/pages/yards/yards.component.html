@@ -60,9 +60,9 @@
         <p>Ocupación: {{ numberText(item.occupancy.positionPercentExact) }} %</p>
       }
       <div class="actions">
-        <a [routerLink]="[]" [queryParams]="{ yardUuid: yard(), parentUuid: item.location.uuid }"
+        <a class="btn secondary" [routerLink]="[]" [queryParams]="{ yardUuid: yard(), parentUuid: item.location.uuid }"
           >Explorar hijos</a
-        ><a [routerLink]="'/inventario/ubicaciones/' + item.location.uuid">Ver ubicación</a>
+        ><a class="btn secondary" [routerLink]="'/inventario/ubicaciones/' + item.location.uuid">Ver ubicación</a>
       </div>
     </article>
   } @empty {

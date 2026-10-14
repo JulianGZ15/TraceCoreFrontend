@@ -149,7 +149,7 @@
     <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
     <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
     <div class="toolbar">
-      <a [routerLink]="'/comercial/rentas/' + row.uuid + '/general'">Abrir renta</a>
+      <a class="btn secondary" [routerLink]="'/comercial/rentas/' + row.uuid + '/general'">Abrir renta</a>
     </div>
   </section>
 }

@@ -116,6 +116,7 @@ export interface Field {
   choices?: string[];
   resource?: string;
   params?: Record<string, string>;
+  relatedPartyKey?: string;
   readonly?: boolean;
   max?: number;
   scale?: number;

@@ -28,7 +28,7 @@
       }
     </p>
     @if (d.reservation.consumedMovementUuid) {
-      <a [routerLink]="'/inventario/movimientos/' + d.reservation.consumedMovementUuid"
+      <a class="btn secondary" [routerLink]="'/inventario/movimientos/' + d.reservation.consumedMovementUuid"
         >Consultar movimiento asociado</a
       >
     }

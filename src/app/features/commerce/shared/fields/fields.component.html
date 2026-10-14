@@ -13,7 +13,7 @@
             [formControlName]="f.key"
             [resource]="f.resource ?? 'party-options'"
             [yard]="yard()"
-            [params]="f.params ?? {}"
+            [params]="lookupParams(f)"
             [title]="f.label"
           />
         }

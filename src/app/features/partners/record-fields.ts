@@ -17,6 +17,7 @@ export const partyFields: Field[] = [
   text('legalName', 'Razón social', true, 250),
   text('tradeName', 'Nombre comercial'),
   country,
+  { key: 'externalDeliveryEnabled', label: 'Usar como sitio externo de entrega', type: 'checkbox' },
   active,
 ];
 export const contactFields: Field[] = [

@@ -54,7 +54,7 @@
             <td>{{ label(r.state) }}</td>
             <td>{{ date(r.proposedAt) }}</td>
             <td>{{ date(r.expiresAt) }}</td>
-            <td><a [routerLink]="'/inventario/propuestas/' + r.uuid">Conciliar</a></td>
+            <td><a class="btn secondary" [routerLink]="'/inventario/propuestas/' + r.uuid">Conciliar</a></td>
           </tr>
         } @empty {
           <tr>

@@ -104,7 +104,7 @@
                 {{ row.document.classification === 'CONFIDENTIAL' ? 'Confidencial' : 'Interno' }}
               </td>
               <td>{{ row.document.state === 'ACTIVE' ? 'Activo' : 'Archivado' }}</td>
-              <td><a [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
+              <td><a class="btn secondary" [routerLink]="['/documentos', row.document.uuid]">Abrir documento</a></td>
             </tr>
           }
         </tbody>

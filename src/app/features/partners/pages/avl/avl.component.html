@@ -17,6 +17,18 @@
     <button class="btn secondary" [disabled]="busy()">Aplicar alcance</button>
   </div>
 </form>
+<section class="panel">
+  <div class="panel-heading"><h3>Sitios de entrega del proveedor</h3><button class="btn secondary" type="button" (click)="loadDeliverySites()">Actualizar sitios</button></div>
+  <p>Contexto de ubicación; su administración está en la sección Sitios de entrega.</p>
+  @if (deliverySitesError()) { <tc-feedback [message]="deliverySitesError()" /> }
+  <ul>
+    @for (site of deliverySites(); track site.uuid) {
+      <li><strong>{{ site.line1 }}</strong> — {{ site.locality }}{{ site.region ? ', ' + site.region : '' }}, {{ site.country }}<small>{{ site.line2 }} · Sitio {{ site.operationalSiteUuid }}</small></li>
+    } @empty {
+      @if (!deliverySitesError()) { <li>No hay sitios de entrega habilitados.</li> }
+    }
+  </ul>
+</section>
 <section class="panel table-panel" [attr.aria-busy]="busy()">
   <div class="panel-heading">
     <h3>Registros de evaluaciones avl</h3>

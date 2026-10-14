@@ -34,7 +34,7 @@
           <button class="btn secondary" (click)="edit(editor, row)">Cambiar modo del grupo</button>
         }
         @if (can('RENTAL_BILL')) {
-          <a [routerLink]="'/comercial/asignaciones/' + row.uuid + '/corte'"
+          <a class="btn secondary" [routerLink]="'/comercial/asignaciones/' + row.uuid + '/corte'"
             >Preparar corte administrativo</a
           >
         }

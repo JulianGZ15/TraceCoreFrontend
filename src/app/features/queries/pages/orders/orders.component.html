@@ -87,7 +87,7 @@
             [timezone]="session.context()?.company?.timezone ?? 'UTC'"
             [value]="row"
           />
-          <a [routerLink]="['/comercial/ordenes', row['uuid']]">Abrir orden comercial</a>
+          <a class="btn secondary" [routerLink]="['/comercial/ordenes', row['uuid']]">Abrir orden comercial</a>
         </article>
       }
       @if (!loading() && !error() && !rows().length) {

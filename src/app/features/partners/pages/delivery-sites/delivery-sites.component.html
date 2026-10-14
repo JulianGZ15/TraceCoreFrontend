@@ -1,0 +1,35 @@
+<section class="panel">
+  <div class="panel-heading">
+    <h2>Sitios de entrega</h2>
+    <a class="btn secondary" [routerLink]="['/terceros', uuid, 'domicilios']">Administrar domicilios</a>
+  </div>
+  <p>Estos domicilios están habilitados como sitios externos y pueden seleccionarse en órdenes de este tercero.</p>
+</section>
+<tc-feedback [message]="error()" />
+<tc-feedback [message]="success()" kind="success" />
+<section class="panel table-panel" [attr.aria-busy]="busy()">
+  <div class="panel-heading">
+    <h3>Domicilios habilitados</h3>
+    <button class="btn secondary" [disabled]="busy()" (click)="load()">Actualizar sitios</button>
+    @if (busy()) { <span role="status">Cargando…</span> }
+  </div>
+  <tc-data-table label="Sitios de entrega del tercero" appearance="embedded" [busy]="busy()">
+    @if (busy() && !rows().length) { <tc-skeleton variant="table" [columns]="3" label="Cargando sitios…" /> }
+    <table [hidden]="busy() && !rows().length">
+      <caption class="sr-only">Sitios externos de entrega del tercero</caption>
+      <thead><tr><th scope="col">Sitio operativo</th><th scope="col">Dirección</th><th scope="col">Acciones</th></tr></thead>
+      <tbody>
+        @for (row of rows(); track row.uuid) {
+          <tr>
+            <td><strong>{{ row.line1 }}</strong><small>{{ row.locality }} · {{ row.region }} · {{ row.country }}</small></td>
+            <td>{{ row.line2 }}<small>{{ row.postalCode }}</small><small class="mono">Sitio {{ row.operationalSiteUuid }}</small></td>
+            <td class="table-actions">@if (session.can('PARTY_MANAGE')) { <button class="btn secondary" (click)="edit(row)">Editar</button> }</td>
+          </tr>
+        } @empty {
+          @if (!busy() && !error()) { <tr><td class="empty-state" colspan="3">No hay sitios habilitados. Activa la opción en un domicilio para agregarlo.</td></tr> }
+        }
+      </tbody>
+    </table>
+  </tc-data-table>
+  <tc-pagination [offset]="offset()" [limit]="limit()" [count]="rows().length" [busy]="busy()" (move)="load($event)" (resize)="resize($event)" />
+</section>

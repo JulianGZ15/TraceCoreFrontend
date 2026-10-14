@@ -132,7 +132,7 @@
             [filters]="{ yardUuid: c.yardUuid, state: 'COMPLETED' }"
             [value]="resolveForm.controls.adjustmentMovementUuid.value"
             (picked)="pick(resolveForm, 'adjustmentMovementUuid', $event)"
-          /><a routerLink="/inventario/movimientos/nuevo" [queryParams]="{ yardUuid: c.yardUuid }"
+          /><a class="btn secondary" routerLink="/inventario/movimientos/nuevo" [queryParams]="{ yardUuid: c.yardUuid }"
             >Preparar ajuste por separado</a
           >
         }

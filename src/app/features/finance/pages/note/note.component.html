@@ -24,7 +24,7 @@
       Total {{ numberText(note()?.['totalAmountExact']) }} ·
       {{ d['reversed'] ? 'Revertida' : 'Vigente' }}
     </p>
-    <a [routerLink]="['/finanzas/facturas', note()?.['invoiceUuid']]">Abrir factura</a>
+    <a class="btn secondary" [routerLink]="['/finanzas/facturas', note()?.['invoiceUuid']]">Abrir factura</a>
     @if (can('FINANCE_APPROVE') && !d['reversed']) {
       <button class="btn secondary" (click)="reverseNote()">Revertir nota</button>
     }

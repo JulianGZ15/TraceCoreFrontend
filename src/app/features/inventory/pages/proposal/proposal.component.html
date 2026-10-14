@@ -75,7 +75,7 @@
     @if (d.decision) {
       <p>Decisión: {{ label(d.decision.action) }} · {{ d.decision.reason }}</p>
       @if (d.decision.movementUuid) {
-        <a [routerLink]="'/inventario/movimientos/' + d.decision.movementUuid"
+        <a class="btn secondary" [routerLink]="'/inventario/movimientos/' + d.decision.movementUuid"
           >Ver movimiento resultante</a
         >
       }

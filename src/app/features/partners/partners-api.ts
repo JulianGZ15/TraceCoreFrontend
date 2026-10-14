@@ -44,6 +44,9 @@ export class PartnersApi {
       fullLists.includes(kind) ? filters : { ...filters, offset, limit },
     );
   }
+  deliverySites(party: string, offset = 0, limit = 25) {
+    return this.api.get<import('./models').Address[]>(this.path(party) + '/delivery-sites', { offset, limit });
+  }
   create<T extends Resource>(party: string, kind: Kind, data: unknown) {
     return this.api.post<T>(this.path(party, kind), data);
   }
