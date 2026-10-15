@@ -11,6 +11,7 @@ import { confirm } from '../../../../shared/ui/editor';
 import * as M from '../../models';
 
 import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
+import { MovementProgressComponent } from '../../components/movement-progress/movement-progress.component';
 
 @Component({
   selector: 'tc-inventory-movement',
@@ -22,6 +23,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
     PageHeading,
     Feedback,
     InventoryNavComponent,
+    MovementProgressComponent,
   ],
   templateUrl: './movement.component.html',
   styleUrl: './movement.component.scss',

@@ -1,10 +1,12 @@
 import { Component, input, inject, computed } from '@angular/core';
 import { Session } from '../../../../core/auth/session';
 import { PageNav, PageNavItem } from '../../../../shared/ui/page-nav/page-nav.component';
+import { Summary } from '../../models';
+import { ProcessProgressComponent } from '../process-progress/process-progress.component';
 
 @Component({
   selector: 'tc-logistics-section-nav',
-  imports: [PageNav],
+  imports: [PageNav, ProcessProgressComponent],
   templateUrl: './section-nav.component.html',
   styleUrl: './section-nav.component.scss',
 })
@@ -12,6 +14,7 @@ export class SectionNavComponent {
   readonly session = inject(Session);
   readonly base = input('');
   readonly sections = input<{ key: string; label: string }[]>([]);
+  readonly summary = input<Summary | null>(null);
 
   readonly moduleItems = computed<PageNavItem[]>(() => {
     const hasRead = this.session.can('LOGISTICS_READ');

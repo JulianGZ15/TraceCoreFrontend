@@ -14,6 +14,7 @@ import { PendingRequestsComponent } from '../../shared/pending-requests/pending-
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
 import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { ProcessProgressComponent } from '../../shared/process-progress/process-progress.component';
 interface SelectedRoot {
   uuid: string;
   form: FormGroup;
@@ -31,6 +32,7 @@ interface SelectedRoot {
     PageHeading,
     Feedback,
     Pagination,
+    ProcessProgressComponent,
   ],
   templateUrl: './reception.component.html',
   styleUrl: './reception.component.scss',

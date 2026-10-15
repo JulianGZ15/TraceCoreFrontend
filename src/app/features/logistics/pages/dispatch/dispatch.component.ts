@@ -12,6 +12,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
 import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { ProcessProgressComponent } from '../../shared/process-progress/process-progress.component';
 @Component({
   selector: 'tc-logistics-dispatch',
   imports: [
@@ -21,6 +22,7 @@ import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.com
     PendingRequestsComponent,
     PageHeading,
     Feedback,
+    ProcessProgressComponent,
   ],
   templateUrl: './dispatch.component.html',
   styleUrl: './dispatch.component.scss',

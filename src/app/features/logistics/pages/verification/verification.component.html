@@ -7,6 +7,7 @@
   <p role="status">Cargando…</p>
 }
 @if (summary(); as s) {
+  <tc-logistics-process-progress [summary]="s" />
   <a class="btn secondary" [routerLink]="['/logistica/manifiestos', id]">Volver al manifiesto {{ s.manifest.folio }}</a>
   <section class="panel">
     <p>

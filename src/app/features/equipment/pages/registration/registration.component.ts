@@ -33,16 +33,17 @@ import { errorMessage } from '../../../../core/http/api';
 import { LookupComponent } from '../../components/lookup/lookup.component';
 
 import { SpecificationsComponent } from '../../components/specifications/specifications.component';
+import { StepperComponent, StepperStep } from '../../../../shared/ui/stepper/stepper.component';
 
 
 
-@Component({selector:"tc-equipment-registration",imports: [Feedback,RouterLink,ReactiveFormsModule,LookupComponent,SpecificationsComponent,Spinner, DateFieldComponent, EntityReferenceComponent],templateUrl:"./registration.component.html",styleUrl:"./registration.component.scss"})
+@Component({selector:"tc-equipment-registration",imports: [Feedback,RouterLink,ReactiveFormsModule,LookupComponent,SpecificationsComponent,Spinner, DateFieldComponent, EntityReferenceComponent, StepperComponent],templateUrl:"./registration.component.html",styleUrl:"./registration.component.scss"})
 
 export class RegistrationComponent extends EquipmentFormPage {
 
  readonly form=new FormGroup({categoryUuid:new FormControl('',{nonNullable:true,validators:[Validators.required]}),modelUuid:new FormControl('',{nonNullable:true,validators:[Validators.required]}),sheetUuid:new FormControl('',{nonNullable:true,validators:[Validators.required]}),internalCode:new FormControl('',{nonNullable:true,validators:[Validators.required,Validators.maxLength(100)]}),serialNumber:new FormControl('',{nonNullable:true,validators:[Validators.maxLength(100)]}),origin:new FormControl('',{nonNullable:true,validators:[Validators.required,Validators.maxLength(500)]}),registeredAt:new FormControl('',{nonNullable:true}),offset:new FormControl('+00:00',{nonNullable:true}),ownerType:new FormControl('COMPANY',{nonNullable:true}),partyUuid:new FormControl('',{nonNullable:true}),titleReference:new FormControl('',{nonNullable:true,validators:[Validators.required,Validators.maxLength(500)]}),ownerReason:new FormControl('',{nonNullable:true,validators:[Validators.required,Validators.maxLength(500)]}),condition:new FormControl('UNKNOWN',{nonNullable:true}),conditionReason:new FormControl('',{nonNullable:true,validators:[Validators.required,Validators.maxLength(500)]}),referenceValue:new FormControl('',{nonNullable:true,validators:[decimalValidator(15,4)]}),currency:new FormControl('',{nonNullable:true,validators:[Validators.pattern(/^[A-Za-z]{3}$/)]}),valuationReference:new FormControl('',{nonNullable:true,validators:[Validators.maxLength(500)]})});
 
- readonly step=signal(0);readonly direction=signal<'forward'|'backward'>('forward');readonly steps=['Selección técnica','Identidad','Propiedad y condición','Revisión'];readonly sheet=signal<Sheet|null>(null);readonly category=signal<Category|null>(null);readonly model=signal<Model|null>(null);readonly ownerLabel=signal('');readonly modelFilters=signal<Record<string,string|number>>({});readonly sheetFilters=signal<Record<string,string|number>>({});readonly conditions=conditions;
+ readonly step=signal(0);readonly direction=signal<'forward'|'backward'>('forward');readonly steps:StepperStep[]=[{label:'Selección técnica'},{label:'Identidad'},{label:'Propiedad y condición'},{label:'Revisión'}];readonly sheet=signal<Sheet|null>(null);readonly category=signal<Category|null>(null);readonly model=signal<Model|null>(null);readonly ownerLabel=signal('');readonly modelFilters=signal<Record<string,string|number>>({});readonly sheetFilters=signal<Record<string,string|number>>({});readonly conditions=conditions;
 
  categoryChanged(item:LookupItem|null){this.category.set(item as Category|null);this.model.set(null);this.sheet.set(null);this.form.controls.modelUuid.reset('');this.form.controls.sheetUuid.reset('');this.modelFilters.set(item?{categoryUuid:item.uuid}:{});this.sheetFilters.set({});}
 

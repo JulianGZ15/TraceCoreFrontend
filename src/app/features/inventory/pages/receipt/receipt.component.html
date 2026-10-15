@@ -13,6 +13,7 @@
   <p role="status">Cargando…</p>
 }
 @if (detail(); as d) {
+  <tc-inventory-movement-progress [detail]="d" />
   <p>{{ d.movement.folio }} · {{ d.items.length }} piezas · {{ label(d.movement.state) }}</p>
   @if (d.logisticsManaged === false) {
     <form [formGroup]="form" (ngSubmit)="save()">

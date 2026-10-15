@@ -7,6 +7,9 @@
   <p role="status">Cargando…</p>
 }
 @if (selected(); as r) {
+  @if (summary(); as manifestSummary) {
+    <tc-logistics-process-progress [summary]="manifestSummary" />
+  }
   <section class="panel">
     <a class="btn secondary" [routerLink]="['/logistica/manifiestos', r.manifestUuid]">Volver al manifiesto</a>
     <p>{{ r.reference }}</p>

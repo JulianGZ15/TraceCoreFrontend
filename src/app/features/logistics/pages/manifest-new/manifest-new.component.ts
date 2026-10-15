@@ -14,6 +14,7 @@ import { form, message, label } from '../../rules';
 import { Entity, Field, MovementDetail } from '../../models';
 import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { StepperComponent, StepperStep } from '../../../../shared/ui/stepper/stepper.component';
 @Component({
   selector: 'tc-logistics-manifest-new',
   imports: [
@@ -25,6 +26,7 @@ import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.com
     PageHeading,
     Feedback,
     Spinner,
+    StepperComponent,
   ],
   templateUrl: './manifest-new.component.html',
   styleUrl: './manifest-new.component.scss',
@@ -35,6 +37,12 @@ export class ManifestNewComponent extends LogisticsPage {
   readonly pending = inject(LogisticsPending);
   readonly root = viewChild(MovementRootComponent);
   readonly step = signal(1);
+  readonly steps: readonly StepperStep[] = [
+    { label: 'Contexto' },
+    { label: 'Raíces' },
+    { label: 'Referencias' },
+    { label: 'Revisión' },
+  ];
   readonly direction = signal<'forward' | 'backward'>('forward');
   readonly saved = signal<
     { movement: Entity; root: string; allocation: string; line: string; reference: string }[]

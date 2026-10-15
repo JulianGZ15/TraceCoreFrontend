@@ -12,6 +12,8 @@ describe('MovementPlanComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.textContent.trim().length).toBeGreaterThan(0);
+    expect(fixture.nativeElement.querySelectorAll('tc-stepper li.stepper-item')).toHaveLength(4);
+    expect(fixture.nativeElement.querySelector('tc-stepper button[aria-current="step"]')).toBeTruthy();
     fixture.destroy();
   });
 });

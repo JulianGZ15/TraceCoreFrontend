@@ -39,4 +39,9 @@ export { UnsavedChanges } from './unsaved-changes';
 export { Spinner, SpinnerComponent } from './spinner/spinner.component';
 export { Skeleton, SkeletonComponent } from './skeleton/skeleton.component';
 export { ProgressBar, ProgressBarComponent } from './progress-bar/progress-bar.component';
+export {
+  StepperComponent,
+  type StepperMode,
+  type StepperStep,
+} from './stepper/stepper.component';
 export { ActivityState, withActivity, createDelayedSignal } from './loading-state';

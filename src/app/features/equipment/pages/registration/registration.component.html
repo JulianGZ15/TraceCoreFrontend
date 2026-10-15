@@ -2,13 +2,12 @@
   <a class="btn secondary" routerLink="/equipos">← Equipos</a>
   <h1>Registrar pieza individual</h1>
   <p>Identidad, propietario y condición inicial se confirman juntos.</p>
-  <ol class="steps">
-    @for (s of steps; track s; let i = $index) {
-      <li [class.current]="step() === i" [attr.aria-current]="step() === i ? 'step' : null">
-        {{ i + 1 }}. {{ s }}
-      </li>
-    }
-  </ol>
+  <tc-stepper
+    [steps]="steps"
+    [currentStep]="step() + 1"
+    mode="progress"
+    ariaLabel="Pasos para registrar una pieza"
+  />
 </section>
 <tc-feedback [message]="error()" />
 <tc-feedback [message]="success()" kind="success" />

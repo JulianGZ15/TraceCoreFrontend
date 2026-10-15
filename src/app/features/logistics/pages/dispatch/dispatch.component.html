@@ -7,6 +7,7 @@
   <p role="status">Cargando…</p>
 }
 @if (summary(); as s) {
+  <tc-logistics-process-progress [summary]="s" />
   <section class="panel">
     <h2>{{ s.manifest.folio }}</h2>
     <p>{{ s.rootCount }} raíces · {{ s.pieceCount }} piezas · {{ s.totalWeightKgExact }} kg</p>

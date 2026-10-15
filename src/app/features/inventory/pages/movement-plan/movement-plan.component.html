@@ -21,18 +21,13 @@
       : 'Guardar prepara un borrador; la salida se confirma después.'
   }}
 </p>
-<nav class="steps" aria-label="Pasos">
-  @for (n of [1, 2, 3, 4]; track n) {
-    <button
-      type="button"
-      class="btn secondary"
-      [attr.aria-current]="step() === n ? 'step' : null"
-      (click)="goStep(n)"
-    >
-      {{ n }} · {{ n === 1 ? 'Contexto' : n === 2 ? 'Raíces' : n === 3 ? 'Destino' : 'Revisión' }}
-    </button>
-  }
-</nav>
+<tc-stepper
+  [steps]="steps"
+  [currentStep]="step()"
+  mode="navigable"
+  ariaLabel="Pasos para preparar un movimiento"
+  (stepSelected)="goStep($event)"
+/>
 <form [formGroup]="form" (ngSubmit)="save()">
   <div
     class="wizard-step-container"

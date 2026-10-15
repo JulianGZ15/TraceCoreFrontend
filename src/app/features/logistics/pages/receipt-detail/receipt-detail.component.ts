@@ -10,9 +10,10 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { RecordsComponent } from '../../shared/records/records.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { ProcessProgressComponent } from '../../shared/process-progress/process-progress.component';
 @Component({
   selector: 'tc-logistics-receipt-detail',
-  imports: [RouterLink, RecordsComponent, PageHeading, Feedback, Pagination],
+  imports: [RouterLink, RecordsComponent, PageHeading, Feedback, Pagination, ProcessProgressComponent],
   templateUrl: './receipt-detail.component.html',
   styleUrl: './receipt-detail.component.scss',
 })

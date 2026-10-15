@@ -1,5 +1,5 @@
 import { SectionNavComponent } from './section-nav.component';
-import { renderLogistics, testId } from '../../testing';
+import { renderLogistics, testId, testSummary } from '../../testing';
 import { FormGroup } from '@angular/forms';
 describe('SectionNavComponent', () => {
   it('shows only manifest sections inside a manifest', async () => {
@@ -20,6 +20,18 @@ describe('SectionNavComponent', () => {
     const navs = fixture.nativeElement.querySelectorAll('nav.page-nav');
     expect(navs).toHaveLength(1);
     expect(navs[0].textContent).toContain('Manifiestos');
+  });
+
+  it('shows process progress beside manifest sections without replacing them', async () => {
+    const fixture = await renderLogistics(SectionNavComponent, {
+      base: '/logistica/manifiestos/' + testId,
+      sections: [{ key: 'general', label: 'Resumen' }],
+      summary: testSummary,
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('tc-logistics-process-progress tc-stepper')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('nav.page-nav')?.textContent).toContain('Resumen');
   });
 
   it('renders authorized read context without permitting a write', async () => {

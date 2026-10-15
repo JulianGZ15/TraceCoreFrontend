@@ -63,16 +63,6 @@
   gap: 8px;
   margin: 16px 0;
 }
-.steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 16px 0;
-}
-.steps button[aria-current='step'] {
-  background: var(--tc-selection);
-  border-color: var(--tc-action);
-}
 .panel {
   margin: 16px 0;
   padding: 24px;
@@ -140,7 +130,6 @@ input[type='checkbox'] {
   .toolbar .field {
     min-width: 100%;
   }
-  .steps button,
   .btn {
     min-height: 44px;
   }

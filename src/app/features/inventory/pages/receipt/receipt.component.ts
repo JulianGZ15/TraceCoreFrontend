@@ -10,6 +10,7 @@ import * as M from '../../models';
 import { LookupComponent } from '../../components/lookup/lookup.component';
 
 import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
+import { MovementProgressComponent } from '../../components/movement-progress/movement-progress.component';
 
 @Component({
   selector: 'tc-inventory-receipt',
@@ -20,6 +21,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
     Pagination,
     LookupComponent,
     InventoryNavComponent,
+    MovementProgressComponent,
   ],
   templateUrl: './receipt.component.html',
   styleUrl: './receipt.component.scss',

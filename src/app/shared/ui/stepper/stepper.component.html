@@ -1,0 +1,43 @@
+@if (mode() === 'navigable') {
+  <nav class="stepper-viewport" [attr.aria-label]="ariaLabel()">
+    <ol #stepList class="stepper-list">
+      @for (item of items; track item.number) {
+        <li class="stepper-item" [class.completed]="item.state === 'completed'">
+          <button
+            type="button"
+            class="stepper-control"
+            [class.current]="item.state === 'current'"
+            [attr.aria-current]="item.state === 'current' ? 'step' : null"
+            (click)="select(item.number)"
+          >
+            <span class="stepper-marker" aria-hidden="true">
+              {{ item.state === 'completed' ? '✓' : item.number }}
+            </span>
+            <span class="stepper-label">{{ item.label }}</span>
+            <span class="sr-only">{{ stateLabel(item.state) }}</span>
+          </button>
+        </li>
+      }
+    </ol>
+  </nav>
+} @else {
+  <ol #stepList class="stepper-list stepper-list-static" [attr.aria-label]="ariaLabel()">
+    @for (item of items; track item.number) {
+      <li
+        class="stepper-item"
+        [class.completed]="item.state === 'completed'"
+        [class.current]="item.state === 'current'"
+        [attr.aria-current]="item.state === 'current' ? 'step' : null"
+      >
+        <span class="stepper-marker" aria-hidden="true">
+          {{ item.state === 'completed' ? '✓' : item.number }}
+        </span>
+        <span class="stepper-label">{{ item.label }}</span>
+        <span class="sr-only">{{ stateLabel(item.state) }}</span>
+      </li>
+    }
+  </ol>
+}
+@if (terminalStatus()) {
+  <p class="stepper-terminal" role="status">{{ terminalStatus() }}</p>
+}

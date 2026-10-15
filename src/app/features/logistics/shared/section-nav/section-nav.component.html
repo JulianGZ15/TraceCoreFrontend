@@ -1,4 +1,7 @@
 @if (sectionItems().length > 0) {
+  @if (summary(); as manifestSummary) {
+    <tc-logistics-process-progress [summary]="manifestSummary" />
+  }
   <tc-page-nav [items]="sectionItems()" ariaLabel="Secciones del expediente logístico" />
 } @else {
   <tc-page-nav [items]="moduleItems()" ariaLabel="Navegación de logística" />

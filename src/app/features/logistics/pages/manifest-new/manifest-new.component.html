@@ -3,21 +3,14 @@
   section="Logística y despacho"
   title="Nuevo manifiesto"
 /><tc-logistics-pending-requests /><tc-feedback [message]="error()" />
-<p>Paso {{ step() }} de 4 · Contexto → raíces → referencias → revisión</p>
+<tc-stepper
+  [steps]="steps"
+  [currentStep]="step()"
+  mode="navigable"
+  ariaLabel="Pasos para crear un manifiesto"
+  (stepSelected)="go($event)"
+/>
 <section class="panel">
-  <div class="actions">
-    @for (n of [1, 2, 3, 4]; track n) {
-      <button
-        class="btn secondary"
-        type="button"
-        (click)="go(n)"
-        [attr.aria-current]="step() === n ? 'step' : null"
-      >
-        Paso {{ n }}
-      </button>
-    }
-  </div>
-
   <div
     class="wizard-step-container"
     [class.tc-wizard-forward-enter]="direction() === 'forward'"

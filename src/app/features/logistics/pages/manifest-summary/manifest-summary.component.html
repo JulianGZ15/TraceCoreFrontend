@@ -6,6 +6,7 @@
   <tc-logistics-section-nav
     [base]="navBase"
     [sections]="mode === 'manifest' ? sections : []"
+    [summary]="mode === 'manifest' ? summary() : null"
   />
 </tc-page-heading>
 <tc-logistics-pending-requests /><tc-feedback [message]="error()" />

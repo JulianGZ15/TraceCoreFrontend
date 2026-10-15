@@ -7,6 +7,7 @@
   <p role="status">Cargando…</p>
 }
 @if (detail(); as d) {
+  <tc-inventory-movement-progress [detail]="d" />
   <section class="panel">
     <h2>{{ d.movement.folio }}</h2>
     <p>{{ label(d.movement.type) }} · {{ label(d.movement.state) }}</p>

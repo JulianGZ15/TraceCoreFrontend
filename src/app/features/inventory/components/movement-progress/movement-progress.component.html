@@ -1,0 +1,9 @@
+@if (progress(); as state) {
+  <tc-stepper
+    [steps]="steps"
+    [currentStep]="state.currentStep"
+    [terminalStatus]="state.terminalStatus"
+    mode="progress"
+    ariaLabel="Avance del movimiento de inventario"
+  />
+}

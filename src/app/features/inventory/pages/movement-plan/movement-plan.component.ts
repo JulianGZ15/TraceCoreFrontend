@@ -17,6 +17,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
 import { ObservationEditorComponent } from '../../components/observation-editor/observation-editor.component';
 
 import { Spinner } from '../../../../shared/ui/page';
+import { StepperComponent, StepperStep } from '../../../../shared/ui/stepper/stepper.component';
 
 @Component({
   selector: 'tc-inventory-movement-plan',
@@ -28,7 +29,7 @@ import { Spinner } from '../../../../shared/ui/page';
     YardPickerComponent,
     InventoryNavComponent,
     ObservationEditorComponent,
-    Spinner, DateFieldComponent],
+    Spinner, DateFieldComponent, StepperComponent],
   templateUrl: './movement-plan.component.html',
   styleUrl: './movement-plan.component.scss',
 })
@@ -41,6 +42,12 @@ export class MovementPlanComponent extends InventoryForm {
   readonly proposal = signal(false);
   readonly step = signal(1);
   readonly direction = signal<'forward' | 'backward'>('forward');
+  readonly steps: readonly StepperStep[] = [
+    { label: 'Contexto' },
+    { label: 'Raíces' },
+    { label: 'Destino' },
+    { label: 'Revisión' },
+  ];
 
   goStep(n: number) {
     if (n > this.step()) this.direction.set('forward');
