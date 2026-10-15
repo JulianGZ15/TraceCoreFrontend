@@ -17,6 +17,7 @@ export class LookupComponent extends InventoryPage {
   readonly filters = input<Record<string, string | number | boolean | null | undefined>>({});
   readonly value = input('');
   readonly title = input('Seleccionar');
+  readonly eligibleOnly = input(false);
   readonly picked = output<string>();
   readonly choices = signal<{ uuid: string; label: string; disabled: boolean }[]>([]);
   readonly suggestions = computed(() => this.choices().map((choice) => ({ value: choice.uuid, label: choice.label, disabled: choice.disabled })));
@@ -44,14 +45,18 @@ export class LookupComponent extends InventoryPage {
 
   async load(query = ''): Promise<EntityOption[]> {
     const k = this.kind();
-    const path = k === 'parties' ? '/party-options' : '/' + k;
+    const unlocatedForYard = k === 'assets' ? this.filters()['unlocatedForYard'] : null;
+    const path = k === 'parties' ? '/party-options' : k === 'assets' && unlocatedForYard ? '/assets/unlocated' : '/' + k;
+    const filters = { ...this.filters() };
+    delete filters['unlocatedForYard'];
+    if (unlocatedForYard) filters['yardUuid'] = unlocatedForYard as string;
     const request = ++this.searchSequence;
     const epoch = this.session.epoch();
     this.busy.set(true);
     this.error.set('');
     try {
       const rows = await this.api.get<Record<string, unknown>[]>(path, {
-        ...this.filters(),
+        ...filters,
         offset: 0,
         limit: 25,
         ...(query.trim() ? { search: query.trim() } : {}),
@@ -72,6 +77,7 @@ export class LookupComponent extends InventoryPage {
               String(r['name'] ?? r['tradeName'] ?? r['state'] ?? r['uuid']),
             disabled:
               (k === 'movements' && r['type'] !== 'ADJUSTMENT') ||
+              (k === 'assets' && this.eligibleOnly() && r['internalMoveEligible'] !== true) ||
               r['active'] === false ||
               r['lifecycle'] === 'RETIRED' ||
               (k === 'reservations' && r['state'] !== 'CONFIRMED'),

@@ -18,6 +18,8 @@
   {{
     proposal()
       ? 'Captura manual de propuesta: no mueve inventario.'
+    : internalLocationFlow()
+      ? 'El movimiento interno se registra al guardar y queda en el historial.'
       : 'Guardar prepara un borrador; la salida se confirma después.'
   }}
 </p>
@@ -62,6 +64,7 @@
               kind="assets"
               [title]="'Raíz ' + (i + 1)"
               [filters]="sourceFilters()"
+              [eligibleOnly]="internalLocationFlow()"
               [value]="g.get('assetUuid')?.value"
               (picked)="pick(g, 'assetUuid', $event)"
             />
@@ -249,7 +252,7 @@
       @if (busy()) {
         <tc-spinner size="sm" [light]="true" message="Guardando…" />
       } @else {
-        {{ step() < 4 ? 'Siguiente' : proposal() ? 'Guardar propuesta' : 'Preparar borrador' }}
+        {{ step() < 4 ? 'Siguiente' : proposal() ? 'Guardar propuesta' : internalLocationFlow() && form.controls.destinationYardUuid.value === yard() ? 'Registrar movimiento interno' : 'Preparar borrador' }}
       }
     </button>
   </div>

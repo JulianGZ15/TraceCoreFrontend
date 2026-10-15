@@ -42,6 +42,10 @@
       </p>
     }
     <div class="actions">
+      @if (access.can('MOVEMENT_MANAGE', l.yardUuid)) {
+        <button class="btn primary" type="button" (click)="addUnlocated()">Agregar equipos sin ubicación</button>
+        <button class="btn secondary" type="button" [disabled]="!selectedRoots().length" (click)="moveSelected()">Mover seleccionados ({{ selectedRoots().length }})</button>
+      }
       @if (access.can('INVENTORY_MANAGE', l.yardUuid)) {
         <button class="btn primary" (click)="edit()">Editar</button>
       }
@@ -55,5 +59,64 @@
         >Equipos del subárbol</a
       >
     </div>
+  </section>
+  <section class="panel">
+    <h2>Equipos en esta ubicación y sus descendientes</h2>
+    <tc-data-table label="Equipos en la ubicación" appearance="embedded" [busy]="busy()" minTableWidth="840px">
+      <table>
+        <caption class="sr-only">Equipos en {{ l.code }} · {{ l.name }} y sus descendientes</caption>
+        <thead><tr><th>Seleccionar raíz</th><th>Equipo</th><th>Jerarquía</th><th>Ubicación</th><th>Situación</th><th></th></tr></thead>
+        <tbody>
+          @for (asset of assets(); track asset.uuid) {
+            <tr>
+              <td>
+                @if (asset.uuid === asset.rootAssetUuid && asset.internalMoveEligible) {
+                  <input type="checkbox" [attr.aria-label]="'Seleccionar ' + asset.internalCode" [checked]="selectedRoots().includes(asset.uuid)" (change)="toggleRoot(asset.uuid, $any($event.target).checked)" />
+                } @else if (asset.uuid !== asset.rootAssetUuid) {
+                  La raíz mueve el conjunto
+                } @else {
+                  No elegible
+                }
+              </td>
+              <td><strong>{{ asset.internalCode }}</strong><br />{{ asset.serialNumber ?? 'Sin serie' }}</td>
+              <td>{{ asset.uuid === asset.rootAssetUuid ? 'Raíz' : 'Componente de conjunto' }}</td>
+              <td>{{ asset.locationCode ? asset.locationCode + ' · ' + asset.locationName : 'Sin ubicación' }}</td>
+              <td>{{ label(asset.placementState) }}</td>
+              <td><a class="btn secondary" [routerLink]="['/inventario/equipos', asset.uuid, 'actual']">Abrir</a></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6">No hay equipos en esta ubicación o página.</td></tr>
+          }
+        </tbody>
+      </table>
+      <tc-pagination tableFooter [offset]="offset()" [limit]="limit()" [count]="assets().length" [busy]="busy()" (move)="page($event)" (resize)="query({ limit: $event, offset: 0 })" />
+    </tc-data-table>
+  </section>
+  <section class="panel">
+    <h2>Historial de movimientos de esta ubicación y sus descendientes</h2>
+    <tc-data-table label="Movimientos de la ubicación" appearance="embedded" [busy]="busy()" minTableWidth="900px">
+      <table>
+        <caption class="sr-only">Historial de movimientos de {{ l.code }} · {{ l.name }}</caption>
+        <thead><tr><th>Folio / fecha</th><th>Equipos</th><th>Origen → destino</th><th>Motivo</th><th>Responsable</th></tr></thead>
+        <tbody>
+          @for (event of movements(); track event.movement.uuid) {
+            <tr>
+              <td>
+                {{ event.movement.folio }}<br />Asignado/solicitado: {{ date(event.movement.createdOn) }}
+                @if (event.movement.dispatchedAt) {<br />Salida: {{ date(event.movement.dispatchedAt) }} }
+                @if (event.movement.receivedAt) {<br />Recepción: {{ date(event.movement.receivedAt) }} }
+              </td>
+              <td class="long">@for (item of event.items; track item.assetUuid) { {{ item.internalCode }}<br /> }</td>
+              <td class="long">@for (item of event.items; track item.assetUuid) { {{ locationText(item.sourceLocation) }} → {{ locationText(item.destinationLocation) }}<br /> }</td>
+              <td>{{ event.movement.reason }}</td>
+              <td class="mono">{{ event.movement.dispatchedBy ?? event.movement.receivedBy ?? 'Sin dato' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5">Sin movimientos en esta ubicación.</td></tr>
+          }
+        </tbody>
+      </table>
+      <tc-pagination tableFooter [offset]="offset()" [limit]="limit()" [count]="movements().length" [busy]="busy()" (move)="page($event)" (resize)="query({ limit: $event, offset: 0 })" />
+    </tc-data-table>
   </section>
 }

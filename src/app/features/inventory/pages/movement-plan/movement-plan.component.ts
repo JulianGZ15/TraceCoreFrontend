@@ -40,6 +40,7 @@ export class MovementPlanComponent extends InventoryForm {
   readonly rfidPending = inject(RfidPending);
   readonly previousStep = (n: number) => n - 1;
   readonly proposal = signal(false);
+  readonly internalLocationFlow = signal(false);
   readonly step = signal(1);
   readonly direction = signal<'forward' | 'backward'>('forward');
   readonly steps: readonly StepperStep[] = [
@@ -90,8 +91,25 @@ export class MovementPlanComponent extends InventoryForm {
   ngOnInit() {
     this.proposal.set(this.route.snapshot.data['proposal'] === true || !!this.rfidPassage());
     this.yard.set(this.rfidYard() || this.route.snapshot.queryParamMap.get('yardUuid') || this.session.selectedYard());
+    const query = this.route.snapshot.queryParamMap;
+    this.internalLocationFlow.set(query.get('internal') === 'true');
+    const initialType = query.get('type');
+    if (initialType === 'INBOUND' || initialType === 'TRANSFER') this.form.controls.type.setValue(initialType);
+    if (this.internalLocationFlow() && !query.get('sourceReference')) this.form.controls.sourceReference.setValue('Ubicación interna');
+    if (query.get('destinationYardUuid')) this.form.controls.destinationYardUuid.setValue(query.get('destinationYardUuid')!);
     if (this.rfidPassage() && this.rfidDirection() === 'ENTRY') this.form.controls.destinationYardUuid.setValue(this.rfidYard());
-    this.addRoot();
+    const selectedAssets = (query.get('assetUuids') ?? '').split(',').filter(Boolean);
+    if (selectedAssets.length) {
+      for (const assetUuid of selectedAssets.slice(0, 100)) {
+        this.addRoot();
+        const root = this.roots.at(this.roots.length - 1);
+        root.get('assetUuid')?.setValue(assetUuid);
+        root.get('destinationLocationUuid')?.setValue(query.get('destinationLocationUuid') ?? '');
+      }
+    } else {
+      this.addRoot();
+      this.roots.at(0).get('destinationLocationUuid')?.setValue(query.get('destinationLocationUuid') ?? '');
+    }
     this.form.markAsPristine();
   }
   addRoot() {
@@ -136,15 +154,12 @@ export class MovementPlanComponent extends InventoryForm {
     this.form.markAsDirty();
   }
   sourceFilters() {
+    if (this.form.controls.type.value === 'INBOUND') return { unlocatedForYard: this.yard(), rootsOnly: true };
     return {
       yardUuid: this.form.controls.type.value === 'RETURN' ? null : this.yard(),
       rootsOnly: true,
       placementState:
-        this.form.controls.type.value === 'INBOUND'
-          ? 'UNLOCATED'
-          : this.form.controls.type.value === 'RETURN'
-            ? 'EXTERNAL_SITE'
-            : 'YARD',
+        this.form.controls.type.value === 'RETURN' ? 'EXTERNAL_SITE' : 'YARD',
     };
   }
   async save() {
@@ -206,11 +221,14 @@ export class MovementPlanComponent extends InventoryForm {
             void this.router.navigate(['/inventario/propuestas', r.proposal.uuid]);
           },
         );
-      } else
-        await this.submitKeyed<M.MovementDetail>('/movements', movement, (r) => {
+      } else {
+        const internal = this.internalLocationFlow() && v.destinationYardUuid === this.yard() && (v.type === 'INBOUND' || v.type === 'TRANSFER');
+        const internalCrossYard = this.internalLocationFlow() && v.type === 'TRANSFER' && v.destinationYardUuid && v.destinationYardUuid !== this.yard();
+        await this.submitKeyed<M.MovementDetail>(internal ? '/movements/internal' : internalCrossYard ? '/movements/internal/prepare' : '/movements', movement, (r) => {
           this.form.markAsPristine();
           void this.router.navigate(['/inventario/movimientos', r.movement.uuid]);
         });
+      }
     } catch (e) {
       this.error.set(String(e));
     }

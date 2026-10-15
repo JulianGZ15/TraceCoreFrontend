@@ -38,6 +38,7 @@ export class AssetComponent extends InventoryForm {
     ].map(([key, label]) => ({ label, route: ['/inventario/equipos', this.id(), key] })),
   );
   readonly profile = signal<M.Profile | null>(null);
+  readonly currentLocation = signal<M.Location | null>(null);
   readonly rows = signal<(M.Assignment | M.Custody)[]>([]);
   readonly placements = signal<M.Assignment[]>([]);
   readonly custodians = signal<M.Custody[]>([]);
@@ -52,8 +53,10 @@ export class AssetComponent extends InventoryForm {
   protected override resourceChanged() {
     super.resourceChanged();
     this.profile.set(null);
+    this.currentLocation.set(null);
     this.rows.set([]);
     this.placements.set([]);
+    this.locationMovements.set([]);
     this.custodians.set([]);
     this.result.set(null);
   }
@@ -66,9 +69,10 @@ export class AssetComponent extends InventoryForm {
     await this.request(
       async () => {
         const p = await this.api.get<M.Profile>('/assets/' + this.id());
-        const y = p.assignment?.locationUuid
-          ? (await this.api.get<M.Location>('/locations/' + p.assignment.locationUuid)).yardUuid
-          : (p.transit?.sourceYardUuid ?? p.custody?.yardUuid ?? null);
+        const location = p.assignment?.locationUuid
+          ? await this.api.get<M.Location>('/locations/' + p.assignment.locationUuid)
+          : null;
+        const y = location?.yardUuid ?? p.transit?.sourceYardUuid ?? p.custody?.yardUuid ?? null;
         const a =
           this.section === 'ubicacion'
             ? await this.api.get<M.Assignment[]>('/assets/' + this.id() + '/locations', {
@@ -83,16 +87,39 @@ export class AssetComponent extends InventoryForm {
                 limit: this.limit(),
               })
             : [];
-        return { p, y, a, c };
+        const movements = this.section === 'ubicacion'
+          ? await this.api.get<M.LocationMovement[]>('/assets/' + this.id() + '/movements', { offset: this.offset(), limit: this.limit() })
+          : [];
+        return { p, y, location, a, c, movements };
       },
       (v) => {
         this.profile.set(v.p);
         this.currentYard.set(v.y);
+        this.currentLocation.set(v.location);
         this.placements.set(v.a);
+        this.locationMovements.set(v.movements);
         this.custodians.set(v.c);
         this.rows.set(this.section === 'ubicacion' ? v.a : v.c);
       },
     );
+  }
+  readonly locationMovements = signal<M.LocationMovement[]>([]);
+  readonly canChangeLocation = computed(() => {
+    const p = this.profile();
+    const eligible = !!p && !p.transit && (p.placementState === 'YARD' || p.placementState === 'UNLOCATED') && p.custody?.mode !== 'RENTAL' && !p.custody?.partyUuid;
+    return eligible && this.access.can('MOVEMENT_MANAGE', this.currentYard() ?? this.yard());
+  });
+  changeLocation() {
+    const p = this.profile();
+    if (!p || !this.canChangeLocation()) return;
+    const yardUuid = this.currentYard() ?? this.yard();
+    void this.router.navigate(['/inventario/movimientos/nuevo'], { queryParams: {
+      yardUuid: yardUuid || null,
+      type: p.placementState === 'UNLOCATED' ? 'INBOUND' : 'TRANSFER',
+      destinationYardUuid: yardUuid || null,
+      assetUuids: p.asset.uuid,
+      internal: 'true',
+    } });
   }
   async availability() {
     this.form.markAllAsTouched();

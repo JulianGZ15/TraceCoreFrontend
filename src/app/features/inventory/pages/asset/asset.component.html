@@ -19,8 +19,12 @@
     <p>{{ label(p.asset.lifecycle) }} · {{ label(p.placementState) }}</p>
     @if (section === 'actual') {
       <p class="long">
-        Ubicación: {{ p.assignment?.locationUuid ?? p.assignment?.siteUuid ?? 'Sin posición' }}
+        Ubicación:
+        {{ currentLocation() ? currentLocation()!.code + ' · ' + currentLocation()!.name : p.assignment?.siteUuid ? 'Sitio externo' : 'Sin posición' }}
       </p>
+      @if (canChangeLocation()) {
+        <button class="btn primary" type="button" (click)="changeLocation()">Asignar o mover ubicación</button>
+      }
       <p>
         Peso bruto:
         {{
@@ -53,6 +57,33 @@
       }
     }
     @if (section === 'ubicacion') {
+      <h2>Historial de movimientos de ubicación</h2>
+      <tc-data-table label="Historial de movimientos de ubicación" appearance="embedded" [busy]="busy()" minTableWidth="800px">
+        <table>
+          <caption class="sr-only">Historial de movimientos de ubicación</caption>
+          <thead><tr><th>Movimiento / fecha</th><th>Equipo</th><th>Origen → destino</th><th>Motivo</th><th>Responsable</th></tr></thead>
+          <tbody>
+            @for (event of locationMovements(); track event.movement.uuid) {
+              @for (item of event.items; track item.assetUuid) {
+                <tr>
+                  <td>
+                    {{ event.movement.folio }}<br />Asignado/solicitado: {{ date(event.movement.createdOn) }}
+                    @if (event.movement.dispatchedAt) {<br />Salida: {{ date(event.movement.dispatchedAt) }} }
+                    @if (event.movement.receivedAt) {<br />Recepción: {{ date(event.movement.receivedAt) }} }
+                  </td>
+                  <td><a [routerLink]="['/inventario/equipos', item.assetUuid, 'actual']">{{ item.internalCode }}</a></td>
+                  <td>{{ item.sourceLocation ? item.sourceLocation.code + ' · ' + item.sourceLocation.name : 'Sin ubicación' }} → {{ item.destinationLocation ? item.destinationLocation.code + ' · ' + item.destinationLocation.name : 'Sin ubicación' }}</td>
+                  <td class="long">{{ event.movement.reason }}</td>
+                  <td class="mono">{{ event.movement.dispatchedBy ?? event.movement.receivedBy ?? 'Sin dato' }}</td>
+                </tr>
+              }
+            } @empty {
+              <tr><td colspan="5">Sin movimientos registrados.</td></tr>
+            }
+          </tbody>
+        </table>
+        <tc-pagination tableFooter [offset]="offset()" [limit]="limit()" [count]="locationMovements().length" [busy]="busy()" (move)="page($event)" (resize)="query({ limit: $event, offset: 0 })" />
+      </tc-data-table>
       <tc-data-table
         label="Expediente físico"
         appearance="embedded"

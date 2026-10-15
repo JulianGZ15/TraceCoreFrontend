@@ -72,9 +72,12 @@ export interface AssetRow {
   rootAssetUuid: string;
   yardUuid: string | null;
   locationUuid: string | null;
+  locationCode?: string | null;
+  locationName?: string | null;
   siteUuid: string | null;
   transitMovementUuid: string | null;
   placementState: Placement;
+  internalMoveEligible?: boolean;
 }
 export interface IdentifierLabel {
   asset: IdentifierAsset;
@@ -149,6 +152,8 @@ export interface Movement extends Versioned {
   createdOn: string;
   dispatchedAt: string | null;
   receivedAt: string | null;
+  dispatchedBy?: string | null;
+  receivedBy?: string | null;
   authorizationReference: string | null;
   repairAuthorizationReference: string | null;
 }
@@ -170,6 +175,17 @@ export interface MovementDetail {
   manifestUuid?:string|null;
   movement: Movement;
   items: MovementItem[];
+}
+export interface LocationMovementItem {
+  assetUuid: string;
+  rootAssetUuid: string;
+  internalCode: string;
+  sourceLocation: Location | null;
+  destinationLocation: Location | null;
+}
+export interface LocationMovement {
+  movement: Movement;
+  items: LocationMovementItem[];
 }
 export interface RootInput {
   assetUuid: string;
