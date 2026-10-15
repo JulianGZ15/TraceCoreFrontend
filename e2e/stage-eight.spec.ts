@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { acceptAppConfirmation } from './confirmation';
 import { logisticsFixture, lids } from './logistics-fixture';
 import { login, expectNoPageOverflow } from './api-fixture';
 test('yard logistics reader reaches manifest without catalog or party permissions', async ({
@@ -40,8 +41,8 @@ test('trip conflict preserves fields and requires explicit reload before confirm
   f.conflict = false;
   f.trip.version = 3;
   f.manifest.version = 5;
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Consultar datos actuales' }).click();
+  await acceptAppConfirmation(page);
   await dialog.getByRole('button', { name: 'Guardar', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   expect(f.writes[1].body.version).toBe(3);
@@ -75,8 +76,8 @@ test('partial delivery captures every component and preserves the other root', a
   await page.getByLabel('Condición común').selectOption('SERVICEABLE');
   await page.getByLabel('Observación común').fill('Recepción declarada sin inspección técnica');
   await page.getByRole('button', { name: 'Aplicar explícitamente a estas piezas' }).click();
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Confirmar entrega seleccionada' }).click();
+  await acceptAppConfirmation(page);
   await expect(page).toHaveURL(/entregas\//);
   expect(f.writes[0].body.roots).toHaveLength(1);
   expect(f.writes[0].body.roots[0].pieces).toHaveLength(2);
@@ -90,6 +91,9 @@ for (const width of [390, 768, 1280, 1440])
     for (const section of ['general', 'carga', 'viaje', 'comprobaciones', 'evidencias']) {
       await page.goto('/logistica/manifiestos/' + lids.manifest + '/' + section);
       await expect(page.locator('tc-page-heading')).toBeVisible();
+      const navs = page.locator('tc-page-heading nav.page-nav');
+      await expect(navs).toHaveCount(1);
+      await expect(navs.first()).not.toContainText('Manifiestos');
       await expectNoPageOverflow(page);
       await page.screenshot({
         path: info.outputPath('logistics-' + section + '-' + width + '.png'),

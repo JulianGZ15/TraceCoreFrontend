@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { acceptAppConfirmation } from './confirmation';
 import { commerceFixture, cids } from './commerce-fixture';
 import { login, expectNoPageOverflow, ids } from './api-fixture';
 test('yard reader without other modules can open direct commercial routes', async ({ page }) => {
@@ -40,8 +41,8 @@ test('line conflict preserves exact draft and does not retry', async ({ page }) 
   f.conflict = false;
   f.line.version = 2;
   f.order.version = 3;
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Consultar datos actuales' }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog.getByLabel('Concepto', { exact: true })).toHaveValue(
     'Conservar revisión local',
   );
@@ -81,9 +82,9 @@ test('obsolete preview retains interval; definitive request includes fingerprint
   await page.getByLabel('Fin con offset').fill('2026-10-02T12:00:00Z');
   await page.getByRole('button', { name: /Previsualizar en servidor/ }).click();
   await expect(page.getByText('1234.5678').first()).toBeVisible();
-  page.on('dialog', (d) => d.accept());
   f.previewConflict = true;
   await page.getByRole('button', { name: /Confirmar corte/ }).click();
+  await acceptAppConfirmation(page);
   await expect(page.getByText(/Conflicto:/)).toBeVisible();
   await expect(page.getByLabel('Fin con offset')).toHaveValue('2026-10-02T12:00:00Z');
   expect(f.writes.find((w) => w.path === '/billings').body.expectedCalculationFingerprint).toBe(
@@ -114,6 +115,11 @@ for (const width of [390, 768, 1280, 1440])
     ]) {
       await page.goto(path);
       await expect(page.locator('tc-page-heading')).toBeVisible();
+      if (name === 'dossier') {
+        const navs = page.locator('tc-page-heading nav.page-nav');
+        await expect(navs).toHaveCount(1);
+        await expect(navs.first()).not.toContainText('Rentas');
+      }
       await expectNoPageOverflow(page);
       await page.screenshot({ path: info.outputPath(name + '-' + width + '.png'), fullPage: true });
     }

@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { acceptAppConfirmation } from './confirmation';
 import fs from 'node:fs/promises';
 export async function commerceLive(page: Page) {
   const email = process.env['TRACECORE_ADMIN_EMAIL']!;
@@ -220,8 +221,8 @@ export async function commerceLive(page: Page) {
   await page.getByLabel('Fin con offset').fill(end);
   await page.getByRole('button', { name: 'Previsualizar en servidor' }).click();
   await expect(page.getByRole('button', { name: 'Confirmar corte definitivo' })).toBeVisible();
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Confirmar corte definitivo' }).click();
+  await acceptAppConfirmation(page);
   await expect(page).toHaveURL(/comercial\/cortes\/[a-f0-9-]{36}$/);
   const billing = await get('/commercial/billings/' + page.url().split('/').at(-1));
   expect(typeof billing.amountExact).toBe('string');

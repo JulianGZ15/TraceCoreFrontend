@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { acceptAppConfirmation } from './confirmation';
 import fs from 'node:fs/promises';
 export async function logisticsLive(page: Page) {
   const email = process.env['TRACECORE_ADMIN_EMAIL']!;
@@ -185,8 +186,8 @@ export async function logisticsLive(page: Page) {
   await expect(page).toHaveURL(/logistica\/comprobaciones/);
   await page.goto('/logistica/manifiestos/' + uuid + '/despacho');
   await page.getByLabel('Referencia de autorización de salida').fill('Autorización de traslado');
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: /Confirmar salida/ }).click();
+  await acceptAppConfirmation(page);
   await expect
     .poll(async () => (await get('/logistics/manifests/' + uuid + '/summary')).manifest.state)
     .toBe('IN_TRANSIT');
@@ -216,8 +217,8 @@ export async function logisticsLive(page: Page) {
     await page.getByLabel('Condición común').selectOption('SERVICEABLE');
     await page.getByLabel('Observación común').fill('Recepción declarada');
     await page.getByRole('button', { name: 'Aplicar explícitamente a estas piezas' }).click();
-    page.once('dialog', (d) => d.accept());
     await page.getByRole('button', { name: 'Confirmar entrega seleccionada' }).click();
+    await acceptAppConfirmation(page);
     await expect(page).toHaveURL(/logistica\/entregas/);
     expect((await get('/logistics/manifests/' + uuid + '/summary')).manifest.state).toBe(
       i === 0 ? 'PARTIALLY_DELIVERED' : 'DELIVERED',

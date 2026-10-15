@@ -1,5 +1,6 @@
-<tc-page-nav [items]="moduleItems()" ariaLabel="Navegación de finanzas" />
 @if (sectionItems().length > 0) {
   <tc-page-nav [items]="sectionItems()" ariaLabel="Secciones financieras" />
+} @else {
+  <tc-page-nav [items]="moduleItems()" ariaLabel="Navegación de finanzas" />
 }
 

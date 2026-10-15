@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { RouterLink } from '@angular/router';
 import { LogisticsPending } from '../../pending';
 import { Pending, Entity } from '../../models';
 import { message } from '../../rules';
+import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'tc-logistics-pending-requests',
   imports: [RouterLink],
@@ -11,11 +13,19 @@ import { message } from '../../rules';
 })
 export class PendingRequestsComponent {
   readonly pending = inject(LogisticsPending);
+  readonly dialog = inject(Dialog);
   readonly error = signal('');
   readonly busy = signal(false);
   readonly recovered = signal<{ uuid: string; path: string } | null>(null);
   async act(p: Pending, recover: boolean) {
-    if (!recover && !window.confirm('¿Repetir exactamente la misma solicitud, clave y datos?'))
+    if (
+      !recover &&
+      !(await confirm(
+        this.dialog,
+        'Repetir solicitud logística',
+        'Se repetirá exactamente la misma solicitud, conservando clave y datos.',
+      ))
+    )
       return;
     this.busy.set(true);
     try {

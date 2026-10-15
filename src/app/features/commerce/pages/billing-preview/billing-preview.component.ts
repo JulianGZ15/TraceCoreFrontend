@@ -23,6 +23,8 @@ import { form, message, instant, exact } from '../../rules';
 import { inject } from '@angular/core';
 import { takeUntil } from 'rxjs';
 import { CommercePending } from '../../pending';
+import { Dialog } from '@angular/cdk/dialog';
+import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'tc-commerce-billing-preview',
   imports: [
@@ -43,6 +45,7 @@ export class BillingPreviewComponent extends CommercePage {
   readonly assignment = signal<Entity | null>(null);
   readonly preview = signal<Preview | null>(null);
   readonly pending = inject(CommercePending);
+  readonly confirmationDialog = inject(Dialog);
   readonly busy = signal(false);
   key = crypto.randomUUID();
   fields: Field[] = [
@@ -91,9 +94,11 @@ export class BillingPreviewComponent extends CommercePage {
     if (
       !p ||
       !this.can('RENTAL_BILL') ||
-      !window.confirm(
-        'Registrar este corte administrativo definitivo? Los mínimos y periodos iniciados se aplican por segmento.',
-      )
+      !(await confirm(
+        this.confirmationDialog,
+        'Registrar corte administrativo definitivo',
+        'Los mínimos y periodos iniciados se aplicarán por segmento.',
+      ))
     )
       return;
     this.busy.set(true);

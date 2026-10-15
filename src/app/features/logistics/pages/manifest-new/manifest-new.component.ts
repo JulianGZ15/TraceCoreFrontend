@@ -1,4 +1,5 @@
 import { takeUntil } from 'rxjs';
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -12,6 +13,7 @@ import { PageHeading, Feedback, Spinner } from '../../../../shared/ui/page';
 import { form, message, label } from '../../rules';
 import { Entity, Field, MovementDetail } from '../../models';
 import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
+import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'tc-logistics-manifest-new',
   imports: [
@@ -29,6 +31,7 @@ import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
 })
 export class ManifestNewComponent extends LogisticsPage {
   readonly unsaved = inject(UnsavedChanges);
+  readonly confirmationDialog = inject(Dialog);
   readonly pending = inject(LogisticsPending);
   readonly root = viewChild(MovementRootComponent);
   readonly step = signal(1);
@@ -196,9 +199,13 @@ export class ManifestNewComponent extends LogisticsPage {
     this.freezeContext();
     this.persist();
   }
-  remove(id: string) {
+  async remove(id: string) {
     if (
-      !window.confirm('¿Retirar de la preparación? El movimiento permanece guardado en inventario.')
+      !(await confirm(
+        this.confirmationDialog,
+        'Retirar movimiento de la preparación',
+        'El movimiento permanece guardado en inventario.',
+      ))
     )
       return;
     this.saved.update((rows) => rows.filter((r) => r.movement.uuid !== id));

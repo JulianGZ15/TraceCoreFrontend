@@ -1,4 +1,5 @@
 import { takeUntil } from 'rxjs';
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -12,6 +13,7 @@ import { RecordsComponent } from '../../shared/records/records.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
 import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
+import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
 interface SelectedRoot {
   uuid: string;
   form: FormGroup;
@@ -35,6 +37,7 @@ interface SelectedRoot {
 })
 export class ReceptionComponent extends LogisticsPage {
   readonly unsaved = inject(UnsavedChanges);
+  readonly confirmationDialog = inject(Dialog);
   protected override resourceChanged() {
     this.form.reset();
     this.chosen.set([]);
@@ -175,7 +178,13 @@ export class ReceptionComponent extends LogisticsPage {
         this.chosen().some((r) => !r.form.get('locationUuid')?.value)
       )
         throw new Error('Selecciona ubicación real por raíz.');
-      if (!window.confirm('¿Confirmar la recepción física de todas las raíces seleccionadas?'))
+      if (
+        !(await confirm(
+          this.confirmationDialog,
+          'Confirmar recepción física',
+          'Se confirmará la recepción física de todas las raíces seleccionadas.',
+        ))
+      )
         return;
       this.saving.set(true);
       const result = await this.pending.create<Entity>(

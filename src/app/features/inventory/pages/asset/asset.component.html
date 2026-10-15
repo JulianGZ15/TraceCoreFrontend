@@ -1,5 +1,5 @@
 <tc-page-heading section="Inventario y patios" title="Expediente físico">
-  <tc-inventory-inventory-nav />
+  <tc-page-nav [items]="sectionItems()" ariaLabel="Secciones del expediente físico" />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
 <tc-feedback [message]="success()" kind="success" />
@@ -17,19 +17,6 @@
       >
     }
     <p>{{ label(p.asset.lifecycle) }} · {{ label(p.placementState) }}</p>
-    <nav class="inventory-tabs" aria-label="Expediente físico">
-      @for (s of ['actual', 'ubicacion', 'custodia', 'disponibilidad']; track s) {
-        <a [routerLink]="'/inventario/equipos/' + id() + '/' + s" routerLinkActive="active">{{
-          s === 'actual'
-            ? 'Situación actual'
-            : s === 'ubicacion'
-              ? 'Historial de ubicación'
-              : s === 'custodia'
-                ? 'Custodia'
-                : 'Disponibilidad'
-        }}</a>
-      }
-    </nav>
     @if (section === 'actual') {
       <p class="long">
         Ubicación: {{ p.assignment?.locationUuid ?? p.assignment?.siteUuid ?? 'Sin posición' }}

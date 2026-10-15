@@ -2,7 +2,7 @@
   section="Calidad y mantenimiento"
   title="Expediente técnico"
 >
-  <tc-quality-nav />
+  <tc-page-nav [items]="sectionItems()" ariaLabel="Secciones del expediente técnico" />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
 <tc-feedback
@@ -38,11 +38,6 @@
       }
     </div>
   </section>
-  <nav class="section-nav" aria-label="Secciones del expediente técnico">
-    @for (s of sections; track s[0]) {
-      <a [routerLink]="['/calidad/equipos', r.uuid, s[0]]" routerLinkActive="active">{{ s[1] }}</a>
-    }
-  </nav>
   @switch (section()) {
     @case ('resumen') {
       <section class="panel">

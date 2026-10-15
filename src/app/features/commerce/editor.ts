@@ -1,15 +1,17 @@
 import { Directive, inject, input, output, signal, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { CommerceApi } from './commerce-api';
 import { CommerceAccess } from './access';
 import { CommercePending } from './pending';
 import { EditorContext, Entity, Field } from './models';
 import { form, message } from './rules';
 import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
+import { confirm } from '../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Directive()
 export abstract class CommerceEditor implements OnInit {
   readonly unsaved = inject(UnsavedChanges);
+  readonly confirmationDialog = inject(Dialog);
   readonly api = inject(CommerceApi);
   readonly session = this.api.session;
   readonly access = inject(CommerceAccess);
@@ -72,9 +74,11 @@ export abstract class CommerceEditor implements OnInit {
   async refresh() {
     if (
       this.busy() ||
-      !window.confirm(
-        'Consultar la versión actual y conservar los campos capturados? Revisa las diferencias antes de guardar otra vez.',
-      )
+      !(await confirm(
+        this.confirmationDialog,
+        'Consultar versión actual',
+        'Se conservarán los campos capturados. Revisa las diferencias antes de guardar otra vez.',
+      ))
     )
       return;
     const epoch = this.session.epoch(),

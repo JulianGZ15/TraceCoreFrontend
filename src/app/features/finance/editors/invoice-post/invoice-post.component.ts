@@ -11,6 +11,7 @@ import { FieldsComponent } from '../../shared/fields/fields.component';
   styleUrl: './invoice-post.component.scss',
 })
 export class InvoicePostComponent extends FinanceEditor {
+  protected override requiresSaveConfirmation = false;
   override title = 'Confirmar factura';
   override permission = 'FINANCE_APPROVE';
   override resource = 'invoices';

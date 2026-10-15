@@ -16,19 +16,22 @@
   <p>
     De 1 a 500 fuentes, sin duplicados. Cada importe es neto y conserva la precisión de su divisa.
   </p>
-  <tc-finance-lookup
-    [resource]="sourceResource"
-    [params]="sourceParams"
-    [formControl]="source"
-    [title]="kind === 'INVOICE' ? 'Cargo disponible' : 'Partida de factura'"
-  /><button
-    class="btn secondary"
-    type="button"
-    [disabled]="!source.value || loading()"
-    (click)="append()"
-  >
-    Agregar fuente
-  </button>
+  <div class="source-selection">
+    <tc-finance-lookup
+      [resource]="sourceResource"
+      [params]="sourceParams"
+      [formControl]="source"
+      [title]="kind === 'INVOICE' ? 'Cargo disponible' : 'Partida de factura'"
+    />
+    <button
+      class="btn secondary"
+      type="button"
+      [disabled]="!source.value || loading()"
+      (click)="append()"
+    >
+      Agregar fuente
+    </button>
+  </div>
   @for (p of parts.controls; track p; let index = $index) {
     <div class="part" [formGroup]="p">
       <span class="mono uuid">{{ p.get('sourceUuid')?.value }}</span

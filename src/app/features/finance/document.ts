@@ -1,4 +1,5 @@
 import { Directive, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormArray, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -8,8 +9,10 @@ import { FinancePending } from './pending';
 import { Calculation, Field, Currency, InvoiceDetail, Entity } from './models';
 import { form, instant, message, exact, numberText, entity, routeFor, optional } from './rules';
 import { decimalValidator } from '../equipment/rules';
+import { confirm } from '../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Directive()
 export abstract class FinanceDocument implements OnInit, OnDestroy {
+  readonly confirmationDialog = inject(Dialog);
   readonly api = inject(FinanceApi);
   readonly session = this.api.session;
   readonly access = inject(FinanceAccess);
@@ -208,11 +211,13 @@ export abstract class FinanceDocument implements OnInit, OnDestroy {
       return;
     }
     if (
-      !window.confirm(
+      !(await confirm(
+        this.confirmationDialog,
+        this.kind === 'INVOICE' ? 'Guardar borrador de factura' : 'Confirmar nota de crédito',
         this.kind === 'INVOICE'
-          ? '¿Guardar factura DRAFT? Su confirmación será independiente.'
-          : '¿Confirmar esta nota de crédito?',
-      )
+          ? 'Se guardará la factura como borrador. Su confirmación posterior será una operación independiente.'
+          : 'Se confirmará esta nota de crédito.',
+      ))
     )
       return;
     if (

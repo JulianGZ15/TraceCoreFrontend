@@ -1,4 +1,5 @@
 import { Directive, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormGroup } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -8,9 +9,11 @@ import { FinanceAccess } from './access';
 import { EditorData, Entity, Field, Operation } from './models';
 import { form, message, entity } from './rules';
 import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
+import { confirm } from '../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Directive()
 export abstract class FinanceEditor implements OnInit, OnDestroy {
   readonly unsaved = inject(UnsavedChanges);
+  readonly confirmationDialog = inject(Dialog);
   readonly api = inject(FinanceApi);
   readonly session = this.api.session;
   readonly access = inject(FinanceAccess);
@@ -19,6 +22,7 @@ export abstract class FinanceEditor implements OnInit, OnDestroy {
   data: EditorData = inject(DIALOG_DATA, { optional: true }) ?? {};
   title = 'Operación financiera';
   hint = '';
+  protected requiresSaveConfirmation = true;
   permission = 'FINANCE_MANAGE';
   fields: Field[] = [];
   form: FormGroup = form([]);
@@ -51,7 +55,12 @@ export abstract class FinanceEditor implements OnInit, OnDestroy {
       !this.compatible() ||
       this.form.invalid ||
       !this.access.can(this.permission) ||
-      !window.confirm('¿Confirmar esta operación financiera?')
+      (this.requiresSaveConfirmation &&
+        !(await confirm(
+          this.confirmationDialog,
+          'Confirmar operación financiera',
+          '¿Confirmas esta operación financiera?',
+        )))
     )
       return;
     const epoch = this.session.epoch();
@@ -76,7 +85,11 @@ export abstract class FinanceEditor implements OnInit, OnDestroy {
   async refresh() {
     if (
       this.busy() ||
-      !window.confirm('¿Consultar el estado actual y conservar el borrador para revisarlo?')
+      !(await confirm(
+        this.confirmationDialog,
+        'Consultar estado actual',
+        'Se conservará el borrador para que puedas revisarlo antes de continuar.',
+      ))
     )
       return;
     const draft = this.form.getRawValue();

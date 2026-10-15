@@ -44,6 +44,10 @@ test('directorio por patio sin permisos de catálogo y evidencias centralizadas'
   await expect(
     page.getByRole('heading', { name: 'Preparación técnica por miembro' }),
   ).toBeVisible();
+  const navs = page.locator('tc-page-heading nav.page-nav');
+  await expect(navs).toHaveCount(1);
+  await expect(navs.first()).toContainText('Certificaciones');
+  await expect(navs.first()).not.toContainText('Equipos');
   await page.goto('/calidad/evidencias');
   await expect(page).toHaveURL(/sin-acceso/);
 });

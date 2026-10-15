@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { CommercePending } from '../../pending';
 import { message } from '../../rules';
 import { Pending } from '../../models';
 import { RouterLink } from '@angular/router';
+import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'tc-commerce-pending-requests',
   imports: [RouterLink],
@@ -11,15 +13,18 @@ import { RouterLink } from '@angular/router';
 })
 export class PendingRequestsComponent {
   readonly pending = inject(CommercePending);
+  readonly dialog = inject(Dialog);
   readonly error = signal('');
   readonly busy = signal(false);
   readonly recovered = signal<{ uuid: string; path: string } | null>(null);
   async act(p: Pending, recover: boolean) {
     if (
       !recover &&
-      !window.confirm(
-        'Repetir exactamente la misma solicitud pendiente, conservando clave y datos?',
-      )
+      !(await confirm(
+        this.dialog,
+        'Repetir solicitud pendiente',
+        'Se repetirá exactamente la misma solicitud pendiente, conservando clave y datos.',
+      ))
     )
       return;
     this.busy.set(true);

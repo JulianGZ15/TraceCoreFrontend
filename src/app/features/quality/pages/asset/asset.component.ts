@@ -1,9 +1,9 @@
-import { Component, signal, input, effect, inject } from '@angular/core';
+import { Component, signal, input, effect, inject, computed } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { PageHeading, Feedback, Pagination, Skeleton, Spinner } from '../../../../shared/ui/page';
+import { PageNav, PageNavItem } from '../../../../shared/ui/page-nav/page-nav.component';
 import { QualityPage } from '../../page-base';
-import { QualityNavComponent } from '../../shared/quality-nav/quality-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { TransitionComponent } from '../../editors/transition/transition.component';
 import { uuidPattern } from '../../rules';
@@ -19,12 +19,11 @@ import { ReleasesComponent } from '../../sections/releases/releases.component';
   selector: 'tc-quality-asset',
   imports: [
     RouterLink,
-    RouterLinkActive,
     PageHeading,
+    PageNav,
     Feedback,
     Skeleton,
     Spinner,
-    QualityNavComponent,
     PendingRequestsComponent,
     PoliciesComponent,
     MaterialsComponent,
@@ -51,6 +50,12 @@ export class AssetComponent extends QualityPage {
     ['retenciones', 'Retenciones'],
     ['liberaciones', 'Liberaciones'],
   ];
+  readonly sectionItems = computed<PageNavItem[]>(() =>
+    this.sections.map(([key, label]) => ({
+      label,
+      route: ['/calidad/equipos', this.id(), key],
+    })),
+  );
   ngOnInit() {
     this.watch(() => {
       const section = this.route.snapshot.paramMap.get('section') ?? 'resumen';

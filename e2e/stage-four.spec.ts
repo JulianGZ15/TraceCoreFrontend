@@ -39,6 +39,7 @@ test('pantallas operativas mantienen contenido y foco en los cuatro tamaños', a
   f.state.movement.state = 'IN_TRANSIT';
   const routes: Record<string, string> = {
     directorio: '/inventario/equipos',
+    expediente: '/inventario/equipos/' + f.asset + '/actual',
     ubicacion: '/inventario/ubicaciones/' + f.location,
     preparacion: '/inventario/movimientos/nuevo?yardUuid=' + f.yard,
     recepcion: '/inventario/movimientos/' + f.move + '/recepcion',
@@ -50,6 +51,11 @@ test('pantallas operativas mantienen contenido y foco en los cuatro tamaños', a
     for (const [name, url] of Object.entries(routes)) {
       await page.goto(url);
       await expect(page.locator('tc-page-heading h1')).toBeVisible();
+      if (name === 'expediente') {
+        const navs = page.locator('tc-page-heading nav.page-nav');
+        await expect(navs).toHaveCount(1);
+        await expect(navs.first()).not.toContainText('Patios');
+      }
       await expect(page.getByText('Cargando…', { exact: true })).toHaveCount(0);
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),

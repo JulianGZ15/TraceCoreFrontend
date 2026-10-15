@@ -1,6 +1,6 @@
 .search-toolbar {
-  padding: 12px;
-  margin-bottom: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
   background: var(--tc-panel);
   border: 1px solid var(--tc-border);
   border-radius: var(--tc-radius-panel, 8px);
@@ -218,7 +218,7 @@
 
 @media (max-width: 767px) {
   .search-toolbar {
-    padding: 12px 14px;
+    padding: 12px;
   }
 
   .toolbar-row {

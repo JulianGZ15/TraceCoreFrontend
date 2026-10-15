@@ -1,4 +1,5 @@
-<tc-page-nav [items]="moduleItems()" ariaLabel="Navegación comercial" />
 @if (sectionItems().length > 0) {
   <tc-page-nav [items]="sectionItems()" ariaLabel="Secciones del expediente comercial" />
+} @else {
+  <tc-page-nav [items]="moduleItems()" ariaLabel="Navegación comercial" />
 }

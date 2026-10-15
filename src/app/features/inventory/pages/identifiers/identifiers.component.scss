@@ -1,6 +1,7 @@
 :host { display: block; min-width: 0; }
 .panel { padding: 20px; margin: 16px 0; background: var(--tc-panel); border: 1px solid var(--tc-border); border-radius: var(--tc-radius-panel); }
 .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; align-items: end; }
+.filters > .field { margin-bottom: 0; }
 .field { display: grid; gap: 6px; }
 .field input { min-height: 44px; padding: 8px 12px; border: 1px solid var(--tc-border); border-radius: var(--tc-radius-control); }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }

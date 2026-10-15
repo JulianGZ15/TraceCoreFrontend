@@ -1,4 +1,5 @@
 import { takeUntil } from 'rxjs';
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,6 +11,7 @@ import { FieldsComponent } from '../../shared/fields/fields.component';
 import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { confirm } from '../../../../shared/ui/confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'tc-logistics-dispatch',
   imports: [
@@ -37,6 +39,7 @@ export class DispatchComponent extends LogisticsPage {
   }
   override mode = 'manifest';
   readonly pending = inject(LogisticsPending);
+  readonly confirmationDialog = inject(Dialog);
   readonly check = signal<Check | null>(null);
   readonly saving = signal(false);
   readonly fields: Field[] = [
@@ -92,7 +95,14 @@ export class DispatchComponent extends LogisticsPage {
     try {
       if (Date.now() >= Date.parse(c.checkedAt!) + 1800000)
         throw new Error('La comprobación venció; vuelve a verificar la carga.');
-      if (!window.confirm('¿Confirmar la salida física de toda la carga?')) return;
+      if (
+        !(await confirm(
+          this.confirmationDialog,
+          'Confirmar salida física',
+          'Se confirmará la salida física de toda la carga.',
+        ))
+      )
+        return;
       this.saving.set(true);
       const v = this.form.getRawValue();
       await this.pending.create('DISPATCH', '/manifests/' + this.id + '/dispatch', {

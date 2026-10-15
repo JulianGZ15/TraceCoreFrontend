@@ -1,16 +1,16 @@
 import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { PageHeading, Feedback, Pagination } from '../../../../shared/ui/page';
+import { PageNav, PageNavItem } from '../../../../shared/ui/page-nav/page-nav.component';
 import { InventoryForm, toInstant } from '../../page-base';
 
 import * as M from '../../models';
 
-import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
 import { CustodyEditorComponent } from '../../editors/custody-editor/custody-editor.component';
 import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference/entity-reference.component';
 
@@ -24,11 +24,19 @@ import { EntityReferenceComponent } from '../../../../shared/ui/entity-reference
     PageHeading,
     Feedback,
     Pagination,
-    InventoryNavComponent, DateFieldComponent, EntityReferenceComponent],
+    PageNav, DateFieldComponent, EntityReferenceComponent],
   templateUrl: './asset.component.html',
   styleUrl: './asset.component.scss',
 })
 export class AssetComponent extends InventoryForm {
+  readonly sectionItems = computed<PageNavItem[]>(() =>
+    [
+      ['actual', 'Situación actual'],
+      ['ubicacion', 'Historial de ubicación'],
+      ['custodia', 'Custodia'],
+      ['disponibilidad', 'Disponibilidad'],
+    ].map(([key, label]) => ({ label, route: ['/inventario/equipos', this.id(), key] })),
+  );
   readonly profile = signal<M.Profile | null>(null);
   readonly rows = signal<(M.Assignment | M.Custody)[]>([]);
   readonly placements = signal<M.Assignment[]>([]);

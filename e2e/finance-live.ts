@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { acceptAppConfirmation } from './confirmation';
 import fs from 'node:fs/promises';
 export async function financeLive(page: Page) {
   const email = process.env['TRACECORE_ADMIN_EMAIL']!;
@@ -110,8 +111,8 @@ export async function financeLive(page: Page) {
     .getByRole('combobox', { name: 'Fuente cumplida', exact: true })
     .selectOption(line.uuid);
   await dialog.getByLabel('Referencia', { exact: true }).fill('Cargo real cumplido');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   const charge = (await get('/finance/charges/directory?orderUuid=' + order.uuid))[0].record;
   expect(charge.netAmountExact).toBe('100.00');
@@ -132,16 +133,16 @@ export async function financeLive(page: Page) {
   const creation = page.waitForRequest(
     (r) => r.method() === 'POST' && r.url().endsWith('/finance/invoices'),
   );
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Guardar DRAFT' }).click();
+  await acceptAppConfirmation(page);
   const invoicePayload = (await creation).postDataJSON();
   await expect(page).toHaveURL(/facturas\/[a-f0-9-]{36}\/resumen/);
   const invoiceUuid = invoicePayload.uuid;
   expect((await get('/finance/invoices/' + invoiceUuid + '/summary')).invoice.state).toBe('DRAFT');
   await page.getByRole('button', { name: 'Confirmar factura' }).click();
   dialog = page.getByRole('dialog');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   expect((await get('/finance/invoices/' + invoiceUuid + '/summary')).balanceExact).toBe('116.00');
   await page.goto('/finanzas/pagos');
@@ -150,8 +151,8 @@ export async function financeLive(page: Page) {
   await dialog.getByRole('combobox', { name: 'Tercero', exact: true }).selectOption(party.uuid);
   await dialog.getByLabel('Importe', { exact: true }).fill('100.00');
   await dialog.getByLabel('Referencia de operación').fill('FIN-PAY-LIVE-001');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   const payment = (await get('/finance/payments/directory?partyUuid=' + party.uuid))[0].record;
   await page.goto('/finanzas/facturas/' + invoiceUuid);
@@ -161,8 +162,8 @@ export async function financeLive(page: Page) {
     .getByRole('combobox', { name: 'Pago con remanente', exact: true })
     .selectOption(payment.uuid);
   await dialog.getByLabel('Importe a aplicar').fill('20.00');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   expect((await get('/finance/invoices/' + invoiceUuid + '/summary')).balanceExact).toBe('96.00');
   await page.getByRole('link', { name: 'Preparar nota de crédito' }).click();
@@ -178,31 +179,31 @@ export async function financeLive(page: Page) {
   await expect(
     page.getByRole('heading', { name: 'Vista previa calculada por el servidor' }),
   ).toBeVisible();
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Confirmar nota de crédito' }).click();
+  await acceptAppConfirmation(page);
   await expect(page).toHaveURL(/notas\//);
   const note = (await get('/finance/invoices/' + invoiceUuid + '/notes'))[0].record;
   expect((await get('/finance/invoices/' + invoiceUuid + '/summary')).balanceExact).toBe('84.40');
   await page.getByRole('button', { name: 'Revertir nota' }).click();
   dialog = page.getByRole('dialog');
   await dialog.getByLabel('Motivo').fill('Nota registrada incorrectamente');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   expect((await get('/finance/invoices/' + invoiceUuid + '/summary')).balanceExact).toBe('96.00');
   await page.goto('/finanzas/terceros/' + party.uuid + '/credito');
   await page.getByRole('button', { name: 'Crear cuenta DRAFT' }).click();
   dialog = page.getByRole('dialog');
   await dialog.getByLabel('Límite', { exact: true }).fill('1000.00');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   await page.getByRole('button', { name: 'Revisar activación' }).click();
   await expect(page.getByRole('heading', { name: 'Sin bloqueos actuales' })).toBeVisible();
   await page.getByRole('button', { name: 'Activar o reactivar' }).click();
   dialog = page.getByRole('dialog');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   const summary = await get('/finance/parties/' + party.uuid + '/summary?currency=MXN');
   expect(summary.account.state).toBe('ACTIVE');

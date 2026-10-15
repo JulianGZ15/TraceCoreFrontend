@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { acceptAppConfirmation } from './confirmation';
 import { financeFixture, fids } from './finance-fixture';
 import { login, expectNoPageOverflow } from './api-fixture';
 async function financeLogin(page: import('@playwright/test').Page) {
@@ -55,8 +56,8 @@ test('cancelled draft is recreated with the same folio and a new UUID after anot
   await page.getByRole('button', { name: 'Cancelar borrador' }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Motivo').fill('Corrección documentada');
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await page.getByRole('link', { name: 'Recrear con nuevo UUID' }).click();
   await expect(page.getByLabel('Folio', { exact: true })).toHaveValue('FIN-001');
   await expect(page.getByLabel('Neto de fuente 1')).toHaveValue('99999999999999.99999999');
@@ -65,8 +66,8 @@ test('cancelled draft is recreated with the same folio and a new UUID after anot
   await expect(
     page.getByRole('heading', { name: 'Vista previa calculada por el servidor' }),
   ).toBeVisible();
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Guardar DRAFT' }).click();
+  await acceptAppConfirmation(page);
   await expect(page).toHaveURL(/facturas\/[a-f0-9-]{36}\/resumen/);
   expect(f.writes).toHaveLength(2);
   expect(f.writes[0].path).toBe('/invoices/' + fids.invoice + '/cancel');
@@ -80,8 +81,8 @@ test('invoice is saved independently as DRAFT with exact strings and reviewed fi
   const f = await financeFixture(page);
   await financeLogin(page);
   await prepare(page);
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Guardar DRAFT' }).click();
+  await acceptAppConfirmation(page);
   await expect(page).toHaveURL(/facturas\/[a-f0-9-]{36}\/resumen/);
   expect(f.writes[0].body.parts[0].netAmount).toBe('99999999999999.99999999');
   expect(f.writes[0].body.expectedCalculationFingerprint).toBe('current-calculation');
@@ -97,8 +98,8 @@ test('editing an invoice invalidates preview and lost response is recovered with
   await expect(page.getByRole('button', { name: 'Guardar DRAFT' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Calcular vista previa' }).click();
   f.loseResponse = true;
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Guardar DRAFT' }).click();
+  await acceptAppConfirmation(page);
   await expect(page.getByRole('button', { name: 'Consultar resultado' })).toBeVisible();
   await page.reload();
   await page.getByRole('button', { name: 'Consultar resultado' }).click();
@@ -116,20 +117,52 @@ test('credit conflict preserves the draft and refreshes only after explicit cons
   await dialog.getByLabel('Nuevo límite').fill('2000.12345678');
   await dialog.getByLabel('Motivo').fill('Aumento autorizado');
   f.conflict = true;
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog.getByLabel('Nuevo límite')).toHaveValue('2000.12345678');
   await expect(dialog.getByRole('button', { name: 'Confirmar', exact: true })).toBeDisabled();
   f.conflict = false;
   f.account.version = 3;
-  page.once('dialog', (d) => d.accept());
   await dialog.getByRole('button', { name: 'Consultar datos actuales' }).click();
-  page.once('dialog', (d) => d.accept());
+  await acceptAppConfirmation(page);
   await dialog.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await acceptAppConfirmation(page);
   await expect(dialog).toHaveCount(0);
   expect(f.writes[1].body.version).toBe(3);
   expect(f.writes[1].body.creditLimit).toBe('2000.12345678');
 });
+
+test('invoice posting has one contextual confirmation dialog', async ({ page }) => {
+  const f = await financeFixture(page);
+  await financeLogin(page);
+  await page.goto('/finanzas/facturas/' + fids.invoice);
+  await page.getByRole('button', { name: 'Confirmar factura' }).click();
+  const dialogs = page.getByRole('dialog');
+  await expect(dialogs).toHaveCount(1);
+  await expect(dialogs.getByRole('heading', { name: 'Confirmar factura' })).toBeVisible();
+  await dialogs.getByRole('button', { name: 'Confirmar', exact: true }).click();
+  await expect(dialogs).toHaveCount(0);
+  expect(f.writes).toHaveLength(1);
+  expect(f.writes[0].path).toBe('/invoices/' + fids.invoice + '/post');
+});
+
+for (const width of [390, 768, 1280, 1440])
+  test('finance directory and dossier keep one navigation at ' + width, async ({ page }) => {
+    await financeFixture(page);
+    await page.setViewportSize({ width, height: 1000 });
+    await financeLogin(page);
+    await page.goto('/finanzas/facturas');
+    const directoryNav = page.locator('tc-page-heading nav.page-nav');
+    await expect(directoryNav).toHaveCount(1);
+    await expect(directoryNav.first()).toContainText('Pagos');
+
+    await page.goto('/finanzas/facturas/' + fids.invoice);
+    const dossierNav = page.locator('tc-page-heading nav.page-nav');
+    await expect(dossierNav).toHaveCount(1);
+    await expect(dossierNav.first()).not.toContainText('Pagos');
+    await expectNoPageOverflow(page);
+  });
+
 for (const width of [390, 768, 1280, 1440])
   test('financial layouts, exact amounts and dialogs at ' + width, async ({ page }, info) => {
     await financeFixture(page);
@@ -145,6 +178,16 @@ for (const width of [390, 768, 1280, 1440])
     ]) {
       await page.goto(path);
       await expect(page.locator('tc-page-heading')).toBeVisible();
+      const navs = page.locator('tc-page-heading nav.page-nav');
+      if (path.includes('/facturas/' + fids.invoice)) {
+        await expect(navs).toHaveCount(1);
+        await expect(navs.first()).not.toContainText('Pagos');
+      } else if (path === '/finanzas/facturas') {
+        await expect(navs).toHaveCount(1);
+        await expect(navs.first()).toContainText('Pagos');
+      } else {
+        expect(await navs.count()).toBeLessThanOrEqual(1);
+      }
       await expectNoPageOverflow(page);
       await page.screenshot({
         path: info.outputPath('finance-' + path.split('/').pop() + '-' + width + '.png'),
