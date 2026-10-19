@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, input, output, inject, signal, DestroyRef } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -54,7 +55,7 @@ export class MovementRootComponent {
     this.form.markAsDirty();
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.busy() || this.form.invalid) return;
     const c = this.context();
     try {

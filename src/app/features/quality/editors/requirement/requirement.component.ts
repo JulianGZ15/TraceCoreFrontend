@@ -9,9 +9,10 @@ import { QualityPending } from '../../pending';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
 import { signedValidator, scaled, optionalExact, toInstant, uuidPattern } from '../../rules';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 @Component({
   selector: 'tc-quality-requirement-editor',
-  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent],
+  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent, HelpTipComponent],
   templateUrl: './requirement.component.html',
   styleUrl: './requirement.component.scss',
 })

@@ -3,7 +3,7 @@ import {movementInput} from '../../movement-input';
 import { Component, signal, input, inject } from '@angular/core';
 import { RfidPending } from '../../../rfid/pending';
 
-import { FormControl, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { PageHeading, Feedback } from '../../../../shared/ui/page';
 import { InventoryForm, toInstant } from '../../page-base';
@@ -18,6 +18,7 @@ import { ObservationEditorComponent } from '../../components/observation-editor/
 
 import { Spinner } from '../../../../shared/ui/page';
 import { StepperComponent, StepperStep } from '../../../../shared/ui/stepper/stepper.component';
+import { attemptFormValidation, presentValidationFeedback } from '../../../../shared/ui/form-validation';
 
 @Component({
   selector: 'tc-inventory-movement-plan',
@@ -41,6 +42,8 @@ export class MovementPlanComponent extends InventoryForm {
   readonly previousStep = (n: number) => n - 1;
   readonly proposal = signal(false);
   readonly internalLocationFlow = signal(false);
+  readonly sourceYardError = signal(false);
+  readonly destinationYardError = signal(false);
   readonly step = signal(1);
   readonly direction = signal<'forward' | 'backward'>('forward');
   readonly steps: readonly StepperStep[] = [
@@ -51,12 +54,49 @@ export class MovementPlanComponent extends InventoryForm {
   ];
 
   goStep(n: number) {
+    if (n > this.step()) {
+      if (!this.validateStep(this.step())) return;
+      n = Math.min(n, this.step() + 1);
+    }
     if (n > this.step()) this.direction.set('forward');
     else if (n < this.step()) this.direction.set('backward');
     this.step.set(n);
     setTimeout(() => {
       document.querySelector<HTMLElement>('.wizard-step-heading')?.focus();
     }, 0);
+  }
+
+  private validateStep(step: number): boolean {
+    if (step === 1) {
+      if (this.yard()) {
+        this.sourceYardError.set(false);
+        return true;
+      }
+      this.sourceYardError.set(true);
+      presentValidationFeedback(document.querySelector<HTMLElement>('form')!);
+      return false;
+    }
+    if (step === 2) {
+      const controls = this.roots.controls.map((root) => root.get('assetUuid')!);
+      return controls.length > 0 && attemptFormValidation(this.form, controls, document.querySelector('form'));
+    }
+    if (step === 3) {
+      const controls: AbstractControl[] = [this.form.controls.reason, this.form.controls.sourceReference];
+      if (this.form.controls.type.value === 'OUTBOUND') {
+        controls.push(this.form.controls.destinationSiteUuid, this.form.controls.destinationCustodianUuid);
+      } else if (this.form.controls.type.value !== 'ADJUSTMENT') {
+        controls.push(this.form.controls.destinationYardUuid);
+        controls.push(...this.roots.controls.map((root) => root.get('destinationLocationUuid')!));
+      }
+      if (this.proposal()) controls.push(this.form.controls.expiresAt);
+      this.destinationYardError.set(
+        this.form.controls.type.value !== 'OUTBOUND' &&
+          this.form.controls.type.value !== 'ADJUSTMENT' &&
+          this.form.controls.destinationYardUuid.invalid,
+      );
+      return attemptFormValidation(this.form, controls, document.querySelector('form'));
+    }
+    return true;
   }
 
   prevStep() {
@@ -110,6 +150,7 @@ export class MovementPlanComponent extends InventoryForm {
       this.addRoot();
       this.roots.at(0).get('destinationLocationUuid')?.setValue(query.get('destinationLocationUuid') ?? '');
     }
+    this.syncConditionalValidators();
     this.form.markAsPristine();
   }
   addRoot() {
@@ -117,7 +158,10 @@ export class MovementPlanComponent extends InventoryForm {
     this.roots.push(
       new FormGroup({
         assetUuid: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-        destinationLocationUuid: new FormControl('', { nonNullable: true }),
+        destinationLocationUuid: new FormControl('', {
+          nonNullable: true,
+          validators: this.requiresRootDestination() ? [Validators.required] : [],
+        }),
         grossWeightKg: new FormControl('', { nonNullable: true, validators: [decimalValidator()] }),
         weightReference: new FormControl('', { nonNullable: true }),
         reservationUuid: new FormControl('', { nonNullable: true }),
@@ -132,6 +176,7 @@ export class MovementPlanComponent extends InventoryForm {
   }
   sourceChanged(y: string) {
     this.yard.set(y);
+    this.sourceYardError.set(false);
     for (const g of this.roots.controls) {
       g.get('assetUuid')?.reset('');
       g.get('reservationUuid')?.reset('');
@@ -140,6 +185,7 @@ export class MovementPlanComponent extends InventoryForm {
   }
   destinationChanged(y: string) {
     this.form.controls.destinationYardUuid.setValue(y);
+    this.destinationYardError.set(false);
     for (const g of this.roots.controls) g.get('destinationLocationUuid')?.reset('');
     this.form.markAsDirty();
   }
@@ -151,7 +197,34 @@ export class MovementPlanComponent extends InventoryForm {
       g.get('reservationUuid')?.reset('');
       g.get('destinationLocationUuid')?.reset('');
     }
+    this.syncConditionalValidators();
     this.form.markAsDirty();
+  }
+
+  private requiresRootDestination(): boolean {
+    return this.form.controls.type.value !== 'OUTBOUND' && this.form.controls.type.value !== 'ADJUSTMENT';
+  }
+
+  private syncConditionalValidators(): void {
+    const outbound = this.form.controls.type.value === 'OUTBOUND';
+    for (const [control, required] of [
+      [this.form.controls.destinationSiteUuid, outbound],
+      [this.form.controls.destinationCustodianUuid, outbound],
+    ] as const) {
+      control.setValidators(required ? [Validators.required] : []);
+      control.updateValueAndValidity({ emitEvent: false });
+    }
+    const destinationRequired = this.requiresRootDestination();
+    const yardRequired = !outbound && this.form.controls.type.value !== 'ADJUSTMENT';
+    this.form.controls.destinationYardUuid.setValidators(yardRequired ? [Validators.required] : []);
+    this.form.controls.destinationYardUuid.updateValueAndValidity({ emitEvent: false });
+    for (const root of this.roots.controls) {
+      const destination = root.get('destinationLocationUuid')!;
+      destination.setValidators(destinationRequired ? [Validators.required] : []);
+      destination.updateValueAndValidity({ emitEvent: false });
+    }
+    this.form.controls.expiresAt.setValidators(this.proposal() ? [Validators.required] : []);
+    this.form.controls.expiresAt.updateValueAndValidity({ emitEvent: false });
   }
   sourceFilters() {
     if (this.form.controls.type.value === 'INBOUND') return { unlocatedForYard: this.yard(), rootsOnly: true };
@@ -167,8 +240,7 @@ export class MovementPlanComponent extends InventoryForm {
       this.goStep(this.step() + 1);
       return;
     }
-    this.form.markAllAsTouched();
-    if (this.form.invalid || this.busy()) return;
+    if (!attemptFormValidation(this.form) || this.busy()) return;
     try {
       const v = this.form.getRawValue();
       if (

@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../shared/ui/form-validation';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Session } from '../../../core/auth/session';
@@ -34,7 +35,7 @@ export class AccountPage {
     { key: 'confirmation', label: 'Confirmar nueva contraseña', help: '' },
   ];
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     if (this.form.controls.newPassword.value !== this.form.controls.confirmation.value) {
       this.error.set('La confirmación no coincide con la nueva contraseña.');

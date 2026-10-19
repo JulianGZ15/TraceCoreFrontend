@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Component, inject } from '@angular/core';
 
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -53,7 +54,7 @@ export class CustodyEditorComponent extends InventoryForm {
       );
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     const v = this.form.getRawValue();
     if (this.form.invalid || this.busy()) return;
     if (v.holder === 'PARTY' && !v.partyUuid) {

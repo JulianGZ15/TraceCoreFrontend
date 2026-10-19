@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive,inject,signal,OnDestroy } from '@angular/core';
 
 import { FormGroup } from '@angular/forms';
@@ -30,7 +31,7 @@ export abstract class EquipmentEditor implements OnDestroy {
 
   abstract save():Promise<unknown>;
 
-  async submit(){this.form.markAllAsTouched();if(this.form.disabled||this.form.invalid||this.busy())return;this.busy.set(true);this.error.set('');this.conflict.set(false);try{const result=await this.save();if(this.alive&&this.epoch===this.session.epoch())this.ref.close(result);}catch(e){if(this.alive&&this.epoch===this.session.epoch()){this.error.set(localError(e)||errorMessage(e));this.conflict.set(e instanceof HttpErrorResponse&&e.status===409);}}finally{if(this.alive)this.busy.set(false);}}
+  async submit(){attemptFormValidation(this.form);if(this.form.disabled||this.form.invalid||this.busy())return;this.busy.set(true);this.error.set('');this.conflict.set(false);try{const result=await this.save();if(this.alive&&this.epoch===this.session.epoch())this.ref.close(result);}catch(e){if(this.alive&&this.epoch===this.session.epoch()){this.error.set(localError(e)||errorMessage(e));this.conflict.set(e instanceof HttpErrorResponse&&e.status===409);}}finally{if(this.alive)this.busy.set(false);}}
 
   reset(row:Ref){this.form.reset(row);}
 

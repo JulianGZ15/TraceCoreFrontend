@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, ViewChild } from '@angular/core';
@@ -70,7 +71,7 @@ export class BillingPreviewComponent extends CommercePage {
     this.form.valueChanges.pipe(takeUntil(this.ended)).subscribe(() => this.preview.set(null));
   }
   async calculate() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || !this.can('RENTAL_BILL')) return;
     this.busy.set(true);
     try {

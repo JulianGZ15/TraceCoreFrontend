@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
@@ -48,7 +49,7 @@ export abstract class FinanceEditor implements OnInit, OnDestroy {
   protected abstract setup(): void;
   protected abstract submit(): Promise<unknown>;
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (
       this.busy() ||
       this.reconcile() ||

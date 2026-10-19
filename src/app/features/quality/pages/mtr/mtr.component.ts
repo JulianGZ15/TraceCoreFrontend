@@ -18,6 +18,7 @@ import { uuidPattern } from '../../rules';
 import * as M from '../../models';
 import { MtrComponent as MtrEditor } from '../../editors/mtr/mtr.component';
 import { OptionPickerComponent } from '../../selectors/option-picker/option-picker.component';
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 @Component({
   selector: 'tc-quality-mtr',
   imports: [
@@ -82,7 +83,7 @@ export class MtrComponent extends QualityPage {
     const r = this.record();
     if (!r) return;
     const selected = kind === 'heats' ? this.heat : this.asset;
-    selected.markAsTouched();
+    attemptFormValidation(this.form, [selected]);
     if (selected.invalid) {
       this.error.set('Selecciona un destino válido.');
       return;

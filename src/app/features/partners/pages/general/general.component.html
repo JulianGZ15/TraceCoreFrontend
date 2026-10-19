@@ -45,7 +45,7 @@
             Recargar datos
           </button>
         }
-        <button class="btn primary" [disabled]="busy() || form.invalid">
+        <button class="btn primary" [disabled]="busy()">
           {{ busy() ? 'Guardando…' : 'Guardar cambios' }}
         </button>
       </div>

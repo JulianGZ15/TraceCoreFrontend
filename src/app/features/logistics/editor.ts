@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive, inject, input, output, signal, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { FormGroup } from '@angular/forms';
@@ -66,7 +67,7 @@ export abstract class LogisticsEditor implements OnInit, OnDestroy {
     return this.form.dirty;
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (
       this.reconcile() ||
       !this.compatible() ||

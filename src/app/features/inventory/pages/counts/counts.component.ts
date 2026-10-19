@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
@@ -67,7 +68,7 @@ export class CountsComponent extends InventoryForm {
     }
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     if (!this.yard()) {
       this.error.set('Selecciona el patio.');

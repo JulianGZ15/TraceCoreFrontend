@@ -1,6 +1,14 @@
 <div class="field">
-  <label for="inventory-yard">Patio</label
-  ><select id="inventory-yard" [ngModel]="value()" (ngModelChange)="picked.emit($event)">
+  <label for="inventory-yard">Patio{{ required() ? ' *' : '' }}</label
+  ><select
+    id="inventory-yard"
+    [ngModel]="value()"
+    [required]="required()"
+    [class.tc-field-invalid]="invalid()"
+    [attr.aria-invalid]="invalid() ? 'true' : null"
+    [attr.aria-describedby]="invalid() ? 'inventory-yard-error' : null"
+    (ngModelChange)="picked.emit($event)"
+  >
     @if (allowGlobal() && access.global('INVENTORY_READ')) {
       <option value="">Todos los patios</option>
     } @else {
@@ -14,4 +22,7 @@
       }
     }
   </select>
+  @if (invalid()) {
+    <small id="inventory-yard-error" class="field-error" role="alert">Selecciona un patio de origen.</small>
+  }
 </div>

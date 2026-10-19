@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Component, signal, inject } from '@angular/core';
 import { takeUntil } from 'rxjs';
 import { RouterLink } from '@angular/router';
@@ -90,7 +91,7 @@ export class ReturnCreateComponent extends CommercePage {
     }
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (
       this.form.invalid ||
       !this.can('COMMERCIAL_FULFILL') ||

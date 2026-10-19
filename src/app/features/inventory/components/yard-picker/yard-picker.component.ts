@@ -14,5 +14,7 @@ export class YardPickerComponent {
   readonly access = inject(InventoryAccess);
   readonly value = input('');
   readonly allowGlobal = input(true);
+  readonly required = input(false);
+  readonly invalid = input(false);
   readonly picked = output<string>();
 }

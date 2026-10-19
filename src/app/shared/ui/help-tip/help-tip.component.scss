@@ -1,0 +1,28 @@
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.help-tip-trigger {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--tc-border, #e2e6ed);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--tc-text-muted, #5e5e61);
+  font: 600 11px/1 var(--font-body, sans-serif);
+  cursor: help;
+}
+
+.help-tip-trigger:hover {
+  border-color: var(--tc-control-border, #7f7663);
+  color: var(--tc-text, #191c1d);
+}
+
+.help-tip-trigger:focus-visible {
+  outline: 2px solid var(--tc-focus, #735c00);
+  outline-offset: 2px;
+}

@@ -10,9 +10,10 @@ import { OptionPickerComponent } from '../../selectors/option-picker/option-pick
 import { EvidencePickerComponent } from '../../selectors/evidence-picker/evidence-picker.component';
 import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { signedValidator, scaled, optionalExact, uuidPattern } from '../../rules';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 @Component({
   selector: 'tc-quality-policy-editor',
-  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent, DateFieldComponent],
+  imports: [ReactiveFormsModule, PageHeading, Feedback, OptionPickerComponent, DateFieldComponent, HelpTipComponent],
   templateUrl: './policy.component.html',
   styleUrl: './policy.component.scss',
 })

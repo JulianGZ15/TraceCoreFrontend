@@ -18,17 +18,21 @@
   >
     @if (step() === 1) {
       <h2 tabindex="-1" class="wizard-step-heading">Contexto y datos de ruta</h2>
-      <label for="new-yard">Patio operativo</label>
+      <label for="new-yard">Patio operativo *</label>
       <select
         id="new-yard"
-        [value]="yard"
+        [formControl]="yardControl"
         (change)="setYard($any($event.target).value)"
         [disabled]="saved().length > 0"
+        [attr.aria-describedby]="yardControl.invalid && yardControl.touched ? 'new-yard-error' : null"
       >
         @for (y of yards; track y.uuid) {
           <option [value]="y.uuid">{{ y.code }} · {{ y.name }}</option>
         }
       </select>
+      @if (yardControl.invalid && yardControl.touched) {
+        <small id="new-yard-error" class="field-error" role="alert">Selecciona el patio operativo.</small>
+      }
       <tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" />
     }
 
@@ -128,7 +132,7 @@
         }
       </button>
     } @else {
-      <button class="btn primary" (click)="next()">Continuar</button>
+      <button class="btn primary" type="button" (click)="next()">Continuar</button>
     }
   </div>
 </section>

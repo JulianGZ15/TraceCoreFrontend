@@ -1,0 +1,17 @@
+@if (entry(); as item) {
+  <button
+    #trigger
+    type="button"
+    class="help-tip-trigger"
+    [attr.aria-label]="'Ayuda: ' + (label() || item.label)"
+    (pointerdown)="pointerDown($event)"
+    (pointerenter)="pointerEnter($event)"
+    (pointerleave)="pointerLeave()"
+    (focus)="focus()"
+    (blur)="blur()"
+    (click)="click($event)"
+    (keydown.escape)="hide()"
+  >
+    <span aria-hidden="true">?</span>
+  </button>
+}

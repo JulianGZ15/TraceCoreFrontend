@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../shared/ui/form-validation';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,7 +25,7 @@ export class LoginPage {
     password: ['', Validators.required],
   });
   async submit() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     this.busy.set(true);
     this.error.set('');

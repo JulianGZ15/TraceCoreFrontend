@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal, inject } from '@angular/core';
@@ -147,7 +148,7 @@ export class ReceiptCreateComponent extends CommercePage {
     this.captures[id][key] = v;
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (
       this.form.invalid ||
       !this.can('COMMERCIAL_FULFILL') ||

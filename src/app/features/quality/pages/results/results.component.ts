@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Component, signal, inject, input, effect, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -92,7 +93,7 @@ export class ResultsComponent extends QualityPage {
   }
   async save() {
     const r = this.record();
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (!r || this.form.invalid || !this.compatible()) return;
     await this.mutate(
       () =>

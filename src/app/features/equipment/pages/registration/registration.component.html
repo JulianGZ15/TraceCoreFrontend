@@ -83,7 +83,7 @@
             <div class="form-grid">
               <div class="field">
                 <label for="ownerType">Propietario</label>
-                <select id="ownerType" formControlName="ownerType">
+                <select id="ownerType" formControlName="ownerType" (change)="ownerTypeChanged()">
                   <option value="COMPANY">Empresa administradora</option>
                   <option value="PARTY">Tercero</option>
                 </select>
@@ -179,7 +179,13 @@
             Anterior
           </button>
         }
-        <button class="btn primary" [class.tc-btn-busy]="busy()" [disabled]="busy()">
+        <button
+          class="btn primary"
+          [class.tc-btn-busy]="busy()"
+          [disabled]="busy()"
+          [type]="step() === 3 ? 'submit' : 'button'"
+          (click)="step() < 3 ? next() : null"
+        >
           @if (busy()) {
             <tc-spinner size="sm" [light]="true" message="Registrando…" />
           } @else {

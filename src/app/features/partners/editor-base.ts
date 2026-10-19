@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive, inject, signal, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Dialog, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
@@ -29,7 +30,7 @@ export abstract class PartnerEditor implements OnDestroy {
   private epoch = this.session.epoch();
   abstract save(): Promise<unknown>;
   async submit() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     this.busy.set(true);
     this.error.set('');

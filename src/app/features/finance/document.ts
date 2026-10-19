@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -169,8 +170,8 @@ export abstract class FinanceDocument implements OnInit, OnDestroy {
     return this.kind === 'INVOICE' ? 'FINANCE_MANAGE' : 'FINANCE_APPROVE';
   }
   async preview() {
-    this.form.markAllAsTouched();
-    this.parts.markAllAsTouched();
+    attemptFormValidation(this.form);
+    attemptFormValidation(this.parts);
     if (!this.valid || this.loading() || !this.access.can(this.permission)) return;
     const epoch = this.session.epoch(),
       seq = ++this.seq;

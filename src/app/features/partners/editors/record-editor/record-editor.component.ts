@@ -7,6 +7,7 @@ import { Field } from '../../../../shared/ui/editor-model';
 import { Feedback } from '../../../../shared/ui/page';
 import { EvidencePickerComponent } from '../../components/evidence-picker/evidence-picker.component';
 import { PartyData, Resource } from '../../models';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 export interface RecordContext extends EditContext {
   fields: Field[];
   initial?: Record<string, unknown>;
@@ -14,7 +15,7 @@ export interface RecordContext extends EditContext {
 }
 @Component({
   selector: 'tc-party-record-editor',
-  imports: [ReactiveFormsModule, Feedback, EvidencePickerComponent, DateFieldComponent],
+  imports: [ReactiveFormsModule, Feedback, EvidencePickerComponent, DateFieldComponent, HelpTipComponent],
   templateUrl: './record-editor.component.html',
   styleUrl: './record-editor.component.scss',
   host: { '(keydown.escape)': 'escape($event)' },

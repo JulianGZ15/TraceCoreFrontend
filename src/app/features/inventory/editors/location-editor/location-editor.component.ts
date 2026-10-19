@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Component, inject } from '@angular/core';
 
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -80,7 +81,7 @@ export class LocationEditorComponent extends InventoryForm {
       );
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy() || this.incompatible) return;
     const v = this.form.getRawValue();
     const body = {

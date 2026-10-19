@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject } from '@angular/core';
 
@@ -44,7 +45,7 @@ export class ReservationEditorComponent extends InventoryForm {
     );
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     try {
       const v = this.form.getRawValue(),

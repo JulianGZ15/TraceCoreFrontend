@@ -67,7 +67,7 @@
           [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
           formControlName="validTo"
         /></label
-      ><label class="check"><input type="checkbox" formControlName="requireMtr" />Exige MTR</label
+      ><div class="field-label-row"><label class="check"><input type="checkbox" formControlName="requireMtr" />Exige MTR</label><tc-help-tip term="mtr" /></div
       ><label class="check"
         ><input type="checkbox" formControlName="requireCertification" />Exige certificación</label
       >

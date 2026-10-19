@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { takeUntil } from 'rxjs';
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
@@ -155,8 +156,8 @@ export class ReceptionComponent extends LogisticsPage {
     }
   }
   async save() {
-    this.form.markAllAsTouched();
-    for (const r of this.chosen()) r.form.markAllAsTouched();
+    attemptFormValidation(this.form);
+    for (const r of this.chosen()) attemptFormValidation(r.form);
     const s = this.summary();
     if (
       !s ||

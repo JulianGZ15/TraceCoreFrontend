@@ -35,6 +35,8 @@ export {
 export * from './filter-model';
 export { EntityLabelResolver } from './entity-label-resolver';
 export { EntityReferenceComponent } from './entity-reference/entity-reference.component';
+export { HelpTipComponent } from './help-tip/help-tip.component';
+export { attemptFormValidation } from './form-validation';
 export { UnsavedChanges } from './unsaved-changes';
 export { Spinner, SpinnerComponent } from './spinner/spinner.component';
 export { Skeleton, SkeletonComponent } from './skeleton/skeleton.component';

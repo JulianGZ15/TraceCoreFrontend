@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../shared/ui/form-validation';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -144,7 +145,7 @@ export class OrganizationDetail {
       await this.load();
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.saving() || !this.canEdit()) return;
     const generation = this.generation;
     const path = this.path;

@@ -48,7 +48,12 @@
             }
           </select>
         </div>
-        <tc-inventory-yard-picker [value]="yard()" (picked)="sourceChanged($event)" />
+        <tc-inventory-yard-picker
+          [value]="yard()"
+          [required]="true"
+          [invalid]="sourceYardError()"
+          (picked)="sourceChanged($event)"
+        />
       </div>
       <p>Las raíces deben compartir origen. Los componentes se moverán con su raíz superior.</p>
     </section>
@@ -63,11 +68,16 @@
             <tc-inventory-lookup
               kind="assets"
               [title]="'Raíz ' + (i + 1)"
+              [class.tc-field-invalid]="g.get('assetUuid')?.touched && g.get('assetUuid')?.invalid"
+              [attr.aria-invalid]="g.get('assetUuid')?.touched && g.get('assetUuid')?.invalid ? 'true' : null"
               [filters]="sourceFilters()"
               [eligibleOnly]="internalLocationFlow()"
               [value]="g.get('assetUuid')?.value"
               (picked)="pick(g, 'assetUuid', $event)"
             />
+            @if (g.get('assetUuid')?.touched && g.get('assetUuid')?.invalid) {
+              <p class="field-error" role="alert">Selecciona una raíz para continuar.</p>
+            }
             <div class="form-grid">
               <div class="field">
                 <label [for]="'grossWeightKg-' + i">Peso bruto medido en kg (opcional)</label
@@ -126,20 +136,33 @@
       @if (form.controls.type.value === 'OUTBOUND') {
         <tc-inventory-lookup
           kind="sites"
-          title="Sitio externo"
+          [title]="'Sitio externo *'"
+          [class.tc-field-invalid]="form.controls.destinationSiteUuid.touched && form.controls.destinationSiteUuid.invalid"
+          [attr.aria-invalid]="form.controls.destinationSiteUuid.touched && form.controls.destinationSiteUuid.invalid ? 'true' : null"
           [value]="form.controls.destinationSiteUuid.value"
           (picked)="pick(form, 'destinationSiteUuid', $event)"
-        /><tc-inventory-lookup
+        />
+        @if (form.controls.destinationSiteUuid.touched && form.controls.destinationSiteUuid.invalid) {
+          <p class="field-error" role="alert">Selecciona un sitio externo.</p>
+        }
+        <tc-inventory-lookup
           kind="parties"
-          title="Custodio externo"
+          title="Custodio externo *"
+          [class.tc-field-invalid]="form.controls.destinationCustodianUuid.touched && form.controls.destinationCustodianUuid.invalid"
+          [attr.aria-invalid]="form.controls.destinationCustodianUuid.touched && form.controls.destinationCustodianUuid.invalid ? 'true' : null"
           [filters]="{ yardUuid: yard(), purpose: 'CUSTODIAN' }"
           [value]="form.controls.destinationCustodianUuid.value"
           (picked)="pick(form, 'destinationCustodianUuid', $event)"
         />
+        @if (form.controls.destinationCustodianUuid.touched && form.controls.destinationCustodianUuid.invalid) {
+          <p class="field-error" role="alert">Selecciona un custodio externo.</p>
+        }
       } @else {
         <tc-inventory-yard-picker
           [allowGlobal]="false"
           [value]="form.controls.destinationYardUuid.value"
+          [required]="form.controls.type.value !== 'ADJUSTMENT'"
+          [invalid]="destinationYardError()"
           (picked)="destinationChanged($event)"
         />
         @if (form.controls.destinationYardUuid.value) {
@@ -147,10 +170,15 @@
             <tc-inventory-lookup
               kind="locations"
               [title]="'Destino raíz ' + (i + 1)"
+              [class.tc-field-invalid]="g.get('destinationLocationUuid')?.touched && g.get('destinationLocationUuid')?.invalid"
+              [attr.aria-invalid]="g.get('destinationLocationUuid')?.touched && g.get('destinationLocationUuid')?.invalid ? 'true' : null"
               [filters]="{ yardUuid: form.controls.destinationYardUuid.value }"
               [value]="g.get('destinationLocationUuid')?.value"
               (picked)="pick(g, 'destinationLocationUuid', $event)"
             />
+            @if (g.get('destinationLocationUuid')?.touched && g.get('destinationLocationUuid')?.invalid) {
+              <p class="field-error" role="alert">Selecciona una ubicación de destino para esta raíz.</p>
+            }
           }
         }
         @if (form.controls.type.value === 'ADJUSTMENT') {
@@ -202,8 +230,8 @@
         />
         <div class="form-grid">
           <div class="field">
-            <label for="expiresAt">Expiración de propuesta</label
-            ><tc-date-field id="expiresAt" mode="datetime" formControlName="expiresAt" />
+            <label for="expiresAt">Expiración de propuesta *</label
+            ><tc-date-field id="expiresAt" mode="datetime" [required]="proposal()" formControlName="expiresAt" />
           </div>
           <div class="field">
             <label for="offset">Desplazamiento UTC</label
@@ -248,7 +276,13 @@
         Anterior
       </button>
     }
-    <button class="btn primary" [class.tc-btn-busy]="busy()" [disabled]="busy()">
+    <button
+      class="btn primary"
+      [class.tc-btn-busy]="busy()"
+      [disabled]="busy()"
+      [type]="step() < 4 ? 'button' : 'submit'"
+      (click)="step() < 4 ? goStep(step() + 1) : null"
+    >
       @if (busy()) {
         <tc-spinner size="sm" [light]="true" message="Guardando…" />
       } @else {

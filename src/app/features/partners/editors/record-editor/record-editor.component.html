@@ -16,12 +16,15 @@
               ><input type="checkbox" [formControlName]="field.key" />{{ field.label }}</label
             >
           } @else {
-            <label [for]="'record-' + field.key"
-              >{{ field.label }}
-              @if (field.required) {
-                <span aria-hidden="true">*</span>
-              }
-            </label>
+            <div class="field-label-row">
+              <label [for]="'record-' + field.key"
+                >{{ field.label }}
+                @if (field.required) {
+                  <span aria-hidden="true">*</span>
+                }
+              </label>
+              <tc-help-tip [term]="field.key" [label]="field.label" />
+            </div>
             @if (field.type === 'select') {
               <select [id]="'record-' + field.key" [formControlName]="field.key">
                 <option value="">Selecciona una opción</option>

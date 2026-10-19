@@ -5,9 +5,10 @@ import { PartnerEditor } from '../../editor-base';
 import { codeValidator } from '../../../../shared/ui/editor-model';
 import { Feedback } from '../../../../shared/ui/page';
 import { toInstant, scorePattern } from '../../rules';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 @Component({
   selector: 'tc-evaluation-editor',
-  imports: [ReactiveFormsModule, Feedback, DateFieldComponent],
+  imports: [ReactiveFormsModule, Feedback, DateFieldComponent, HelpTipComponent],
   templateUrl: './evaluation-editor.component.html',
   styleUrl: './evaluation-editor.component.scss',
   host: { '(keydown.escape)': 'escape($event)' },

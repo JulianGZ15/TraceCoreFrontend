@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
@@ -122,7 +123,7 @@ export class AssetComponent extends InventoryForm {
     } });
   }
   async availability() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid) return;
     try {
       const v = this.form.getRawValue(),

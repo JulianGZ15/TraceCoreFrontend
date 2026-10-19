@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
@@ -94,7 +95,7 @@ export class CountComponent extends InventoryForm {
     });
   }
   async observe() {
-    this.observeForm.markAllAsTouched();
+    attemptFormValidation(this.observeForm);
     const v = this.observeForm.getRawValue();
     if (this.observeForm.invalid || this.busy()) return;
     if (!!v.assetUuid === !!v.identifier.trim()) {
@@ -118,7 +119,7 @@ export class CountComponent extends InventoryForm {
   }
   async resolve() {
     const r = this.selected();
-    this.resolveForm.markAllAsTouched();
+    attemptFormValidation(this.resolveForm);
     if (!r || this.resolveForm.invalid || this.busy()) return;
     const v = this.resolveForm.getRawValue();
     if (v.resolution === 'ADJUSTMENT' && !v.adjustmentMovementUuid) {
@@ -141,7 +142,7 @@ export class CountComponent extends InventoryForm {
     if (ok) await this.load();
   }
   async finish(action: string) {
-    this.endForm.markAllAsTouched();
+    attemptFormValidation(this.endForm);
     if (this.endForm.invalid) return;
     const c = this.row()!;
     await this.action(

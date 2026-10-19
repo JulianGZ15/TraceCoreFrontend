@@ -8,6 +8,7 @@ import { errorMessage } from '../../../core/http/api';
 import { EditorData } from '../editor-model';
 import { confirm } from '../confirm-dialog/confirm-dialog.component';
 import { DateFieldComponent } from '../date-field/date-field.component';
+import { attemptFormValidation } from '../form-validation';
 export function edit(dialog: Dialog, data: EditorData) {
   return firstValueFrom(
     dialog.open(EditorDialog, {
@@ -53,7 +54,7 @@ export class EditorDialog {
       );
   }
   async submit() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     this.busy.set(true);
     this.error.set('');

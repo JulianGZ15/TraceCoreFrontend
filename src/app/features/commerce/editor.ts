@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive, inject, input, output, signal, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
@@ -52,7 +53,7 @@ export abstract class CommerceEditor implements OnInit {
     return this.form.dirty;
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (!this.compatible() || this.form.invalid || !this.allowed() || this.busy()) return;
     const epoch = this.session.epoch();
     this.busy.set(true);

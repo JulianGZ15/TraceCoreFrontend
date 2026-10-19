@@ -5,14 +5,19 @@
     manifiesto.
   </p>
   <form [formGroup]="form" (ngSubmit)="save()">
-    <label>Raíz superior</label
+    <label>Raíz superior *</label
     ><tc-inventory-lookup
       kind="assets"
       title="Raíz superior"
+      [class.tc-field-invalid]="form.controls['assetUuid'].touched && form.controls['assetUuid'].invalid"
+      [attr.aria-invalid]="form.controls['assetUuid'].touched && form.controls['assetUuid'].invalid ? 'true' : null"
       [filters]="sourceFilters()"
       [value]="form.get('assetUuid')?.value ?? ''"
       (picked)="pick('assetUuid', $event)"
     />
+    @if (form.controls['assetUuid'].touched && form.controls['assetUuid'].invalid) {
+      <p class="field-error" role="alert">Selecciona una raíz antes de guardar.</p>
+    }
     @if (context()['type'] !== 'OUTBOUND') {
       <tc-logistics-lookup
         resource="location-options"
@@ -39,7 +44,7 @@
       [yard]="context()['yardUuid']"
     /><tc-feedback [message]="error()" /><button
       class="btn secondary"
-      [disabled]="busy() || form.invalid"
+      [disabled]="busy()"
     >
       Guardar movimiento de esta raíz
     </button>

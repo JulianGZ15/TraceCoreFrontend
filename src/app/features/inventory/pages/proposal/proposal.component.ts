@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Skeleton } from '../../../../shared/ui/skeleton/skeleton.component';
 import { DataTable } from '../../../../shared/ui/data-table/data-table.component';
 import { Component, signal } from '@angular/core';
@@ -70,7 +71,7 @@ export class ProposalComponent extends InventoryForm {
     );
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     const d = this.detail();
     if (!d || this.form.invalid || this.busy()) return;
     const v = this.form.getRawValue();

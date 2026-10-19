@@ -309,6 +309,15 @@ small {
 .field label {
   font-weight: 500;
 }
+.field-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+}
+.field-label-row label {
+  margin: 0;
+}
 .field label span {
   color: var(--tc-danger);
 }
@@ -345,6 +354,41 @@ select[aria-invalid='true'] {
 }
 .field-error {
   color: var(--tc-danger);
+}
+.tc-field-invalid {
+  border: 1px solid var(--tc-danger) !important;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tc-danger) 18%, transparent);
+}
+.tc-validation-summary {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--tc-danger);
+  border-radius: 4px;
+  background: var(--tc-danger-bg);
+  font-weight: 600;
+}
+.tc-validation-error {
+  display: block;
+  margin-top: 4px;
+  font-weight: 500;
+}
+.tc-invalid-shake :is(input, select, textarea, [formControlName], .tc-field-invalid)[aria-invalid='true'] {
+  animation: tcFieldShake 360ms ease-in-out;
+}
+@keyframes tcFieldShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
 }
 .checkbox {
   display: flex;

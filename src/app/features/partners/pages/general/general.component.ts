@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { RouterLink } from '@angular/router';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -45,7 +46,7 @@ export class GeneralComponent {
     });
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy() || !this.session.can('PARTY_MANAGE')) return;
     const uuid = this.store.uuid,
       epoch = this.session.epoch(),

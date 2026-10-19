@@ -1,4 +1,5 @@
 import { takeUntil } from 'rxjs';
+import { FormControl, Validators } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 import { FieldsComponent } from '../../shared/fields/fields.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { MovementRootComponent } from '../../components/movement-root/movement-root.component';
-import { PageHeading, Feedback, Spinner } from '../../../../shared/ui/page';
+import { PageHeading, Feedback, Spinner, attemptFormValidation } from '../../../../shared/ui/page';
 import { form, message, label } from '../../rules';
 import { Entity, Field, MovementDetail } from '../../models';
 import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
@@ -19,6 +20,7 @@ import { StepperComponent, StepperStep } from '../../../../shared/ui/stepper/ste
   selector: 'tc-logistics-manifest-new',
   imports: [
     RouterLink,
+    ReactiveFormsModule,
     LookupComponent,
     FieldsComponent,
     PendingRequestsComponent,
@@ -48,7 +50,9 @@ export class ManifestNewComponent extends LogisticsPage {
     { movement: Entity; root: string; allocation: string; line: string; reference: string }[]
   >([]);
   readonly submitting = signal(false);
-  readonly fields: Field[] = [
+  readonly yardControl = new FormControl('', Validators.required);
+  private requirementType = '';
+  fields: Field[] = [
     {
       key: 'type',
       label: 'Tipo',
@@ -105,7 +109,12 @@ export class ManifestNewComponent extends LogisticsPage {
   }
   override ngOnInit() {
     super.ngOnInit();
-    this.form.valueChanges.pipe(takeUntil(this.ended)).subscribe(() => this.persist());
+    this.yardControl.setValue(this.yard);
+    this.syncDestinationRequirements();
+    this.form.valueChanges.pipe(takeUntil(this.ended)).subscribe(() => {
+      this.syncDestinationRequirements();
+      this.persist();
+    });
     this.session.ended.pipe(takeUntil(this.ended)).subscribe(() => {
       this.form.reset();
       this.saved.set([]);
@@ -123,6 +132,7 @@ export class ManifestNewComponent extends LogisticsPage {
         this.gate = d.gate ?? '';
         this.freezeContext();
         this.yard = d.yard || this.yard;
+        this.yardControl.setValue(this.yard);
       }
     } catch {
       sessionStorage.removeItem(this.storage);
@@ -147,6 +157,7 @@ export class ManifestNewComponent extends LogisticsPage {
       return;
     }
     this.yard = v;
+    this.yardControl.setValue(v);
     this.persist();
   }
   addCreated(d: MovementDetail) {
@@ -237,12 +248,41 @@ export class ManifestNewComponent extends LogisticsPage {
       ))
     )
       return;
+    if (n > this.step()) {
+      if (!(await this.validateStage(this.step()))) return;
+      n = Math.min(n, this.step() + 1);
+    }
     if (n > this.step()) this.direction.set('forward');
     else if (n < this.step()) this.direction.set('backward');
     this.step.set(n);
     setTimeout(() => {
       document.querySelector<HTMLElement>('.wizard-step-heading')?.focus();
     }, 0);
+  }
+  private async validateStage(stage: number): Promise<boolean> {
+    if (stage === 1) {
+      const required = this.fields
+        .filter((field) => field.required)
+        .map((field) => this.form.get(field.key)!);
+      return attemptFormValidation(
+        this.form,
+        [this.yardControl, ...required],
+        document.querySelector<HTMLElement>('section.panel'),
+      );
+    }
+    if (stage === 2) {
+      if (this.saved().length) return true;
+      const root = this.root();
+      if (root?.form.invalid) attemptFormValidation(root.form, [root.form.get('assetUuid')!], document.querySelector<HTMLElement>('tc-logistics-movement-root form'));
+      this.error.set('Agrega y guarda al menos una raíz antes de continuar.');
+      return false;
+    }
+    if (stage === 3) {
+      if (this.saved().length) return true;
+      this.error.set('Agrega al menos una raíz antes de revisar el manifiesto.');
+      return false;
+    }
+    return true;
   }
   next() {
     void this.go(Math.min(4, this.step() + 1));
@@ -252,8 +292,7 @@ export class ManifestNewComponent extends LogisticsPage {
   }
   async save() {
     if (this.submitting()) return;
-    this.form.markAllAsTouched();
-    if (this.form.invalid || !this.saved().length) {
+    if (!attemptFormValidation(this.form, [this.form], document.querySelector<HTMLElement>('section.panel')) || !this.saved().length) {
       this.error.set('Completa el contexto y selecciona al menos una raíz.');
       return;
     }
@@ -284,6 +323,30 @@ export class ManifestNewComponent extends LogisticsPage {
     this.gate = v;
     this.form.markAsDirty();
     this.persist();
+  }
+  private syncDestinationRequirements(): void {
+    const type = this.form.getRawValue()['type'];
+    if (type === this.requirementType) return;
+    this.requirementType = type;
+    const conditional = new Set(
+      type === 'OUTBOUND'
+        ? ['destinationSiteUuid', 'destinationCustodianUuid']
+        : ['destinationYardUuid'],
+    );
+    const alwaysRequired = new Set(['type', 'carrierUuid', 'destinationCustodyMode', 'reason', 'sourceReference']);
+    this.fields = this.fields.map((field) => ({
+      ...field,
+      required: alwaysRequired.has(field.key) || conditional.has(field.key),
+    }));
+    for (const key of ['destinationSiteUuid', 'destinationCustodianUuid', 'destinationYardUuid']) {
+      const field = this.fields.find((item) => item.key === key)!;
+      const control = this.form.get(key)!;
+      control.setValidators([
+        Validators.maxLength(field.max ?? 1000),
+        ...(conditional.has(key) ? [Validators.required] : []),
+      ]);
+      control.updateValueAndValidity({ emitEvent: false });
+    }
   }
   freezeContext() {
     for (const f of this.fields) {

@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { Component, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -61,7 +62,7 @@ export class OrderCreditComponent extends CommercePage {
     });
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || !this.session.can('FINANCE_CREDIT') || !this.credit()) return;
     this.saving.set(true);
     try {

@@ -5,9 +5,10 @@ import { LookupComponent } from '../lookup/lookup.component';
 import { Field } from '../../models';
 import { label } from '../../rules';
 import { Session } from '../../../../core/auth/session';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 @Component({
   selector: 'tc-commerce-fields',
-  imports: [ReactiveFormsModule, LookupComponent, DateFieldComponent],
+  imports: [ReactiveFormsModule, LookupComponent, DateFieldComponent, HelpTipComponent],
   templateUrl: './fields.component.html',
   styleUrl: './fields.component.scss',
 })

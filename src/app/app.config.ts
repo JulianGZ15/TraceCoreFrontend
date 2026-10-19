@@ -12,6 +12,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { UnsavedChanges } from './shared/ui/unsaved-changes';
+import { FormValidationFeedback } from './shared/ui/form-validation-feedback';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +21,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     importProvidersFrom(DialogModule),
     provideEnvironmentInitializer(() => inject(UnsavedChanges)),
+    provideEnvironmentInitializer(() => inject(FormValidationFeedback)),
   ],
 };

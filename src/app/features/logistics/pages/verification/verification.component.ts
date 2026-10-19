@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { takeUntil } from 'rxjs';
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -98,7 +99,7 @@ export class VerificationComponent extends LogisticsPage {
     }
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     const s = this.summary(),
       ctx = this.context();
     if (this.form.invalid || !s || !ctx || this.saving()) return;

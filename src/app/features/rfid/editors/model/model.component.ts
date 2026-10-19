@@ -1,6 +1,12 @@
-import {Component} from '@angular/core';import {ReactiveFormsModule,Validators} from '@angular/forms';
-import {Feedback} from '../../../../shared/ui/page';import {RfidEditor} from '../../editor-base';import {uuidPattern} from '../../rules';import {ScanPickerComponent} from '../../selectors/scan-picker/scan-picker.component';import * as M from '../../models';
-@Component({selector:'tc-rfid-model-editor',imports:[ReactiveFormsModule,Feedback],templateUrl:'./model.component.html',styleUrl:'./model.component.scss'})
+import { Component } from '@angular/core';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
+import { Feedback } from '../../../../shared/ui/page';
+import { RfidEditor } from '../../editor-base';
+import { uuidPattern } from '../../rules';
+import { ScanPickerComponent } from '../../selectors/scan-picker/scan-picker.component';
+import * as M from '../../models';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
+@Component({selector:'tc-rfid-model-editor',imports:[ReactiveFormsModule,Feedback,HelpTipComponent],templateUrl:'./model.component.html',styleUrl:'./model.component.scss'})
 export class ModelComponent extends RfidEditor {
  readonly capability='RFID_TAG_MANAGE';override readonly globalOperation=true;
  readonly form=this.fb.nonNullable.group({ uuid:[crypto.randomUUID(),this.uuid],

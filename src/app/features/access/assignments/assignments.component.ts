@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../shared/ui/form-validation';
 import { DateFieldComponent } from '../../../shared/ui/date-field/date-field.component';
 import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -79,7 +80,7 @@ export class AssignmentsPanel implements OnDestroy {
     }
   }
   async assign() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     this.error.set('');
     const v = this.form.getRawValue();

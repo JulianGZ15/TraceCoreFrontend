@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../shared/ui/form-validation';
 import { Directive, inject, output, signal } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -65,7 +66,7 @@ export abstract class QualityEditor extends QualityPage {
       this.error.set('Backend incompatible: faltan decimales exactos.');
       return;
     }
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid) {
       this.error.set('Revisa los campos obligatorios y su formato.');
       return;

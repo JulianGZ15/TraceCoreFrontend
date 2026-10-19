@@ -8,6 +8,7 @@ import { RfidNavComponent } from '../../shared/rfid-nav/rfid-nav.component';
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import * as M from '../../models';
 import { ModelComponent } from '../../editors/model/model.component';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 
 @Component({
   selector: 'tc-rfid-tag-models',
@@ -21,6 +22,7 @@ import { ModelComponent } from '../../editors/model/model.component';
     Pagination,
     RfidNavComponent,
     PendingRequestsComponent,
+    HelpTipComponent,
   ],
   templateUrl: './tag-models.component.html',
   styleUrl: './tag-models.component.scss',

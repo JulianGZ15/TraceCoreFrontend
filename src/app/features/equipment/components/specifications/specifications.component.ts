@@ -27,10 +27,11 @@ import { Ref, Category, Model, Sheet, Asset, Profile, Grade, Heat, Trace, Lot, L
 import { label, localError, numberText, quantityText, decimal, decimalValidator, scaled, exact, specsForm, readSpecs, writeSpecs, approvalMissing, toInstant, instantInput, units, uuidPattern, calendarValid } from '../../rules';
 
 import { errorMessage } from '../../../../core/http/api';
+import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
 
 
 
-@Component({selector:"tc-equipment-specifications",imports:[ReactiveFormsModule],templateUrl:"./specifications.component.html",styleUrl:"./specifications.component.scss"})
+@Component({selector:"tc-equipment-specifications",imports:[ReactiveFormsModule,HelpTipComponent],templateUrl:"./specifications.component.html",styleUrl:"./specifications.component.scss"})
 
 export class SpecificationsComponent {
 

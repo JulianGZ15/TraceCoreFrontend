@@ -5,6 +5,7 @@ import { WorkspaceApi } from '../../../../core/http/workspace-api';
 import { Feedback } from '../../../../shared/ui/page';
 import { workspaceError as errorMessage } from '../../../../core/http/workspace-api';
 import { UnsavedChanges } from '../../../../shared/ui/unsaved-changes';
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 export interface DecisionData {
   title: string;
   path: string;
@@ -75,8 +76,7 @@ export class DecisionEditorComponent {
     }
   }
   async save() {
-    this.reason.markAsTouched();
-    if (this.reason.invalid || !this.reason.value.trim() || this.busy() || !this.reviewed()) return;
+    if (!attemptFormValidation(this.reason) || !this.reason.value.trim() || this.busy() || !this.reviewed()) return;
     this.busy.set(true);
     this.error.set('');
     try {

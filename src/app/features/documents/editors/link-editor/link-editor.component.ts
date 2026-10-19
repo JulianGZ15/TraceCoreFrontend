@@ -1,3 +1,4 @@
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 import { DateFieldComponent } from '../../../../shared/ui/date-field/date-field.component';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -95,7 +96,7 @@ export class LinkEditorComponent {
       this.ref.close();
   }
   async save() {
-    this.form.markAllAsTouched();
+    attemptFormValidation(this.form);
     if (this.form.invalid || this.busy()) return;
     this.busy.set(true);
     this.error.set('');

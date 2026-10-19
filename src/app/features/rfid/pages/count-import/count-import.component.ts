@@ -20,6 +20,7 @@ import { RfidForm } from '../../form-base';
 import { RfidSelection } from '../../selection';
 import { ScanPickerComponent } from '../../selectors/scan-picker/scan-picker.component';
 import { confirm } from '../../../../shared/ui/editor';
+import { attemptFormValidation } from '../../../../shared/ui/form-validation';
 interface Preview {
   eventUuid: string;
   expectedItemUuid: string | null;
@@ -95,7 +96,8 @@ export class CountImportComponent extends RfidForm {
     this.reviewed.set(false);
   }
   async review() {
-    if (!this.form.controls.countUuid.valid || !this.selected().length) {
+    attemptFormValidation(this.form);
+    if (this.form.invalid || !this.selected().length) {
       this.error.set('Selecciona conteo y recibos.');
       return;
     }
