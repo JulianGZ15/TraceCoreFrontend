@@ -15,9 +15,25 @@ npm start
 
 Abrir `http://localhost:4200/login`. El backend debe estar configurado y ejecutándose en `http://127.0.0.1:8080`, con una cuenta existente; consultar [organización y acceso](../../docs/back/05-organizacion-acceso.md) para el bootstrap explícito. La aplicación no tiene credenciales predeterminadas ni registro público.
 
-`proxy.conf.json` publica `/api/**` en el mismo origen y conserva Host/Origin (`changeOrigin: false`). Para otro puerto, ajustar su target. Producción requiere servir la API bajo `/api/v1`, conservar el origen público y redirigir las rutas de Angular al `index.html`.
+`proxy.conf.json` publica `/api/**` en el mismo origen durante desarrollo y conserva Host/Origin (`changeOrigin: false`). Para otro puerto, ajustar su target. En producción, `API_PATH` define la ruta de la API en el mismo origen; su valor predeterminado es `/api/v1`. El interceptor solo adjunta Bearer a solicitudes de ese origen y dentro de esa ruta.
 
-`API_BASE` permite configurar otra base HTTP mediante un provider; el interceptor verifica origen y límite de ruta antes de adjuntar Bearer. Los permisos proceden de `/auth/context` y se comprueban en el backend.
+### Desplegar en Dokploy con Docker
+
+El `Dockerfile` instala dependencias con Node 22, compila Angular en una etapa de construcción y sirve `dist/TraceCore/browser` con Nginx. Nginx conserva el fallback de rutas al `index.html` para que funcionen las rutas directas de Angular. `API_PATH` se lee al iniciar el contenedor; no hace falta recompilar para cambiarlo. Ejemplo local: `.env.example`.
+
+En Dokploy configura:
+
+- **Build Type:** Dockerfile
+- **Dockerfile Path:** `./Dockerfile`
+- **Docker Context Path:** `.`
+- **Dominio, puerto del contenedor:** `80`
+- **Variables de entorno:** `API_PATH=/api/v1` y `API_UPSTREAM=http://tracecore-backend:8080`
+
+Sustituye `API_UPSTREAM` por el origen HTTP(S) del backend, accesible desde el contenedor frontend (por ejemplo, su nombre de servicio en la red compartida de Dokploy). Nginx reenvía `API_PATH` al backend conservando el prefijo; el navegador siempre llama al frontend en el mismo origen, por lo que el interceptor puede adjuntar Bearer de forma segura. Si `API_UPSTREAM` no se define, las rutas de API responden `502` en vez de devolver el HTML de Angular.
+
+No pongas secretos en `API_PATH`: esta ruta se expone al navegador. Debe comenzar con `/` y no incluir dominio, query ni fragmento. `API_UPSTREAM` solo admite el esquema y host/puerto, sin ruta adicional.
+
+Los permisos proceden de `/auth/context` y se comprueban en el backend.
 
 ## Componentes modulares
 

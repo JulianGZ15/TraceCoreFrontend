@@ -1,8 +1,9 @@
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { runtimeApiPath } from './runtime-config';
 
-export const API_BASE = new InjectionToken<string>('API_BASE', { factory: () => '/api/v1' });
+export const API_BASE = new InjectionToken<string>('API_BASE', { factory: runtimeApiPath });
 export interface User {
   uuid: string;
   name: string;
