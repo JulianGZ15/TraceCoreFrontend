@@ -23,6 +23,36 @@
   </button>
 </tc-search-toolbar>
 
+<section class="panel search-panel" aria-labelledby="integrated-search-title">
+  <h2 id="integrated-search-title">Buscar expediente</h2>
+  <p>Busca por equipo o tercero. Cada búsqueda conserva sus permisos y alcance.</p>
+  <div class="entity-searches">
+    @if (session.can('EQUIPMENT_READ') && access.any('QUERY_READ')) {
+      <div>
+        <h3>Equipo</h3>
+        <tc-document-subject-picker
+          kind="ASSET"
+          source="QUERIES"
+          [yard]="yard"
+          label="Buscar equipo"
+          (selected)="selectEntity('equipos', $event)"
+        />
+      </div>
+    }
+    @if (session.can('PARTY_READ') && session.can('QUERY_READ')) {
+      <div>
+        <h3>Tercero</h3>
+        <tc-document-subject-picker
+          kind="PARTY"
+          source="QUERIES"
+          label="Buscar tercero"
+          (selected)="selectEntity('terceros', $event)"
+        />
+      </div>
+    }
+  </div>
+</section>
+
 @if (error()) {
   <tc-feedback [message]="error()" />
 }
@@ -93,24 +123,3 @@
     </section>
   }
 }
-<section class="panel">
-  <h2>Expedientes integrales</h2>
-  <p>Consulta por entidad; cada sección conserva sus permisos originales.</p>
-  @if (session.can('EQUIPMENT_READ') && access.any('QUERY_READ')) {
-    <tc-document-subject-picker
-      kind="ASSET"
-      source="QUERIES"
-      [yard]="yard"
-      label="Buscar equipo"
-      (selected)="selectEntity('equipos', $event)"
-    />
-  }
-  @if (session.can('PARTY_READ') && session.can('QUERY_READ')) {
-    <tc-document-subject-picker
-      kind="PARTY"
-      source="QUERIES"
-      label="Buscar tercero"
-      (selected)="selectEntity('terceros', $event)"
-    />
-  }
-</section>
