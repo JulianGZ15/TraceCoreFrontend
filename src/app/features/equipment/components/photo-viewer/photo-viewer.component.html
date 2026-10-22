@@ -1,0 +1,54 @@
+<section class="viewer">
+  <header class="viewer-heading"><h2>Foto del equipo</h2><button class="btn secondary" (click)="close()" aria-label="Cerrar visor de fotos">Cerrar</button></header>
+  <nav class="actions" aria-label="Fotos de esta página">
+    <button class="btn secondary" (click)="move(-1)" [disabled]="index() === 0 || busy()">Foto anterior</button>
+    <span>{{ index() + 1 }} de {{ data.photos.length }} en esta página</span>
+    <button class="btn secondary" (click)="move(1)" [disabled]="index() + 1 === data.photos.length || busy()">Foto siguiente</button>
+  </nav>
+  @if (error()) { <p class="feedback" role="alert">{{ error() }}</p> }
+  @if (loading()) { <p role="status">Cargando imagen…</p> }
+  @if (!loading() && !photo()) { <button class="btn secondary" (click)="load()">Reintentar imagen</button> }
+  @if (photo(); as p) {
+    @if (url()) {
+      <div class="picture" tabindex="0" aria-label="Imagen ampliada; desplázate para explorar el zoom"><img [src]="url()" [alt]="p.description || p.original.filename" [style.width.%]="zoom() * 100"></div>
+      <label class="zoom">Zoom <input type="range" min="1" max="4" step="0.25" [value]="zoom()" (input)="zoom.set(+$any($event.target).value)" aria-label="Ampliación de la foto"> {{ zoom() }}×</label>
+    }
+    <h3>{{ p.description || p.original.filename }}</h3>
+    <dl class="metadata">
+      <dt>Fecha de toma</dt><dd>{{ takenText(p) }}</dd>
+      <dt>Subida</dt><dd>{{ time(p.uploadedAt) }} · {{ p.uploadedBy.name }} · Web</dd>
+      <dt>Archivo recibido</dt><dd>{{ p.original.filename }} · {{ p.original.mediaType }} · {{ p.original.size }} bytes · {{ p.original.width }} × {{ p.original.height }} px</dd>
+      <dt>Estado</dt><dd>{{ p.state === 'ACTIVE' ? 'Activa' : 'Archivada' }}</dd>
+      @if (p.capture.cameraMake || p.capture.cameraModel) { <dt>Cámara</dt><dd>{{ p.capture.cameraMake }} {{ p.capture.cameraModel }}</dd> }
+      @if (p.capture.exifTakenAtLocal) { <dt>Fecha EXIF recibida</dt><dd>{{ p.capture.exifTakenAtLocal.replace('T', ' ') }}</dd> }
+      @if (p.archivedBy && p.archivedAt) { <dt>Archivo</dt><dd>{{ p.archivedBy.name }} · {{ time(p.archivedAt) }} · {{ p.archiveReason }}</dd> }
+    </dl>
+    <details><summary>Integridad y variantes</summary><p class="hash">SHA-256 recibido: {{ p.original.sha256 }}</p>
+      @for (entry of entries(p.images); track entry[0]) { <p class="hash">{{ entry[0] }} · {{ entry[1].width }} × {{ entry[1].height }} px · {{ entry[1].size }} bytes · {{ entry[1].sha256 }}</p> }
+      <p>Las imágenes almacenadas se normalizaron sin EXIF ni GPS.</p>
+    </details>
+    @if (!data.readOnly) {
+      <form [formGroup]="form" (ngSubmit)="save()" class="photo-editor">
+        <h3>Corregir metadatos</h3>
+        <label for="photo-edit-description">Descripción (opcional)</label><textarea id="photo-edit-description" formControlName="description" maxlength="1000" [attr.aria-invalid]="form.controls.description.invalid && form.controls.description.touched"></textarea>
+        <label for="photo-edit-date">Fecha y hora de la toma (opcional)</label>
+        <tc-date-field [id]="'photo-edit-date'" label="Fecha y hora de la toma (opcional)" mode="datetime" valueFormat="local" formControlName="takenAtLocal" />
+        <label for="photo-edit-zone">Zona de la toma (opcional, ±HH:MM)</label><input id="photo-edit-zone" formControlName="offset" placeholder="-06:00" maxlength="6" [attr.aria-invalid]="form.controls.offset.invalid && form.controls.offset.touched" aria-describedby="photo-edit-zone-error">
+        @if (form.controls.offset.invalid && form.controls.offset.touched) { <p id="photo-edit-zone-error" class="feedback">Indica una zona como -06:00 o deja el campo vacío.</p> }
+        <label for="photo-edit-reason">Motivo del cambio o archivo</label><textarea id="photo-edit-reason" formControlName="reason" maxlength="1000" required [attr.aria-invalid]="form.controls.reason.invalid && form.controls.reason.touched" aria-describedby="photo-reason-feedback"></textarea>
+        @if (form.controls.reason.invalid && form.controls.reason.touched) { <p id="photo-reason-feedback" class="feedback">Indica el motivo.</p> }
+        <div class="actions"><button class="btn" type="submit" [disabled]="busy()">Guardar corrección</button><button class="btn secondary" type="button" (click)="transition()" [disabled]="busy()">{{ p.state === 'ACTIVE' ? 'Archivar foto' : 'Restaurar foto' }}</button></div>
+      </form>
+    }
+    <h3>Historial de la foto</h3>
+    @if (historyError()) { <p class="feedback" role="alert">{{ historyError() }}</p><button class="btn secondary" (click)="loadHistory()">Reintentar historial</button> }
+    @if (historyLoading()) { <p role="status">Cargando historial…</p> }
+    @for (event of history(); track event.uuid) {
+      <article class="history-entry"><strong>{{ action(event.action) }} · {{ event.actor.name }}</strong><p>{{ time(event.occurredAt) }} · {{ event.reason }}</p>
+        @if (event.before; as before) { <p>Antes: {{ before.description || 'Sin descripción' }} · {{ takenText(before) }} · {{ before.state === 'ACTIVE' ? 'Activa' : 'Archivada' }}</p> }
+        <p>Después: {{ event.after.description || 'Sin descripción' }} · {{ takenText(event.after) }} · {{ event.after.state === 'ACTIVE' ? 'Activa' : 'Archivada' }}</p>
+      </article>
+    }
+    <nav class="actions" aria-label="Páginas del historial"><button class="btn secondary" (click)="loadHistory(historyOffset() - 10)" [disabled]="historyOffset() === 0 || historyLoading()">Historial anterior</button><button class="btn secondary" (click)="loadHistory(historyOffset() + 10)" [disabled]="!historyMore() || historyLoading()">Historial siguiente</button></nav>
+  }
+</section>

@@ -80,7 +80,7 @@ export type LookupKind = 'category'|'model'|'sheet'|'grade'|'heat'|'lot'|'asset'
 
 export type Purpose = 'MANUFACTURER'|'MILL'|'OWNER';
 
-export const assetSections = [['general','General'],['tecnica','Ficha técnica'],['materiales','Materiales'],['propiedad','Propiedad'],['condicion','Condición'],['lotes','Lotes'],['composicion','Composición'],['uso','Horas de uso']] as const;
+export const assetSections = [['general','General'],['tecnica','Ficha técnica'],['materiales','Materiales'],['propiedad','Propiedad'],['condicion','Condición'],['lotes','Lotes'],['composicion','Composición'],['uso','Horas de uso'],['fotos','Fotos']] as const;
 
 export const catalogLinks = [['categorias','Categorías'],['modelos','Modelos y fichas'],['grados','Grados'],['coladas','Coladas'],['lotes','Lotes']] as const;
 

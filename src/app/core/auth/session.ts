@@ -16,7 +16,7 @@ export function safeReturn(value: string | null): string {
     return value;
   const id = '[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}';
   if (new RegExp('^/documentos(?:/' + id + '(?:/(?:resumen|versiones(?:/' + id + ')?|vinculos))?)?$').test(path)) return value;
-  if (new RegExp('^/consultas(?:/(?:panel|inventario|ordenes|equipos/' + id + '(?:/(?:resumen|tecnica|composicion|inventario|calidad|rfid|comercial|documentos))?|terceros/' + id + '(?:/(?:resumen|contactos|avl|comercial|finanzas|evidencias|documentos))?))?$').test(path)) return value;
+  if (new RegExp('^/consultas(?:/(?:panel|inventario|ordenes|equipos/' + id + '(?:/(?:resumen|tecnica|composicion|inventario|calidad|rfid|comercial|documentos|fotos))?|terceros/' + id + '(?:/(?:resumen|contactos|avl|comercial|finanzas|evidencias|documentos))?))?$').test(path)) return value;
   if (/^\/soporte(?:\/(?:recibos-rfid|auditoria))?$/.test(path)) return value;
   if (
     new RegExp(
@@ -123,7 +123,7 @@ export function safeReturn(value: string | null): string {
     new RegExp(
       '^/equipos(?:/nuevo|/' +
         id +
-        '(?:/(?:general|tecnica|materiales|propiedad|condicion|lotes|composicion|uso))?)?$',
+        '(?:/(?:general|tecnica|materiales|propiedad|condicion|lotes|composicion|uso|fotos))?)?$',
     ).test(path)
   )
     return value;

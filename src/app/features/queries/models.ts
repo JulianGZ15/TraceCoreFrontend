@@ -44,6 +44,7 @@ export const equipmentSections: Record<
   { label: string; backend: string; collections: Record<string, string> }
 > = {
   resumen: { label: 'Resumen', backend: '', collections: {} },
+  fotos: { label: 'Fotos', backend: 'photos', collections: {} },
   tecnica: {
     label: 'Historia técnica',
     backend: 'technicalHistory',

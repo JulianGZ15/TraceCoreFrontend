@@ -53,6 +53,8 @@
       <p class="feedback info">
         Esta sección requiere capacidades adicionales. No se muestran datos ni cantidades.
       </p>
+    } @else if (equipment && selected === 'fotos') {
+      <tc-photo-gallery [assetUuid]="uuid" [readOnly]="true" [query]="true" />
     } @else {
       <section class="panel">
         <h2>{{ sections()[selected].label }}</h2>

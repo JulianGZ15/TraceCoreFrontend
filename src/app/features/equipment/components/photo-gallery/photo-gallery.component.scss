@@ -1,0 +1,18 @@
+:host { display: block; min-width: 0; }
+.photo-gallery { min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+.photo-card { min-width: 0; padding: 12px; border: 1px solid var(--tc-border); border-radius: 12px; }
+.photo-card p, .photo-card strong { overflow-wrap: anywhere; }
+.photo-card p { font-size: 14px; }
+.photo-open { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; text-align: left; }
+.photo-open img, .photo-open > span { width: 100%; height: 200px; object-fit: contain; display: block; background: var(--tc-surface-muted); margin-bottom: 12px; border-radius: 8px; }
+.photo-open > span { display: grid; place-content: center; font-size: 14px; }
+.photo-open:focus-visible { outline: 3px solid var(--tc-focus); outline-offset: 4px; }
+.upload-box { margin-bottom: 24px; padding: 16px; background: var(--tc-surface-muted); border-radius: 12px; }
+.upload-box input[type=file] { max-width: 100%; margin-top: 8px; }
+.pending-photo { display: grid; gap: 8px; padding: 16px 0; border-top: 1px solid var(--tc-border); }
+.pending-photo strong { overflow-wrap: anywhere; }
+.pending-photo textarea, .pending-photo input { width: 100%; box-sizing: border-box; }
+.photo-pagination { margin-top: 20px; align-items: center; }
+@media (max-width: 600px) { .panel-heading { display: grid; gap: 12px; } .upload-box { padding: 12px; } }

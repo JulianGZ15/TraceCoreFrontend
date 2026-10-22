@@ -1,0 +1,16 @@
+:host { display: block; overflow: auto; max-height: calc(100dvh - 24px); border-radius: 16px; background: var(--tc-panel); color: var(--tc-text); }
+.viewer { padding: 24px; min-width: 0; }
+.viewer-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 1; background: var(--tc-panel); padding-bottom: 8px; }
+.picture { max-height: 55dvh; overflow: auto; margin-top: 16px; background: var(--tc-surface-muted); border-radius: 8px; }
+.picture img { display: block; max-width: none; height: auto; margin: auto; }
+.zoom { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+.zoom input { width: min(240px, 60%); }
+.metadata { display: grid; grid-template-columns: minmax(100px, 160px) minmax(0, 1fr); gap: 8px 16px; }
+dd { margin: 0; overflow-wrap: anywhere; }
+dt { color: var(--tc-text-muted); }
+.hash { overflow-wrap: anywhere; font-size: 13px; }
+.photo-editor { display: grid; gap: 8px; margin: 20px 0; }
+.photo-editor input, .photo-editor textarea { width: 100%; box-sizing: border-box; }
+.history-entry { border-top: 1px solid var(--tc-border); padding: 12px 0; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+@media (max-width: 600px) { .viewer { padding: 16px; } .metadata { grid-template-columns: 1fr; } }

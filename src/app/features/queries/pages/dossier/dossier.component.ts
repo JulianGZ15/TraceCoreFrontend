@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { PhotoGalleryComponent } from '../../../equipment/components/photo-gallery/photo-gallery.component';
 import { RouterLink } from '@angular/router';
 import { ReadPage } from '../../../../shared/ui/read-page';
 import { PageHeading, Feedback, Pagination, PageNav, PageNavItem, Skeleton, Spinner } from '../../../../shared/ui/page';
@@ -9,7 +10,7 @@ import { QueryAccess } from '../../access';
 import { CsvDownload } from '../../csv';
 @Component({
   selector: 'tc-query-dossier',
-  imports: [RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent, PageNav, Skeleton, Spinner],
+  imports: [PhotoGalleryComponent, RouterLink, PageHeading, Feedback, Pagination, RecordValuesComponent, PageNav, Skeleton, Spinner],
   templateUrl: './dossier.component.html',
   styleUrl: './dossier.component.scss',
 })

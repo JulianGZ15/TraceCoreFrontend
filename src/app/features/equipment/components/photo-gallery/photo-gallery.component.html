@@ -1,0 +1,55 @@
+<section class="panel photo-gallery" aria-label="Fotos del equipo">
+  <div class="panel-heading">
+    <div><h2>Fotos del equipo</h2><p class="small-muted">Identificación visual e historial fotográfico.</p></div>
+    <div class="actions">
+      <button class="btn secondary" (click)="state.set(state() === 'ACTIVE' ? 'ARCHIVED' : 'ACTIVE')" [disabled]="uploading()">{{ state() === 'ACTIVE' ? 'Ver archivadas' : 'Ver activas' }}</button>
+      <button class="btn secondary" (click)="load()" [disabled]="loading() || uploading()">Actualizar fotos</button>
+    </div>
+  </div>
+  @if (manage()) {
+    <div class="upload-box">
+      <label for="equipment-photo-files">Seleccionar fotos para subir</label>
+      <input id="equipment-photo-files" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple (change)="select($event)" [disabled]="uploading()" aria-describedby="photo-upload-help">
+      <p id="photo-upload-help" class="small-muted">JPEG o PNG, hasta 10 MiB y 40 megapíxeles por foto. Puedes usar el selector del teléfono. Se conserva una copia sin EXIF ni GPS.</p>
+      @for (item of pending(); track item; let i = $index) {
+        <div class="pending-photo" [formGroup]="item.form">
+          <strong>{{ item.file.name }}</strong>
+          @if (item.status === 'pending' || item.status === 'error') {
+            <label [for]="'photo-description-' + i">Descripción (opcional)</label>
+            <textarea [id]="'photo-description-' + i" formControlName="description" maxlength="1000" [attr.aria-invalid]="item.form.controls.description.invalid && item.form.controls.description.touched"></textarea>
+            <label [for]="'photo-taken-' + i">Fecha y hora de la toma (opcional)</label>
+            <tc-date-field [id]="'photo-taken-' + i" label="Fecha y hora de la toma (opcional)" mode="datetime" valueFormat="local" formControlName="takenAtLocal" />
+            <label [for]="'photo-zone-' + i">Zona de la toma (opcional, ±HH:MM)</label>
+            <input [id]="'photo-zone-' + i" formControlName="offset" placeholder="-06:00" maxlength="6" [attr.aria-invalid]="item.form.controls.offset.invalid && item.form.controls.offset.touched" [attr.aria-describedby]="'photo-zone-error-' + i">
+            @if (item.form.controls.offset.invalid && item.form.controls.offset.touched) { <p [id]="'photo-zone-error-' + i" class="feedback">Indica una zona como -06:00 o deja el campo vacío.</p> }
+          }
+          @if (item.result) { <p role="status" [class.feedback]="item.status === 'error'">{{ item.result }}</p> }
+          @if (item.status === 'error') { <button type="button" class="btn secondary" (click)="retry(item)" [disabled]="uploading()">Preparar reintento</button> }
+          <button type="button" class="btn secondary" (click)="remove(item)" [disabled]="uploading()">Quitar de la cola</button>
+        </div>
+      }
+      @if (pending().length) { <button class="btn" (click)="upload()" [disabled]="uploading()">{{ uploading() ? 'Subiendo fotos…' : 'Subir fotos pendientes' }}</button> }
+    </div>
+  }
+  @if (error()) { <p class="feedback" role="alert">{{ error() }}</p> }
+  @if (loading()) { <p role="status">Cargando fotos…</p> }
+  @else if (!error() && !rows().length) { <p>Este equipo no tiene fotos {{ state() === 'ACTIVE' ? 'activas' : 'archivadas' }}.</p> }
+  <div class="photo-grid">
+    @for (photo of rows(); track photo.uuid; let index = $index) {
+      <article class="photo-card">
+        <button class="photo-open" (click)="open(index)" [attr.aria-label]="'Abrir foto: ' + (photo.description || photo.original.filename)">
+          @if (thumbnails()[photo.uuid]; as url) { <img [src]="url" [alt]="photo.description || photo.original.filename" width="360" height="270"> }
+          @else { <span>{{ thumbnailErrors()[photo.uuid] ? 'Miniatura no disponible' : 'Cargando miniatura…' }}</span> }
+          <strong>{{ photo.description || photo.original.filename }}</strong>
+        </button>
+        @if (thumbnailErrors()[photo.uuid]) { <button class="btn secondary" (click)="thumbnail(photo)">Reintentar miniatura</button> }
+        <p>{{ takenText(photo) }}</p><p class="small-muted">Subida por {{ photo.uploadedBy.name }}</p>
+      </article>
+    }
+  </div>
+  <nav class="actions photo-pagination" aria-label="Páginas de fotos">
+    <button class="btn secondary" (click)="load(offset() - 25)" [disabled]="offset() === 0 || loading() || uploading()">Anterior</button>
+    <span>Página {{ offset() / 25 + 1 }}</span>
+    <button class="btn secondary" (click)="load(offset() + 25)" [disabled]="!hasMore() || loading() || uploading()">Siguiente</button>
+  </nav>
+</section>
