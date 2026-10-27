@@ -112,12 +112,12 @@ export class LookupComponent implements ControlValueAccessor, OnDestroy {
                   label:
                     [row.record.concept ?? row.record.filename ?? row.record.folio, row.label]
                       .filter(Boolean)
-                      .join(' · ') || row.record.uuid,
+                      .join(' · ') || 'Registro disponible',
                 }
               : v;
           });
         this.options.set(options);
-        if (this.selected()) this.selectedLabel.set(options.find((o) => o.uuid === this.selected())?.label ?? this.selected());
+        if (this.selected()) this.selectedLabel.set(options.find((o) => o.uuid === this.selected())?.label ?? 'Registro seleccionado');
         return options.map((option) => ({ value: option.uuid, label: option.label }));
       }
     } catch {

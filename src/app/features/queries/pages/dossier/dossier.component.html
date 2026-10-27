@@ -58,10 +58,11 @@
     } @else {
       <section class="panel">
         <h2>{{ sections()[selected].label }}</h2>
-        <p class="small-muted">
+        <aside class="attention-note info" role="note">
+          <strong>Los datos de esta sección tienen su propia hora de consulta</strong>
           Sección generada {{ time(detail.generatedAt) }}. No comparte una instantánea con las demás
           secciones.
-        </p>
+        </aside>
         @if (collections().length) {
           <div class="actions">
             <button
@@ -131,5 +132,14 @@
         }
       </section>
     }
+  }
+  @if (selected !== 'resumen' && !section() && !initialLoading()) {
+    <section class="panel" aria-live="polite">
+      <h2>{{ sections()[selected]?.label ?? 'Sección' }}</h2>
+      <p>No se pudo cargar esta sección. La navegación del expediente sigue disponible.</p>
+      <button class="btn secondary" (click)="load()" [disabled]="loading()">
+        Reintentar sección
+      </button>
+    </section>
   }
 }

@@ -4,13 +4,44 @@
     placeholder="Buscar por nombre de archivo…"
     [value]="control().value ?? ''"
     [selectedLabel]="selectedLabel()"
+    [searchError]="error()"
     [searchFn]="searchFn"
     (select)="select($event)"
   />
-  <p class="small-muted">
-    Utiliza una referencia documental existente. Vincularla no verifica su contenido.
-  </p>
-  @if (access.global('QUALITY_READ')) {
+  <aside class="attention-note info" role="note">
+    <strong>Sobre el documento y su vínculo</strong>
+    @if (allowUpload() && access.global('QUALITY_MANAGE')) {
+      Puedes seleccionar evidencia existente o subir un archivo. Al cargarlo no se verifica su contenido;
+      quedará asociado cuando guardes el MTR.
+    } @else {
+      Utiliza una referencia documental existente. Vincularla no verifica su contenido.
+    }
+  </aside>
+  @if (allowUpload() && access.global('QUALITY_MANAGE')) {
+    <div class="tc-file-upload upload-field">
+      <label for="mtr-evidence-file">Subir un documento MTR</label>
+      <p>PDF, PNG o JPEG · máximo 10 MiB. Se asociará al MTR cuando guardes.</p>
+      <input
+        id="mtr-evidence-file"
+        #fileControl
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        [disabled]="busy()"
+        (change)="selectFile($event)"
+      />
+      <p class="tc-file-upload__selected">{{ file()?.name || 'Ningún archivo seleccionado' }}</p>
+      <button
+        type="button"
+        class="btn primary"
+        [disabled]="busy() || !file()"
+        (click)="uploadSelected()"
+      >
+        {{ busy() ? 'Subiendo…' : 'Subir documento' }}
+      </button>
+    </div>
+    <tc-feedback [message]="success()" kind="success" />
+  }
+  @if (access.global('QUALITY_READ') || (allowUpload() && access.global('QUALITY_MANAGE'))) {
     <tc-feedback [message]="error()" />
   } @else {
     <p class="small-muted">Solicita la referencia al responsable documental.</p>

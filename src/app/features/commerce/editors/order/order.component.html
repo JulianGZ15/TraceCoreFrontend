@@ -1,9 +1,10 @@
 <section class="editor">
   <h2>{{ title }}</h2>
-  <p>
-    Guarda primero esta cabecera. Después completa partidas, tarifas y documentos. El alta no
-    aprueba ni reserva equipos.
-  </p>
+  <aside class="attention-note info" role="note">
+    <strong>Completa la orden por etapas</strong>
+    Guarda primero esta cabecera y después agrega partidas, tarifas y documentos. Guardarla no
+    aprueba la orden ni reserva equipos.
+  </aside>
   @if (!data.summary) {
     <p class="small-muted">El folio se asignará automáticamente: PREFIJO-{{ type }}-número.</p>
   }

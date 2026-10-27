@@ -1,5 +1,6 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Field } from './models';
+import { timeZoneValidator } from '../../shared/time-zones';
 import { decimalValidator, scaled } from '../equipment/rules';
 export { exact, numberText, prettyDate } from '../equipment/rules';
 export const labels: Record<string, string> = {
@@ -49,8 +50,29 @@ export const labels: Record<string, string> = {
   OPERATIONAL_RESTRICTION: 'Una restricción operativa impide confirmar.',
   DESTINATION_UNAVAILABLE: 'El destino ya no está disponible.',
   RENTAL_PARTIES_OR_FRAMEWORK_UNAVAILABLE: 'Revisa los terceros y la cobertura del contrato marco.',
+  PARTY_INACTIVE: 'La contraparte está inactiva.',
+  ROLE_REQUIRED: 'A la contraparte le falta el rol necesario para esta operación.',
+  AUTHORIZATION_REQUIRED: 'La contraparte necesita una autorización vigente para esta operación.',
+  AVL_REQUIRED: 'Se requiere una evaluación AVL aprobada y vigente para esta compra.',
+  AVL_NOT_APPROVED_OR_EXPIRED: 'La evaluación AVL de la contraparte no está aprobada o ya venció.',
 };
-export const label = (v: unknown) => (v == null ? 'Sin dato' : (labels[String(v)] ?? String(v)));
+const eligibilityReasons: Record<string, string> = {
+  PARTY_INACTIVE: labels['PARTY_INACTIVE'],
+  ROLE_REQUIRED: labels['ROLE_REQUIRED'],
+  AUTHORIZATION_REQUIRED: labels['AUTHORIZATION_REQUIRED'],
+  AVL_REQUIRED: labels['AVL_REQUIRED'],
+  AVL_NOT_APPROVED_OR_EXPIRED: labels['AVL_NOT_APPROVED_OR_EXPIRED'],
+};
+export const label = (v: unknown) => {
+  if (v == null) return 'Sin dato';
+  const value = String(v);
+  const ineligibleReason = value.startsWith('Counterparty ineligible: ')
+    ? value.slice('Counterparty ineligible: '.length)
+    : null;
+  if (ineligibleReason)
+    return eligibilityReasons[ineligibleReason] ?? 'La contraparte no cumple los requisitos para esta operación.';
+  return labels[value] ?? value;
+};
 export function instant(v: unknown) {
   if (typeof v !== 'string' || !/(?:Z|[+-]\d{2}:\d{2})$/.test(v) || !Number.isFinite(Date.parse(v)))
     throw new Error('Indica fecha ISO con Z o desplazamiento UTC explícito.');
@@ -63,6 +85,7 @@ export function form(fields: Field[], values: Record<string, unknown> = {}) {
     if (f.required) validators.push(Validators.required);
     if (f.type === 'decimal') validators.push(decimalValidator(14, f.scale ?? 8));
     if (f.type === 'integer') validators.push(Validators.pattern(/^[1-9]\d*$/));
+    if (f.type === 'timezone') validators.push(timeZoneValidator);
     if (f.type === 'instant')
       validators.push((c) =>
         !c.value

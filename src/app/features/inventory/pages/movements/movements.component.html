@@ -22,14 +22,20 @@
     <tc-inventory-yard-picker toolbarContext [value]="yard()" (picked)="changeYard($event)" />
 
     @if (access.any('MOVEMENT_MANAGE') || access.any('INVENTORY_ADJUST')) {
-      <a
-        toolbarAction
-        class="btn primary"
-        routerLink="/inventario/movimientos/nuevo"
-        [queryParams]="{ yardUuid: yard() }"
-      >
-        Preparar movimiento
-      </a>
+      @if (yard()) {
+        <a
+          toolbarAction
+          class="btn primary"
+          routerLink="/inventario/movimientos/nuevo"
+          [queryParams]="{ yardUuid: yard() }"
+        >
+          Preparar movimiento
+        </a>
+      } @else {
+        <button toolbarAction class="btn secondary" type="button" disabled>
+          Selecciona un patio para preparar un movimiento
+        </button>
+      }
     }
   </tc-search-toolbar>
 
@@ -62,9 +68,16 @@
           <tr>
             <td>{{ r.folio }}<br />{{ label(r.type) }}</td>
             <td>{{ label(r.state) }}</td>
-            <td class="mono long">
-              {{ r.sourceYardUuid ?? r.sourceSiteUuid ?? 'Sin ubicación' }} →
-              {{ r.destinationYardUuid ?? r.destinationSiteUuid ?? 'Sin posición' }}
+            <td class="long">
+              <div>{{ locationName(r.sourceYardUuid, r.sourceSiteUuid, 'Sin origen') }}</div>
+              @if (r.sourceYardUuid ?? r.sourceSiteUuid; as sourceId) {
+                <small class="mono small-muted">{{ sourceId }}</small>
+              }
+              <div aria-hidden="true">→</div>
+              <div>{{ locationName(r.destinationYardUuid, r.destinationSiteUuid, 'Sin destino') }}</div>
+              @if (r.destinationYardUuid ?? r.destinationSiteUuid; as destinationId) {
+                <small class="mono small-muted">{{ destinationId }}</small>
+              }
             </td>
             <td>{{ date(r.createdOn) }}</td>
             <td><a class="btn secondary" [routerLink]="'/inventario/movimientos/' + r.uuid">Abrir</a></td>

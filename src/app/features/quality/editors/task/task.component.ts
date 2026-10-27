@@ -19,9 +19,9 @@ export class TaskComponent extends QualityEditor {
   readonly operationCapability = 'MAINTENANCE_MANAGE';
   readonly pending = inject(QualityPending);
   readonly form = this.fb.group({
-    code: ['', this.required],
-    description: ['', this.required],
-    requirements: ['', this.required],
+    code: ['', [Validators.required, Validators.pattern(/^[A-Za-z][A-Za-z0-9_:-]{0,79}$/)]],
+    description: ['', [Validators.required, Validators.maxLength(500)]],
+    requirements: ['', [Validators.required, Validators.maxLength(1000)]],
   });
   record: M.Task | null = null;
   ngOnInit() {
@@ -42,13 +42,18 @@ export class TaskComponent extends QualityEditor {
   async save() {
     await this.saveWith(async () => {
       const r = this.form.getRawValue();
+      const payload = {
+        code: r.code?.trim().toUpperCase() ?? '',
+        description: r.description?.trim() ?? '',
+        requirements: r.requirements?.trim() ?? '',
+      };
       return this.record
         ? this.api.put<M.Task>('/tasks/' + this.record.uuid, {
-            ...r,
+            ...payload,
             version: this.record.version,
             orderVersion: this.data['orderVersion'],
           })
-        : this.api.post<M.Task>('/maintenance/' + this.data['orderUuid'] + '/tasks', r);
+        : this.api.post<M.Task>('/maintenance/' + this.data['orderUuid'] + '/tasks', payload);
     });
   }
 }

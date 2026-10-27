@@ -31,9 +31,10 @@
     </p>
     <p class="mono">{{ result.reason }}</p>
   }
-  <p class="small-muted">
-    Resultado puntual del servidor para la operación y el alcance consultados. No emite órdenes.
-  </p>
+  <aside class="attention-note info" role="note">
+    <strong>El resultado solo aplica a esta consulta</strong>
+      Se limita a la operación y al alcance consultados; no genera ni envía una orden.
+  </aside>
 </section>
 <section class="panel table-panel" [attr.aria-busy]="busy()">
   <div class="panel-heading">

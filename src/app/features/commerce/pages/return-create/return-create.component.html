@@ -4,10 +4,11 @@
     [sections]="sections"
   />
 </tc-page-heading><tc-commerce-pending-requests /><tc-feedback [message]="error()" />
-<p>
-  El retorno físico RETURN y su recepción administrativa deben estar completados. La devolución
-  finaliza renta; daño o rechazo no equivalen a liberación técnica.
-</p>
+<aside class="attention-note warning" role="note">
+  <strong>Requisitos para confirmar la devolución</strong>
+  Completa primero el retorno físico y su recepción administrativa. La devolución finaliza la renta;
+  si hubo daño o rechazo, el equipo todavía requiere su liberación técnica.
+</aside>
 @if (loading()) {
   <p role="status">Consultando contrato y contexto del patio…</p>
 } @else {

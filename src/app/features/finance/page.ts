@@ -16,6 +16,7 @@ import {
   EditorData,
 } from './models';
 import { label, numberText, message, prettyDate } from './rules';
+import { readErrorMessage } from '../../core/http/api';
 import { PaymentComponent } from './editors/payment/payment.component';
 import { ChargeComponent } from './editors/charge/charge.component';
 import { AllocationComponent } from './editors/allocation/allocation.component';
@@ -247,7 +248,7 @@ export abstract class FinancePage implements OnInit, OnDestroy {
       }
     } catch (e) {
       if (seq === this.seq) {
-        this.error.set(message(e));
+        this.error.set(readErrorMessage(e));
         if ([401, 403].includes((e as { status?: number })?.status ?? 0)) this.rows.set([]);
         if ((e as { status?: number })?.status === 403) void this.session.refresh();
       }

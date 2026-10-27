@@ -14,9 +14,12 @@
         <option value="FRAMEWORK_CONTRACT">Contrato marco</option><option value="MANIFEST">Manifiesto</option>
       </select>
     </div>
-    <tc-entity-search label="Contexto de origen" placeholder="Buscar por nombre o folio…" [value]="contextUuid()" [selectedLabel]="contextLabel()" [searchFn]="contextSearch" (select)="chooseContext($event)" />
+    <tc-entity-search label="Contexto de origen" placeholder="Buscar por nombre o folio…" [value]="contextUuid()" [selectedLabel]="contextLabel()" [searchError]="error()" [searchFn]="contextSearch" (select)="chooseContext($event)" />
   }
 </div>
-<p>La importación conserva los permisos de origen en todas las versiones posteriores.</p>
+<aside class="attention-note info" role="note">
+  <strong>Se conservan los permisos del documento de origen</strong>
+  La importación aplica esos permisos también a las versiones posteriores.
+</aside>
 <tc-feedback [message]="error()" />
-<tc-entity-search label="Evidencia" placeholder="Buscar archivo por nombre…" [value]="chosen()?.uuid ?? ''" [selectedLabel]="chosen()?.filename ?? ''" [searchFn]="evidenceSearch" [disabled]="form.controls.sourceKind.value !== 'QUALITY' && !contextUuid()" (select)="choose($event)" />
+<tc-entity-search label="Evidencia" placeholder="Buscar archivo por nombre…" [value]="chosen()?.uuid ?? ''" [selectedLabel]="chosen()?.filename ?? ''" [searchError]="error()" [searchFn]="evidenceSearch" [disabled]="form.controls.sourceKind.value !== 'QUALITY' && !contextUuid()" (select)="choose($event)" />

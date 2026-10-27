@@ -3,6 +3,7 @@ import { AbstractControl } from '@angular/forms';
 const VALIDATION_CLASS = 'tc-validation-attempted';
 const ERROR_CLASS = 'tc-validation-error';
 const SHAKE_CLASS = 'tc-invalid-shake';
+let nextErrorId = 0;
 
 /**
  * Marks a form (or a subset of its controls) as attempted and provides a
@@ -50,8 +51,8 @@ function showValidationFeedback(host: HTMLElement): void {
 
   const message = getOrCreateSummary(host);
   message.textContent = invalid.length
-    ? `Hay ${invalid.length} ${invalid.length === 1 ? 'campo' : 'campos'} por corregir. Revisa la información marcada.`
-    : 'Revisa los campos obligatorios y su formato.';
+    ? `Hay ${invalid.length} ${invalid.length === 1 ? 'dato pendiente' : 'datos pendientes'}. Revisa ${invalid.length === 1 ? 'el campo marcado' : 'los campos marcados'} para continuar.`
+    : 'Completa los campos pendientes o revisa los datos marcados para continuar.';
 
   for (const control of invalid) {
     control.setAttribute('aria-invalid', 'true');
@@ -81,10 +82,30 @@ function clearValidationFeedback(host: HTMLElement | null): void {
   if (!host) return;
   host.classList.remove(VALIDATION_CLASS, SHAKE_CLASS);
   delete host.dataset['tcValidationAttempted'];
+  host.querySelectorAll<HTMLElement>('[data-tc-validation-error-id]').forEach((control) => {
+    clearControlDescription(control);
+  });
   host.querySelectorAll<HTMLElement>(`[${ERROR_CLASS}]`).forEach((node) => node.remove());
   host.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((control) => {
     control.removeAttribute('aria-invalid');
   });
+}
+
+export function clearControlValidationFeedback(control: HTMLElement): void {
+  clearControlDescription(control);
+  control.removeAttribute('aria-invalid');
+  control.closest('.field')?.querySelector(`.${ERROR_CLASS}`)?.remove();
+}
+
+function clearControlDescription(control: HTMLElement): void {
+  const generatedId = control.dataset['tcValidationErrorId'];
+  if (!generatedId) return;
+  const describedBy = (control.getAttribute('aria-describedby') ?? '')
+    .split(/\s+/)
+    .filter((id) => id && id !== generatedId);
+  if (describedBy.length) control.setAttribute('aria-describedby', describedBy.join(' '));
+  else control.removeAttribute('aria-describedby');
+  delete control.dataset['tcValidationErrorId'];
 }
 
 function getOrCreateSummary(host: HTMLElement): HTMLElement {
@@ -101,22 +122,38 @@ function getOrCreateSummary(host: HTMLElement): HTMLElement {
 
 function attachFieldMessage(control: HTMLElement): void {
   const field = control.closest<HTMLElement>('.field');
-  if (!field || field.querySelector(`.${ERROR_CLASS}, [role="alert"]`)) return;
+  if (!field || field.querySelector(`.${ERROR_CLASS}, .field-error`)) return;
   const error = document.createElement('small');
   error.className = `field-error ${ERROR_CLASS}`;
-  error.setAttribute('role', 'alert');
+  const id = `tc-validation-error-${++nextErrorId}`;
+  error.id = id;
+  control.dataset['tcValidationErrorId'] = id;
+  const describedBy = (control.getAttribute('aria-describedby') ?? '')
+    .split(/\s+/)
+    .filter(Boolean);
+  control.setAttribute('aria-describedby', [...new Set([...describedBy, id])].join(' '));
   error.textContent = isRequired(control) ? 'Este campo es obligatorio.' : 'Revisa este valor.';
   field.append(error);
 }
 
 function isRequired(control: HTMLElement): boolean {
-  if (control.hasAttribute('required') || control.getAttribute('aria-required') === 'true') return true;
+  const nativeControl = control.matches('input, select, textarea')
+    ? (control as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)
+    : control.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        'input, select, textarea',
+      );
+  const required =
+    control.hasAttribute('required') ||
+    control.getAttribute('aria-required') === 'true' ||
+    nativeControl?.hasAttribute('required') ||
+    nativeControl?.getAttribute('aria-required') === 'true';
   const label = control.id
     ? Array.from(document.querySelectorAll<HTMLLabelElement>('label[for]')).find(
         (candidate) => candidate.htmlFor === control.id,
       )
     : control.closest('label');
-  return !!label?.textContent?.includes('*');
+  if (!required && !label?.textContent?.includes('*')) return false;
+  return !nativeControl || nativeControl.value.trim() === '';
 }
 
 function isVisibleControl(control: HTMLElement): boolean {

@@ -11,6 +11,12 @@
   <ng-container listFeedback>
     <tc-logistics-pending-requests />
     <tc-feedback [message]="error()" />
+    @if (!filters['carrierUuid'] && !loading()) {
+      <p class="feedback info">
+        Selecciona un transportista para consultar sus vehículos. Esta vista no muestra un directorio
+        global, así que el estado vacío sin ese filtro no indica que falten registros.
+      </p>
+    }
     @if (loading()) {
       <p role="status">Cargando…</p>
     }
@@ -63,25 +69,29 @@
     </form>
   </ng-template>
 
-  <tc-logistics-records
-    listTable
-    [zone]="zone"
-    [rows]="rows()"
-    [columns]="columns"
-    (selected)="open($event)"
-    layout="fill"
-    appearance="embedded"
-    tableLabel="Vehículos y remolques"
-    [busy]="loading()"
-  />
-  <tc-pagination
-    listPagination
-    [offset]="offset"
-    [limit]="limit"
-    [count]="rows().length"
-    [busy]="loading()"
-    (move)="move($event)"
-  />
+  @if (filters['carrierUuid']) {
+    <tc-logistics-records
+      listTable
+      [zone]="zone"
+      [rows]="rows()"
+      [columns]="columns"
+      (selected)="open($event)"
+      layout="fill"
+      appearance="embedded"
+      tableLabel="Vehículos y remolques"
+      [busy]="loading()"
+    />
+  }
+  @if (filters['carrierUuid']) {
+    <tc-pagination
+      listPagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="rows().length"
+      [busy]="loading()"
+      (move)="move($event)"
+    />
+  }
 </tc-list-container>
 @if (selected(); as r) {
   <a class="btn secondary" [routerLink]="['/logistica/vehiculos', r.uuid]">Abrir ficha</a>

@@ -12,10 +12,11 @@
     <h2>{{ s.manifest.folio }}</h2>
     <p>{{ s.rootCount }} raíces · {{ s.pieceCount }} piezas · {{ s.totalWeightKgExact }} kg</p>
     <p>{{ s.labels['origin'] }} → {{ s.labels['destination'] }}</p>
-    <p>
+    <aside class="attention-note warning" role="note">
+      <strong>La revisión previa no garantiza el despacho</strong>
       El servidor volverá a comprobar calidad, reservas, propietario, composición y recursos. La
-      salida es una operación completa.
-    </p>
+      salida confirma la carga completa en una sola operación.
+    </aside>
     @if (check(); as c) {
       <p>Comprobación {{ c.uuid }} · válida hasta {{ date(expires()) }}</p>
     } @else {

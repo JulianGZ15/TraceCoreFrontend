@@ -108,9 +108,10 @@
             <dd>{{ date(a.revokedAt) }}</dd>
           }
         </dl>
-        <p class="small-muted">
-          La vigencia no garantiza acceso si la empresa o el patio están inactivos.
-        </p>
+        <aside class="attention-note info" role="note">
+          <strong>La vigencia no garantiza el acceso</strong>
+          El usuario no podrá acceder mientras la empresa o el patio estén inactivos.
+        </aside>
         @if (!a.revokedAt) {
           <button
             class="btn secondary"

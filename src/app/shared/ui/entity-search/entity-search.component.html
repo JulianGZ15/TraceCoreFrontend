@@ -1,8 +1,10 @@
 <div #container class="entity-search-container">
   @if (value() && currentLabel()) {
     <div class="selected-entity-chip">
-      <span class="entity-title">{{ label() }}:</span>
-      <strong class="entity-name">{{ currentLabel() }}</strong>
+      @if (showSelectedTitle()) {
+        <span class="entity-title">{{ label() }}:</span>
+      }
+      <strong class="entity-name" [attr.title]="currentLabel()">{{ currentLabel() }}</strong>
       <button
         type="button"
         class="chip-clear-btn"
@@ -24,16 +26,25 @@
         [attr.aria-label]="label()"
         [placeholder]="placeholder()"
         [disabled]="disabled()"
-        [ngModel]="query()"
-        (ngModelChange)="onInput($event)"
+        [class.ng-invalid]="validationControl()?.invalid ?? false"
+        [attr.aria-invalid]="
+          validationControl()?.invalid && validationControl()?.touched ? 'true' : null
+        "
+        [attr.aria-required]="validationControl()?.hasValidator(requiredValidator) ? 'true' : null"
+        [attr.aria-describedby]="describedBy() || null"
+        [value]="query()"
+        (input)="onInput($any($event.target).value)"
         (focus)="onFocus()"
+        (blur)="validationControl()?.markAsTouched()"
         maxlength="100"
         (keydown)="onKeydown($event)"
         autocomplete="off"
         role="combobox"
         [attr.aria-expanded]="open()"
         [attr.aria-controls]="listId"
-        [attr.aria-activedescendant]="activeIndex() >= 0 ? listId + '-option-' + activeIndex() : null"
+        [attr.aria-activedescendant]="
+          activeIndex() >= 0 ? listId + '-option-' + activeIndex() : null
+        "
         aria-autocomplete="list"
       />
       @if (busy()) {
@@ -59,9 +70,16 @@
             }
           </li>
         } @empty {
-          <li class="no-options">No se encontraron resultados</li>
+          <li class="no-options">
+            {{ searchError() ? 'No se pudieron cargar las opciones.' : 'No se encontraron resultados' }}
+          </li>
         }
       </ul>
+      @if (searchError()) {
+        <button type="button" class="btn secondary" (click)="retrySearch()">
+          Reintentar búsqueda
+        </button>
+      }
     }
   }
 </div>

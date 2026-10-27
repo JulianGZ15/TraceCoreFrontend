@@ -51,6 +51,19 @@
             }
           </select>
         }
+        @case ('timezone') {
+          <select
+            [id]="'commerce-' + f.key"
+            [attr.aria-label]="f.label"
+            [attr.aria-required]="f.required ?? false"
+            [formControlName]="f.key"
+          >
+            <option value="">Selecciona una zona horaria</option>
+            @for (zone of timeZones; track zone.value) {
+              <option [value]="zone.value">{{ zone.label }}</option>
+            }
+          </select>
+        }
         @default {
           <input
             [id]="'commerce-' + f.key"
@@ -63,7 +76,20 @@
         }
       }
       @if (form().get(f.key)?.invalid && form().get(f.key)?.touched) {
-        <small class="field-error" [id]="'commerce-' + f.key + '-error'">Revisa {{ f.label.toLowerCase() }}.</small>
+        <small class="field-error" [id]="'commerce-' + f.key + '-error'">
+          @if (form().get(f.key)?.hasError('timeZone')) {
+            Selecciona una zona horaria IANA válida de la lista.
+          } @else if (
+            form().get(f.key)?.hasError('instant') ||
+            form().get(f.key)?.hasError('dateTimeConversion') ||
+            form().get(f.key)?.hasError('dateTimeInvalid') ||
+            form().get(f.key)?.hasError('dateTimeZoneRequired')
+          ) {
+            Revisa la fecha, la hora y la zona horaria.
+          } @else {
+            Revisa {{ f.label.toLowerCase() }}.
+          }
+        </small>
       }
     </div>
   }

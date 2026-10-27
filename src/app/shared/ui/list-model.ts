@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { Api, errorMessage } from '../../core/http/api';
+import { Api, readErrorMessage } from '../../core/http/api';
 export class PageList<T> {
   readonly items = signal<T[]>([]);
   readonly busy = signal(false);
@@ -26,7 +26,7 @@ export class PageList<T> {
       this.items.set(data);
       this.offset.set(offset);
     } catch (e) {
-      if (generation === this.generation) this.error.set(errorMessage(e));
+      if (generation === this.generation) this.error.set(readErrorMessage(e));
     } finally {
       if (generation === this.generation) this.busy.set(false);
     }

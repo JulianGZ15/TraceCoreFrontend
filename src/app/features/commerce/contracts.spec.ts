@@ -6,7 +6,7 @@ import { CommerceApi } from './commerce-api';
 import { CommercePending } from './pending';
 import { CommerceAccess } from './access';
 import { Session, safeReturn } from '../../core/auth/session';
-import { fraction, instant, form } from './rules';
+import { fraction, instant, form, label } from './rules';
 describe('commercial interaction contracts', () => {
   it('retains exact maximums and requires explicit instant offsets', () => {
     const f = form(
@@ -20,6 +20,11 @@ describe('commercial interaction contracts', () => {
     expect(() => fraction('1.00000001')).toThrow();
     expect(instant('2026-10-01T12:00:00-06:00')).toBe('2026-10-01T12:00:00-06:00');
     expect(() => instant('2026-10-01T12:00:00')).toThrow();
+  });
+  it('explains approval eligibility blockers in Spanish', () => {
+    expect(label('Counterparty ineligible: AVL_REQUIRED')).toBe(
+      'Se requiere una evaluación AVL aprobada y vigente para esta compra.',
+    );
   });
   it('company and yard scope are local; writing never grants reading', () => {
     const session = {

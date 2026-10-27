@@ -9,16 +9,19 @@
     <tc-feedback [message]="error()" />
   }
   @if (data.mode === 'UPLOAD') {
-    <label
-      >Archivo PDF, PNG o JPEG<input
+    <section class="tc-file-upload">
+      <label for="document-version-file">Selecciona el archivo de la nueva versión</label>
+      <input
+        id="document-version-file"
         type="file"
         accept=".pdf,.png,.jpg,.jpeg"
         (change)="select($event)"
-    /></label>
-    <p>De 1 byte a 10 MiB. El servidor valida contenido, extensión e integridad.</p>
-    @if (file()) {
-      <p>{{ file()?.name }} · {{ file()?.size }} bytes</p>
-    }
+      />
+      <p>PDF, PNG o JPEG · de 1 byte a 10 MiB. El servidor valida contenido e integridad.</p>
+      @if (file()) {
+        <p class="tc-file-upload__selected">{{ file()?.name }} · {{ file()?.size }} bytes</p>
+      }
+    </section>
   } @else {
     <tc-document-evidence-picker
       [document]="summary().document.uuid"

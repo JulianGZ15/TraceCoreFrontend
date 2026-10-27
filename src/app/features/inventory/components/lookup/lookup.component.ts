@@ -71,10 +71,10 @@ export class LookupComponent extends InventoryPage {
                   r['legalName'] ??
                   r['folio'] ??
                   r['rootAssetUuid'] ??
-                  r['uuid'],
+                  'Registro disponible',
               ) +
               ' · ' +
-              String(r['name'] ?? r['tradeName'] ?? r['state'] ?? r['uuid']),
+              String(r['name'] ?? r['tradeName'] ?? r['state'] ?? 'Registro disponible'),
             disabled:
               (k === 'movements' && r['type'] !== 'ADJUSTMENT') ||
               (k === 'assets' && this.eligibleOnly() && r['internalMoveEligible'] !== true) ||
@@ -83,7 +83,7 @@ export class LookupComponent extends InventoryPage {
               (k === 'reservations' && r['state'] !== 'CONFIRMED'),
           }));
       this.choices.set(choices);
-      if (this.selectedId()) this.selected.set(choices.find((c) => c.uuid === this.selectedId())?.label ?? this.selectedId());
+      if (this.selectedId()) this.selected.set(choices.find((c) => c.uuid === this.selectedId())?.label ?? 'Registro seleccionado');
       return this.suggestions();
     } catch (error) {
       if (request === this.searchSequence) this.error.set(error instanceof Error ? error.message : 'No se pudieron consultar las opciones.');

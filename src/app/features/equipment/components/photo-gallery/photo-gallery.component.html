@@ -7,7 +7,7 @@
     </div>
   </div>
   @if (manage()) {
-    <div class="upload-box">
+    <div class="upload-box tc-file-upload">
       <label for="equipment-photo-files">Seleccionar fotos para subir</label>
       <input id="equipment-photo-files" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple (change)="select($event)" [disabled]="uploading()" aria-describedby="photo-upload-help">
       <p id="photo-upload-help" class="small-muted">JPEG o PNG, hasta 10 MiB y 40 megapíxeles por foto. Puedes usar el selector del teléfono. Se conserva una copia sin EXIF ni GPS.</p>

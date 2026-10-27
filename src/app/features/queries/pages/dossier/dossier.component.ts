@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ReadPage } from '../../../../shared/ui/read-page';
 import { PageHeading, Feedback, Pagination, PageNav, PageNavItem, Skeleton, Spinner } from '../../../../shared/ui/page';
 import { RecordValuesComponent } from '../../../../shared/ui/record-values/record-values.component';
-import { Page } from '../../../../core/http/workspace-api';
+import { Page, workspaceReadError } from '../../../../core/http/workspace-api';
 import { Summary, Section, equipmentSections, partySections } from '../../models';
 import { QueryAccess } from '../../access';
 import { CsvDownload } from '../../csv';
@@ -59,18 +59,22 @@ export class DossierComponent extends ReadPage {
           throw new Error('Colección desconocida.');
         const root = '/queries/' + (this.equipment ? 'equipment' : 'parties') + '/' + this.uuid;
         const summary = await this.api.get<Summary>(root + '/summary', {}, this.stop);
-        const section = selected.backend
-          ? await this.api.get<Section>(
-              root + '/sections/' + selected.backend,
-              { collection: this.collection, offset: this.offset, limit: this.limit },
-              this.stop,
-            )
-          : null;
-        return { summary, section };
+        if (!selected.backend) return { summary, section: null, sectionError: '' };
+        try {
+          const section = await this.api.get<Section>(
+            root + '/sections/' + selected.backend,
+            { collection: this.collection, offset: this.offset, limit: this.limit },
+            this.stop,
+          );
+          return { summary, section, sectionError: '' };
+        } catch (error) {
+          return { summary, section: null, sectionError: workspaceReadError(error) };
+        }
       },
       (r) => {
         this.summary.set(r.summary);
         this.section.set(r.section);
+        this.error.set(r.sectionError);
         const data = r.section?.data;
         if (data && typeof data === 'object' && 'items' in data)
           this.page.set(data as Page<unknown>);

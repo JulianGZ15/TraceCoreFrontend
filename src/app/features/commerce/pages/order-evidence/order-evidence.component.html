@@ -8,13 +8,17 @@
   Recargar datos
 </button>
 @if (can('CONTRACT_MANAGE')) {
-  <label
-    >Cargar evidencia · PDF/PNG/JPEG · máximo 10 MiB<input
+  <section class="tc-file-upload">
+    <label for="order-evidence-file">Agregar evidencia a la orden</label>
+    <p>PDF, PNG o JPEG · máximo 10 MiB. El servidor revisa el contenido del archivo.</p>
+    <input
+      id="order-evidence-file"
       type="file"
       accept="application/pdf,image/png,image/jpeg"
       [disabled]="uploadBusy()"
       (change)="upload($event)"
-  /></label>
+    />
+  </section>
 }
 <tc-data-table label="Evidencias de la orden" minTableWidth="640px" [busy]="loading()">
   @if (loading() && !rows().length) {
@@ -48,7 +52,10 @@
     </tbody>
   </table>
 </tc-data-table>
-<p>El hash identifica el archivo; no es una firma ni certificación.</p>
+<aside class="attention-note info" role="note">
+  <strong>Alcance del SHA-256</strong>
+  El hash ayuda a identificar el archivo; no funciona como firma ni como certificación.
+</aside>
 <tc-pagination
   [offset]="offset"
   [limit]="limit"

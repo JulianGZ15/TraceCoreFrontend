@@ -1,7 +1,10 @@
 <section class="panel">
   <a class="btn secondary" routerLink="/equipos">← Equipos</a>
   <h1>Registrar pieza individual</h1>
-  <p>Identidad, propietario y condición inicial se confirman juntos.</p>
+  <aside class="attention-note info" role="note">
+    <strong>El registro confirma un conjunto de datos</strong>
+    La identidad, el propietario y la condición inicial se guardan juntos.
+  </aside>
   <tc-stepper
     [steps]="steps"
     [currentStep]="step() + 1"
@@ -24,7 +27,10 @@
         @switch (step()) {
           @case (0) {
             <h2 tabindex="-1" class="wizard-step-heading">Selección técnica</h2>
-            <p>Prepara primero el catálogo y su ficha aprobada.</p>
+            <aside class="attention-note warning" role="note">
+              <strong>Antes de registrar una pieza</strong>
+              Prepara el modelo en el catálogo y asegúrate de que tenga una ficha aprobada.
+            </aside>
             <div class="form-grid">
               <tc-equipment-lookup
                 kind="category"

@@ -52,4 +52,15 @@
       }
     </div>
   </section>
+
+  <section class="print-pages" aria-hidden="true">
+    @for (label of labels(); track label.asset.uuid) {
+      <article class="print-sheet" aria-hidden="true">
+        <img class="print-qr" [src]="label.qr" alt="" />
+      </article>
+      <article class="print-sheet" aria-hidden="true">
+        <img class="print-barcode" [src]="label.barcode" alt="" />
+      </article>
+    }
+  </section>
 }

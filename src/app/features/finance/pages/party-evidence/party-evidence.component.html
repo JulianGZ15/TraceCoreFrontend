@@ -32,18 +32,23 @@
     >
   </section>
 }
-<p>PDF, PNG o JPEG hasta 10 MiB. El hash identifica el archivo.</p>
 @if (can('FINANCE_MANAGE')) {
   <section class="panel">
-    <label
-      >Archivo<input
+    <div class="tc-file-upload">
+      <label for="finance-evidence-file">Adjuntar soporte</label>
+      <p>PDF, PNG o JPEG · máximo 10 MiB. El hash SHA-256 identifica el contenido.</p>
+      <input
+        id="finance-evidence-file"
         type="file"
         accept="application/pdf,image/png,image/jpeg"
         #uploadFile
-        (change)="file = uploadFile.files?.item(0) ?? null" /></label
-    ><button class="btn primary" [disabled]="!file || loading()" (click)="upload()">
-      Cargar explícitamente
-    </button>
+        (change)="file = uploadFile.files?.item(0) ?? null"
+      />
+      @if (file) { <p class="tc-file-upload__selected">{{ file.name }}</p> }
+      <button class="btn primary" [disabled]="!file || loading()" (click)="upload()">
+        {{ loading() ? 'Cargando…' : 'Cargar explícitamente' }}
+      </button>
+    </div>
   </section>
 }
 <section class="panel">

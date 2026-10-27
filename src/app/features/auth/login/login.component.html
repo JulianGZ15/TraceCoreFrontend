@@ -23,20 +23,23 @@
           Validar sesión
         </button>
       }
-      <form [formGroup]="form" (ngSubmit)="submit()">
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <div class="field">
           <label for="email">Correo electrónico</label
           ><input
             id="email"
             type="email"
+            required
             autocomplete="username"
             formControlName="email"
             placeholder="nombre@empresa.com"
-            [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
-            aria-describedby="email-error"
+            [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid ? 'true' : null"
+            [attr.aria-describedby]="form.controls.email.touched && form.controls.email.invalid ? 'email-error' : null"
           />
           @if (form.controls.email.touched && form.controls.email.invalid) {
-            <small class="field-error" id="email-error">Ingresa un correo válido.</small>
+            <small class="field-error" id="email-error">
+              {{ form.controls.email.hasError('required') ? 'El correo electrónico es obligatorio.' : 'Ingresa un correo válido.' }}
+            </small>
           }
         </div>
         <div class="field">
@@ -45,13 +48,18 @@
             <input
               id="password"
               [type]="show() ? 'text' : 'password'"
+              required
               autocomplete="current-password"
               formControlName="password"
-              [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+              [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid ? 'true' : null"
+              [attr.aria-describedby]="form.controls.password.touched && form.controls.password.invalid ? 'password-error' : null"
             /><button type="button" [attr.aria-pressed]="show()" (click)="show.set(!show())">
               {{ show() ? 'Ocultar' : 'Mostrar' }}
             </button>
           </div>
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <small class="field-error" id="password-error">La contraseña es obligatoria.</small>
+          }
         </div>
         <button class="btn primary full-width" [class.tc-btn-busy]="busy()" [disabled]="busy()">
           @if (busy()) {

@@ -34,7 +34,18 @@ export const decimalValidator=(integers=12,scale=6,positive=false):ValidatorFn=>
 
 export function exact(value:unknown):string {if(typeof value!=='string'||! /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value))throw new Error('Backend incompatible: falta un valor decimal exacto.');return value;}
 
-export function numberText(value:unknown) {try{return exact(value);}catch{return 'Backend incompatible: falta decimal exacto.';}}
+export function numberText(value:unknown) {
+  try {
+    const raw = exact(value);
+    const negative = raw.startsWith('-');
+    const [integer, fraction = ''] = (negative ? raw.slice(1) : raw).split('.');
+    const significantFraction = fraction.replace(/0+$/, '');
+    const isZero = /^0+$/.test(integer) && !significantFraction;
+    return `${negative && !isZero ? '-' : ''}${integer}${significantFraction ? '.' + significantFraction : ''}`;
+  } catch {
+    return 'Backend incompatible: falta decimal exacto.';
+  }
+}
 
 export function quantityText(q:Quantity|null|undefined) {return q?numberText(q.valueExact)+' '+q.unit:'Sin dato';}
 

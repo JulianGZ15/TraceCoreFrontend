@@ -1,13 +1,28 @@
-<div class="picker">
-  <strong>{{ title() }}</strong>
+<div class="picker field">
+  <strong>{{ title() }}{{ nullable() ? '' : ' *' }}</strong>
   <tc-entity-search
     [label]="title()"
     placeholder="Escribe para buscar…"
     [value]="control().value ?? ''"
     [selectedLabel]="selected()"
+    [searchError]="error()"
     [searchFn]="searchFn"
+    [validationControl]="control()"
+    [describedBy]="control().invalid && control().touched ? errorId : ''"
     (select)="select($event)"
   />
+  <span
+    [id]="errorId"
+    class="field-error"
+    role="alert"
+    [hidden]="!control().touched || control().valid"
+  >
+    {{
+      control().hasError('required')
+        ? 'Selecciona ' + title().toLowerCase() + ' de las opciones disponibles.'
+        : 'Revisa la selección de ' + title().toLowerCase() + '.'
+    }}
+  </span>
   <tc-feedback [message]="error()" />
   @if (nullable()) {
     <button [disabled]="busy()" type="button" class="btn secondary" (click)="unset()">

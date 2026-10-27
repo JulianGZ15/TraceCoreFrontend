@@ -1,6 +1,14 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
 .lookup {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+  min-width: 0;
 }
 .lookup-pages {
   display: flex;

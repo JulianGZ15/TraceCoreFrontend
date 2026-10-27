@@ -23,6 +23,7 @@ export class RequirementComponent extends QualityEditor {
   readonly form = this.fb.group({
     sheetUuid: ['', this.uuid],
     standardUuid: ['', this.uuid],
+    name: ['', [this.required, Validators.maxLength(200)]],
     scope: ['', this.required],
     requirements: ['', this.required],
     requireMtr: [false],

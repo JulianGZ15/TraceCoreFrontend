@@ -21,16 +21,16 @@
       </caption>
       <thead>
         <tr>
-          <th scope="col">Código</th>
           <th scope="col">Nombre</th>
+          <th scope="col">Código</th>
           <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
         @for (role of list.items(); track role.uuid) {
           <tr>
-            <td class="mono">{{ role.code }}</td>
             <td>{{ role.name }}</td>
+            <td class="mono">{{ role.code }}</td>
             <td class="table-actions">
               <button class="btn secondary" (click)="permissions(role)">Gestionar permisos</button>
             </td>

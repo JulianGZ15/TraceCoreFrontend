@@ -1,5 +1,15 @@
 @if (message()) {
-  <div [class]="'feedback ' + kind()" [attr.role]="kind() === 'danger' ? 'alert' : 'status'">
-    {{ message() }}
+  <div [class]="'feedback ' + kind()" [class.feedback-with-action]="!!actionLabel()" [attr.role]="kind() === 'danger' ? 'alert' : 'status'">
+    <span>{{ message() }}</span>
+    @if (actionLabel()) {
+      <button
+        class="btn secondary"
+        type="button"
+        [disabled]="actionDisabled()"
+        (click)="action.emit()"
+      >
+        {{ actionLabel() }}
+      </button>
+    }
   </div>
 }

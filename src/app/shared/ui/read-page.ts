@@ -4,7 +4,7 @@ import { displayInstant } from '../instant';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, combineLatest } from 'rxjs';
 import { WorkspaceApi, Params } from '../../core/http/workspace-api';
-import { workspaceError as errorMessage } from '../../core/http/workspace-api';
+import { workspaceReadError as errorMessage } from '../../core/http/workspace-api';
 
 @Directive()
 export abstract class ReadPage implements OnDestroy {

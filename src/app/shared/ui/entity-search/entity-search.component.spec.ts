@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, Validators } from '@angular/forms';
 import { EntitySearchComponent, EntityOption } from './entity-search.component';
 
 describe('EntitySearchComponent', () => {
@@ -17,6 +18,33 @@ describe('EntitySearchComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('valida la selección real aunque se escriba una búsqueda y asocia el error al control', async () => {
+    const control = new FormControl('', Validators.required);
+    fixture.componentRef.setInput('validationControl', control);
+    fixture.componentRef.setInput('describedBy', 'selection-error');
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+    expect(input.getAttribute('aria-invalid')).toBeNull();
+    expect(input.getAttribute('aria-required')).toBe('true');
+    expect(input.hasAttribute('aria-invalid')).toBe(false);
+
+    input.value = 'Solo una búsqueda';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new FocusEvent('blur'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(control.value).toBe('');
+    expect(control.touched).toBe(true);
+    expect(input.getAttribute('aria-invalid')).toBe('true');
+    expect(input.getAttribute('aria-describedby')).toBe('selection-error');
+
+    control.setValue('selected');
+    fixture.componentRef.setInput('value', 'selected');
+    fixture.detectChanges(false);
+    expect(fixture.nativeElement.querySelector('[aria-invalid="true"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Registro seleccionado');
   });
 
   it('should emit selected option when clicked', () => {
@@ -58,14 +86,27 @@ describe('EntitySearchComponent', () => {
     expect(selected).toEqual({ value: '123', label: 'Proveedor Alfa' });
   });
 
+  it('separa el error de carga del estado sin resultados y ofrece reintentar', async () => {
+    const search = vi.fn(async () => []);
+    fixture.componentRef.setInput('searchFn', search);
+    fixture.componentRef.setInput('searchError', 'No se pudo consultar el servicio.');
+    component.onFocus();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('No se pudieron cargar las opciones.');
+    expect(fixture.nativeElement.textContent).not.toContain('No se encontraron resultados');
+    const retry = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    retry.click();
+    await fixture.whenStable();
+    expect(search).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps the latest results when searches resolve out of order', async () => {
     let finishOld!: (value: EntityOption[]) => void;
-    fixture.componentRef.setInput(
-      'searchFn',
-      (query: string) =>
-        query === 'old'
-          ? new Promise<EntityOption[]>((resolve) => (finishOld = resolve))
-          : Promise.resolve([{ value: 'new', label: 'Resultado nuevo' }]),
+    fixture.componentRef.setInput('searchFn', (query: string) =>
+      query === 'old'
+        ? new Promise<EntityOption[]>((resolve) => (finishOld = resolve))
+        : Promise.resolve([{ value: 'new', label: 'Resultado nuevo' }]),
     );
     const oldSearch = component.performSearch('old');
     await component.performSearch('new');

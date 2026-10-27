@@ -84,6 +84,16 @@ export class IdentifiersComponent extends InventoryPage {
   }
 
   print() {
-    if (this.labels().length) window.print();
+    if (!this.labels().length) return;
+
+    const printClass = 'inventory-code-print';
+    const cleanup = () => {
+      document.body.classList.remove(printClass);
+      window.removeEventListener('afterprint', cleanup);
+    };
+
+    window.addEventListener('afterprint', cleanup, { once: true });
+    document.body.classList.add(printClass);
+    window.print();
   }
 }

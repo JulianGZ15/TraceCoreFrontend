@@ -45,6 +45,20 @@ describe('ManifestNewComponent', () => {
     fixture.destroy();
   });
 
+  it('shows only destination fields that apply to the selected manifest type', async () => {
+    const fixture = await renderLogistics(ManifestNewComponent, {});
+    const component = fixture.componentInstance;
+
+    expect(component.visibleFields.map((field) => field.key)).toContain('destinationSiteUuid');
+    expect(component.visibleFields.map((field) => field.key)).not.toContain('destinationYardUuid');
+
+    component.form.controls['type'].setValue('TRANSFER');
+    expect(component.visibleFields.map((field) => field.key)).toContain('destinationYardUuid');
+    expect(component.visibleFields.map((field) => field.key)).not.toContain('destinationSiteUuid');
+    expect(component.visibleFields.map((field) => field.key)).not.toContain('destinationCustodianUuid');
+    fixture.destroy();
+  });
+
   it('renders authorized read context without permitting a write', async () => {
     const fixture = await renderLogistics(ManifestNewComponent, {});
     fixture.detectChanges();

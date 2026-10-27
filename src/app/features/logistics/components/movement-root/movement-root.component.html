@@ -1,9 +1,10 @@
 <section class="panel">
   <h3>Preparar una raíz</h3>
-  <p>
-    Este guardado crea un movimiento DRAFT independiente. Conserva su UUID si todavía no creas el
+  <aside class="attention-note info" role="note">
+    <strong>Este movimiento se guarda por separado</strong>
+    Se creará un movimiento en borrador. Conserva su folio para relacionarlo si todavía no creas el
     manifiesto.
-  </p>
+  </aside>
   <form [formGroup]="form" (ngSubmit)="save()">
     <label>Raíz superior *</label
     ><tc-inventory-lookup

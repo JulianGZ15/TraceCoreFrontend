@@ -9,6 +9,7 @@
     placeholder="Buscar archivo por nombre…"
     [value]="value() ?? ''"
     [selectedLabel]="selectedLabel()"
+    [searchError]="error()"
     [searchFn]="searchFn"
     (select)="choose($event)"
   />

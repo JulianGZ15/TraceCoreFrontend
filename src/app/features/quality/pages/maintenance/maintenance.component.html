@@ -9,7 +9,14 @@
   </tc-page-heading>
 
   <ng-container listFeedback>
-    <tc-feedback [message]="error()" />
+    @if (error()) {
+      <tc-feedback
+        [message]="error()"
+        actionLabel="Volver a cargar"
+        [actionDisabled]="busy()"
+        (action)="load()"
+      />
+    }
     <tc-feedback [message]="success()" kind="success" />
     @if (busy()) {
       <p role="status">Cargando…</p>
@@ -52,6 +59,9 @@
         Planificar orden
       </a>
     }
+    <button toolbarAction class="btn secondary" [disabled]="busy()" (click)="load()">
+      Recargar
+    </button>
   </tc-search-toolbar>
 
   <ng-template #filterDrawerTpl>
@@ -182,61 +192,65 @@
     </form>
   </ng-template>
 
-  <tc-data-table
-    label="Agenda de mantenimiento"
-    listTable
-    appearance="embedded"
-    layout="fill"
-    [busy]="busy()"
-  >
-    @if (busy() && !rows().length) {
-      <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
-    }
-    <table [hidden]="busy() && !rows().length">
-      <caption class="sr-only">
-        Agenda de mantenimiento
-      </caption>
-      <thead>
-        <tr>
-          <th scope="col">Pieza</th>
-          <th scope="col">Programación</th>
-          <th scope="col">Estado</th>
-          <th scope="col">Responsable</th>
-          <th scope="col">Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.record.uuid) {
+  @if (!error() || rows().length > 0) {
+    <tc-data-table
+      label="Agenda de mantenimiento"
+      listTable
+      appearance="embedded"
+      layout="fill"
+      [busy]="busy()"
+    >
+      @if (busy() && !rows().length) {
+        <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
+      }
+      <table [hidden]="busy() && !rows().length">
+        <caption class="sr-only">
+          Agenda de mantenimiento
+        </caption>
+        <thead>
           <tr>
-            <td>
-              {{ row.assetCode }}
-              <p>{{ row.serialNumber || 'Sin serial' }}</p>
-            </td>
-            <td>{{ date(row.record.scheduledAt) }}</td>
-            <td>{{ label(row.record.state) }} · {{ label(row.record.kind) }}</td>
-            <td class="mono">{{ row.record.responsibleUuid }}</td>
-            <td class="table-actions">
-              <a class="btn secondary" [routerLink]="['/calidad/mantenimiento', row.record.uuid]">
-                Abrir
-              </a>
-            </td>
+            <th scope="col">Pieza</th>
+            <th scope="col">Programación</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Responsable</th>
+            <th scope="col">Acción</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="5" class="empty">Sin registros.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </tc-data-table>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.record.uuid) {
+            <tr>
+              <td>
+                {{ row.assetCode }}
+                <p>{{ row.serialNumber || 'Sin serial' }}</p>
+              </td>
+              <td>{{ date(row.record.scheduledAt) }}</td>
+              <td>{{ label(row.record.state) }} · {{ label(row.record.kind) }}</td>
+              <td class="mono">{{ row.record.responsibleUuid }}</td>
+              <td class="table-actions">
+                <a class="btn secondary" [routerLink]="['/calidad/mantenimiento', row.record.uuid]">
+                  Abrir
+                </a>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty">Sin registros.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </tc-data-table>
+  }
 
-  <tc-pagination
-    listPagination
-    [offset]="offset()"
-    [limit]="limit()"
-    [count]="rows().length"
-    [busy]="busy()"
-    (move)="page($event)"
-    (resize)="filter({ limit: $event.toString() })"
-  />
+  @if (!error() || rows().length > 0) {
+    <tc-pagination
+      listPagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="page($event)"
+      (resize)="filter({ limit: $event.toString() })"
+    />
+  }
 </tc-list-container>

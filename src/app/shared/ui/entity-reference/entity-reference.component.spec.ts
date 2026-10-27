@@ -31,6 +31,8 @@ describe('EntityReferenceComponent', () => {
       kind: 'party',
       uuid: 'unknown-party-uuid',
     });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Nombre no disponible');
     expect(fixture.nativeElement.textContent).not.toContain('unknown-party-uuid');

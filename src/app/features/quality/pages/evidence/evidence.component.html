@@ -4,6 +4,8 @@
     section="Calidad y mantenimiento"
     title="Biblioteca de evidencias"
     description="Biblioteca centralizada de empresa. El SHA-256 identifica el contenido; no constituye una firma."
+    descriptionAttention="info"
+    descriptionAttention="info"
   >
     <tc-quality-nav />
   </tc-page-heading>
@@ -22,15 +24,19 @@
 
   @if (access.global('QUALITY_MANAGE')) {
     <section listToolbar class="panel record">
-      <label
-        >Archivo PDF, PNG o JPEG · máximo 10 MiB<input
+      <div class="tc-file-upload">
+        <label for="quality-library-evidence-file">Agregar evidencia a la biblioteca</label>
+        <p>PDF, PNG o JPEG · máximo 10 MiB. El servidor verifica el contenido del archivo.</p>
+        <input
+          id="quality-library-evidence-file"
           #uploadInput
           type="file"
           accept=".pdf,.png,.jpg,.jpeg"
           [disabled]="busy()"
           (change)="select($event)"
-      /></label>
-      <p>{{ file()?.name || 'Sin archivo seleccionado' }}</p>
+        />
+        <p class="tc-file-upload__selected">{{ file()?.name || 'Ningún archivo seleccionado' }}</p>
+      </div>
       <button
         class="btn primary"
         [disabled]="busy() || !file()"

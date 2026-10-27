@@ -88,10 +88,11 @@
     @case ('liberaciones') {
       <section class="panel record">
         <h2>Despacho del conjunto</h2>
-        <p>
+        <aside class="attention-note warning" role="note">
+          <strong>Condición necesaria para autorizar la salida</strong>
           La salida requiere liberación eficaz de la raíz y cada componente. La autorización final
           se verifica en la transacción del movimiento.
-        </p>
+        </aside>
         @for (status of readiness(); track status.assetUuid) {
           <p class="mono">
             {{ status.assetUuid }} ·

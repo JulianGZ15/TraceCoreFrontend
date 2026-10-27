@@ -111,7 +111,7 @@ export interface Pending {
 export interface Field {
   key: string;
   label: string;
-  type?: 'text' | 'decimal' | 'integer' | 'instant' | 'select' | 'textarea' | 'lookup';
+  type?: 'text' | 'decimal' | 'integer' | 'instant' | 'timezone' | 'select' | 'textarea' | 'lookup';
   required?: boolean;
   choices?: string[];
   resource?: string;

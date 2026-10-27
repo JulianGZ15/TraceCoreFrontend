@@ -38,14 +38,16 @@ export class DeliverySitesComponent extends SectionPage<Address> {
     ++this.deliveryGeneration;
     super.ngOnDestroy();
   }
-  async edit(row: Address) {
+  async edit(row?: Address) {
     await this.open(RecordEditorComponent, {
-      title: 'Editar sitio de entrega',
+      title: row ? 'Editar sitio de entrega' : 'Nuevo sitio de entrega',
       party: this.uuid,
       kind: this.kind,
       row,
       fields: addressFields,
-      initial: { ...row },
+      initial: row
+        ? { ...row }
+        : { type: 'DELIVERY', country: 'MX', active: true, externalDeliveryEnabled: true },
     });
   }
 }

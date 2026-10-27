@@ -68,21 +68,25 @@
     </div>
   </section>
   @if (blocks().length) {
-    <section class="panel">
-      <h2>Requisitos de aprobación</h2>
+    <aside class="attention-note" role="note" aria-labelledby="approval-requirements-title">
+      <h2 id="approval-requirements-title">Requisitos de aprobación</h2>
+      <strong>Revisa estos puntos antes de aprobar:</strong>
       <ul>
         @for (b of blocks(); track $index) {
           <li>{{ label(b) }}</li>
         }
       </ul>
-      <p>La comprobación previa no sustituye la validación transaccional de la aprobación.</p>
-    </section>
+      <p>Esta revisión es orientativa; la aprobación volverá a validar las condiciones vigentes.</p>
+    </aside>
   }
   @if (s.order['snapshot']; as snapshot) {
     <section class="panel">
-      <h2>Snapshot aprobado</h2>
-      <p>La ficha actual del tercero no reescribe estos datos.</p>
-      <p>Consulta los totales exactos y términos congelados en el registro aprobado.</p>
+      <h2>Datos fijados al aprobar</h2>
+      <aside class="attention-note info" role="note">
+        <strong>Los cambios posteriores no alteran este registro</strong>
+        Actualizar la ficha del tercero no modifica esta información. Aquí ves los totales y términos
+        vigentes cuando se aprobó la orden.
+      </aside>
       <dl>
         <div>
           <dt>Razón social congelada</dt>

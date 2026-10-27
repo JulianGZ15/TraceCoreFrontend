@@ -118,7 +118,7 @@ export function errorMessage(error: unknown): string {
     case 0:
       return 'No hay conexión con el servidor. Revisa tu conexión e inténtalo de nuevo.';
     case 400:
-      return 'El servidor no aceptó los datos. Revisa los campos antes de enviar.';
+      return 'No pudimos procesar la solicitud. Comprueba el contexto e inténtalo de nuevo.';
     case 401:
       return 'Tu sesión finalizó. Inicia sesión de nuevo.';
     case 403:
@@ -134,4 +134,15 @@ export function errorMessage(error: unknown): string {
     default:
       return 'El servidor no pudo completar la operación. Puedes intentar de nuevo.';
   }
+}
+
+/** Message for failed reads; a GET failure must never imply that a form was submitted. */
+export function readErrorMessage(error: unknown): string {
+  if (error instanceof HttpErrorResponse) {
+    if (error.status === 400)
+      return 'No pudimos cargar la información. Revisa los filtros y vuelve a intentarlo.';
+    if (error.status === 404)
+      return 'La información solicitada no está disponible. Actualiza la vista e inténtalo de nuevo.';
+  }
+  return errorMessage(error);
 }

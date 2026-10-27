@@ -78,6 +78,12 @@ describe('Finanzas: precisión, permisos y recuperación', () => {
     expect(() => money('0', 2, true)).toThrow();
     expect(numberText(undefined)).toContain('incompatible');
   });
+  it('formatea ceros decimales no significativos sin usar números de punto flotante', () => {
+    expect(numberText('2560.000000')).toBe('2560');
+    expect(numberText('29000.00000000')).toBe('29000');
+    expect(numberText('0.00125000')).toBe('0.00125');
+    expect(numberText('-0.0000')).toBe('0');
+  });
   it('acepta únicamente destinos internos financieros conocidos', () => {
     expect(safeReturn('/finanzas/terceros/' + fid + '/credito?currency=MXN')).toContain(
       '/finanzas/terceros/',

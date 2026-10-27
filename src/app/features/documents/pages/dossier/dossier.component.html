@@ -2,6 +2,8 @@
   [title]="summary()?.document?.title ?? 'Documento'"
   section="EXPEDIENTE DOCUMENTAL"
   description="Documento lógico, número de archivo y versiones de concurrencia se mantienen separados."
+  descriptionAttention="info"
+  descriptionAttention="info"
 >
   <button actions class="btn secondary tc-btn-busy" (click)="load()" [disabled]="loading()">
     @if (updating()) {

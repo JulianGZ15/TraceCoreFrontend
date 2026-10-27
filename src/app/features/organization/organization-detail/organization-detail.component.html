@@ -25,15 +25,31 @@
         @for (field of fields; track field.key) {
           <div class="field">
             <label [for]="field.key">{{ field.label }}</label
-            ><input
-              [id]="field.key"
-              [formControlName]="field.key"
-              [attr.aria-invalid]="
-                form.controls[field.key].touched && form.controls[field.key].invalid
-              "
-              [attr.maxlength]="field.key === 'folioPrefix' ? 12 : null"
-              [attr.aria-describedby]="field.key + '-help'"
-            /><small [id]="field.key + '-help'"
+            >@if (field.type === 'select') {
+              <select
+                [id]="field.key"
+                [formControlName]="field.key"
+                [attr.aria-invalid]="
+                  form.controls[field.key].touched && form.controls[field.key].invalid
+                "
+                [attr.aria-describedby]="field.key + '-help'"
+              >
+                <option value="">Selecciona una zona horaria</option>
+                @for (option of field.options ?? []; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            } @else {
+              <input
+                [id]="field.key"
+                [formControlName]="field.key"
+                [attr.aria-invalid]="
+                  form.controls[field.key].touched && form.controls[field.key].invalid
+                "
+                [attr.maxlength]="field.key === 'folioPrefix' ? 12 : null"
+                [attr.aria-describedby]="field.key + '-help'"
+              />
+            }<small [id]="field.key + '-help'"
               >{{ field.help ?? '' }}
               @if (form.controls[field.key].touched && form.controls[field.key].invalid) {
                 <span class="field-error">Revisa este campo.</span>

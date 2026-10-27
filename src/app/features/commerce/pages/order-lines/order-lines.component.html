@@ -18,7 +18,7 @@
 <tc-commerce-records
   [rows]="rows()"
   [columns]="columns"
-  (selected)="selected.set($event)"
+  (selected)="openLine($event)"
   [busy]="loading()"
 /><tc-pagination
   [offset]="offset"

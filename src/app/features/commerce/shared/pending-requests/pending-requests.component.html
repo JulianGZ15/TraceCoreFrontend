@@ -1,9 +1,11 @@
 @if (pending.own().length) {
   <section class="pending">
     <h2>Solicitudes pendientes de conciliación</h2>
-    <p>
-      Una respuesta perdida no confirma que la operación haya fallado. Consulta antes de repetir.
-    </p>
+    <aside class="attention-note warning" role="note">
+      <strong>Consulta el resultado antes de repetir</strong>
+      Una respuesta perdida no confirma que la operación haya fallado. Repetirla puede duplicar el
+      efecto solicitado.
+    </aside>
     @for (p of pending.own(); track p.key) {
       <div>
         <strong>{{ p.operation }}</strong

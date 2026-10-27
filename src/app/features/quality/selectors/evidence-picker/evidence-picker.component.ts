@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FormControl, AbstractControl } from '@angular/forms';
 import { EntitySearchComponent, EntityOption } from '../../../../shared/ui/entity-search/entity-search.component';
 import { Feedback } from '../../../../shared/ui/page';
@@ -12,8 +12,12 @@ import * as M from '../../models';
 })
 export class EvidencePickerComponent extends QualityPage {
   readonly control = input.required<AbstractControl>();
+  readonly allowUpload = input(false);
+  readonly uploadingChange = output<boolean>();
   readonly selectedLabel = signal('');
+  readonly file = signal<File | null>(null);
   readonly searchFn = (query: string) => this.searchEvidence(query);
+  private fileInput?: HTMLInputElement;
   get field() {
     return this.control() as FormControl;
   }
@@ -31,5 +35,46 @@ export class EvidencePickerComponent extends QualityPage {
     this.field.setValue(row?.value ?? '');
     this.field.markAsDirty();
     this.selectedLabel.set(row?.label ?? '');
+  }
+
+  selectFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.fileInput = input;
+    const file = input.files?.[0] ?? null;
+    this.error.set('');
+    if (file && (file.size === 0 || file.size > 10 * 1024 * 1024)) {
+      this.error.set('El archivo debe contener datos y pesar como máximo 10 MiB.');
+      this.file.set(null);
+      input.value = '';
+      return;
+    }
+    if (file && !['application/pdf', 'image/png', 'image/jpeg', ''].includes(file.type)) {
+      this.error.set('Selecciona un archivo PDF, PNG o JPEG.');
+      this.file.set(null);
+      input.value = '';
+      return;
+    }
+    this.file.set(file);
+    if (file) this.field.markAsDirty();
+  }
+
+  async uploadSelected() {
+    const file = this.file();
+    if (!file || !this.allowUpload() || !this.access.global('QUALITY_MANAGE') || this.busy()) return;
+    this.uploadingChange.emit(true);
+    try {
+      await this.mutate(
+        () => this.api.upload(file),
+        (evidence) => {
+          this.field.setValue(evidence.uuid);
+          this.field.markAsDirty();
+          this.selectedLabel.set(evidence.fileName);
+          this.file.set(null);
+          if (this.fileInput) this.fileInput.value = '';
+        },
+      );
+    } finally {
+      this.uploadingChange.emit(false);
+    }
   }
 }

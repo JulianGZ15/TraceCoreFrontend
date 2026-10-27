@@ -88,6 +88,70 @@ select,
 textarea {
   font: inherit;
 }
+.tc-file-upload {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin-block: 16px;
+  padding: 16px;
+  border: 1px dashed var(--tc-control-border);
+  border-radius: var(--tc-radius-panel);
+  background: var(--tc-selection);
+}
+.tc-file-upload > label {
+  font-weight: 600;
+}
+.tc-file-upload > p {
+  margin: 0;
+  color: var(--tc-text-muted);
+  font-size: 13px;
+}
+.tc-file-upload input[type='file'] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--tc-control-border);
+  border-radius: var(--tc-radius-control);
+  background: var(--tc-panel);
+  color: var(--tc-text);
+}
+.tc-file-upload input[type='file']::file-selector-button {
+  min-height: 32px;
+  margin-inline-end: 12px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: var(--tc-radius-control);
+  background: var(--tc-action);
+  color: var(--tc-on-action);
+  font: inherit;
+  cursor: pointer;
+}
+.tc-file-upload input[type='file']::file-selector-button:hover {
+  background: var(--tc-action-hover);
+}
+.tc-file-upload input[type='file']:focus-visible {
+  outline: 2px solid var(--tc-focus);
+  outline-offset: 2px;
+}
+.tc-file-upload input[type='file']:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.tc-file-upload.compact {
+  flex: 1 1 360px;
+  max-width: 560px;
+  gap: 6px;
+  margin-block: 0;
+  padding: 12px;
+}
+.tc-file-upload__selected {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--tc-text);
+  font-weight: 500;
+}
 button,
 a,
 input,
@@ -233,7 +297,7 @@ small {
   padding: 14px 16px;
   border: 1px solid currentColor;
   border-radius: 4px;
-  margin-bottom: 16px;
+  margin: 20px 0 16px;
   font-size: 14px;
 }
 .feedback.danger {
@@ -247,6 +311,97 @@ small {
 .feedback.info {
   background: var(--tc-info-bg);
   color: var(--tc-info);
+}
+.attention-note {
+  display: block;
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--tc-warning);
+  border-inline-start-width: 4px;
+  border-radius: 4px;
+  background: var(--tc-warning-bg);
+  color: var(--tc-warning);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.attention-note > :first-child {
+  margin-block-start: 0;
+}
+.attention-note > :last-child {
+  margin-block-end: 0;
+}
+.attention-note > strong {
+  display: block;
+  margin-block-end: 4px;
+  font-weight: 700;
+}
+.attention-note ul {
+  margin-block: 8px;
+  padding-inline-start: 20px;
+}
+.attention-note.info {
+  border-color: var(--tc-info);
+  background: var(--tc-info-bg);
+  color: var(--tc-info);
+}
+@page inventory-code {
+  size: A4 portrait;
+  margin: 0;
+}
+@media print {
+  body.inventory-code-print {
+    margin: 0 !important;
+    background: #fff !important;
+    print-color-adjust: exact;
+  }
+  body.inventory-code-print * {
+    display: none !important;
+  }
+  body.inventory-code-print app-root,
+  body.inventory-code-print tc-shell,
+  body.inventory-code-print tc-shell > .workspace,
+  body.inventory-code-print tc-shell > .workspace > main.main-content,
+  body.inventory-code-print tc-inventory-identifiers,
+  body.inventory-code-print tc-inventory-identifiers .print-pages,
+  body.inventory-code-print tc-inventory-identifiers .print-sheet,
+  body.inventory-code-print tc-inventory-identifiers .print-sheet > img {
+    display: block !important;
+  }
+  body.inventory-code-print tc-shell,
+  body.inventory-code-print tc-shell > .workspace,
+  body.inventory-code-print tc-shell > .workspace > main.main-content,
+  body.inventory-code-print tc-inventory-identifiers {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    background: #fff !important;
+  }
+  body.inventory-code-print tc-inventory-identifiers .print-sheet {
+    page: inventory-code;
+    display: flex !important;
+    break-after: page;
+    page-break-after: always;
+  }
+  body.inventory-code-print tc-inventory-identifiers .print-sheet:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  body.inventory-code-print tc-inventory-identifiers .print-qr {
+    width: 190mm !important;
+    height: 190mm !important;
+    max-width: 100% !important;
+    object-fit: contain;
+  }
+  body.inventory-code-print tc-inventory-identifiers .print-barcode {
+    width: 190mm !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain;
+  }
 }
 .badge {
   display: inline-flex;

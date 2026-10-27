@@ -85,7 +85,7 @@
     listTable
     [rows]="rows()"
     [columns]="columns"
-    (selected)="selected.set($event)"
+    (selected)="openReceipt($event.uuid)"
     layout="fill"
     appearance="embedded"
     tableLabel="Recepciones administrativas"
@@ -100,12 +100,3 @@
     (move)="move($event)"
   />
 </tc-list-container>
-@if (selected(); as row) {
-  <section class="selection">
-    <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
-    <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
-    <div class="toolbar">
-      <a class="btn secondary" [routerLink]="'/comercial/recepciones/' + row.uuid">Abrir recepción</a>
-    </div>
-  </section>
-}

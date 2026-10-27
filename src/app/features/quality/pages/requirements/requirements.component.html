@@ -35,7 +35,7 @@
         class="btn secondary"
         (click)="filter({ sheetUuid: sheet.value })"
       >
-        Consultar ficha
+        {{ sheet.value ? 'Consultar ficha' : 'Ver todos' }}
       </button>
     </div>
 
@@ -62,7 +62,7 @@
       </caption>
       <thead>
         <tr>
-          <th scope="col">Ficha / norma</th>
+          <th scope="col">Folio / nombre</th>
           <th scope="col">Requisitos</th>
           <th scope="col">Revisión</th>
           <th scope="col">Acciones</th>
@@ -71,7 +71,7 @@
       <tbody>
         @for (row of rows(); track row.uuid) {
           <tr>
-            <td class="mono">{{ row.sheetUuid }}<br />{{ row.standardUuid }}</td>
+            <td><strong>{{ row.folio }}</strong><br />{{ row.name }}</td>
             <td>
               {{ row.scope }}
               <p>{{ row.requirements }}</p>
@@ -108,7 +108,7 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="4" class="empty">Selecciona una ficha para consultar requisitos.</td>
+            <td colspan="4" class="empty">No encontramos requisitos con este filtro.</td>
           </tr>
         }
       </tbody>

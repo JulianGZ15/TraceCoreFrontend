@@ -139,4 +139,8 @@ export class ReceiptsComponent extends CommercePage {
   onOrderPicked(uuid: string) {
     this.drawerForm.controls.orderUuid.setValue(uuid);
   }
+
+  openReceipt(uuid: string) {
+    void this.router.navigate(['/comercial/recepciones', uuid]);
+  }
 }

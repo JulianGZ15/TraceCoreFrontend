@@ -172,7 +172,7 @@ export class OrderComponent extends CommerceEditor {
               },
               { key: 'plannedFrom', label: 'Inicio previsto', type: 'instant', required: true },
               { key: 'plannedTo', label: 'Fin previsto', type: 'instant', required: true },
-              { key: 'timezone', label: 'Zona contractual IANA', required: true },
+              { key: 'timezone', label: 'Zona contractual IANA', type: 'timezone', required: true },
               {
                 key: 'responsibilities',
                 label: 'Responsabilidades',

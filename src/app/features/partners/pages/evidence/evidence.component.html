@@ -6,20 +6,24 @@
 @if (session.can('PARTY_MANAGE')) {
   <section class="panel">
     <h3>Cargar evidencia</h3>
-    <label for="evidence-file">Archivo PDF, PNG o JPEG · máximo 10 MiB</label>
-    <div class="page-actions file-selection">
-      <button type="button" class="btn secondary" [disabled]="busy()" (click)="fileInput.click()">
-        Seleccionar archivo</button
-      ><span>{{ file()?.name ?? 'Ningún archivo seleccionado' }}</span>
+    <div class="tc-file-upload">
+      <label for="evidence-file">Selecciona un archivo de respaldo</label>
+      <p>PDF, PNG o JPEG · máximo 10 MiB. El SHA-256 ayuda a identificarlo.</p>
+      <div class="page-actions file-selection">
+        <button type="button" class="btn secondary" [disabled]="busy()" (click)="fileInput.click()">
+          Elegir archivo
+        </button>
+        <span class="tc-file-upload__selected">{{ file()?.name ?? 'Ningún archivo seleccionado' }}</span>
+      </div>
+      <input
+        #fileInput
+        hidden
+        id="evidence-file"
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        (change)="selected($event)"
+      />
     </div>
-    <input
-      #fileInput
-      hidden
-      id="evidence-file"
-      type="file"
-      accept=".pdf,.png,.jpg,.jpeg"
-      (change)="selected($event)"
-    />
     <div class="form-footer">
       <button class="btn primary" [disabled]="busy() || !file()" (click)="upload()">
         Cargar archivo

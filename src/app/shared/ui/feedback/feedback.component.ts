@@ -8,4 +8,7 @@ import { RouterLink } from '@angular/router';
 export class Feedback {
   readonly message = input('');
   readonly kind = input<'danger' | 'success' | 'info'>('danger');
+  readonly actionLabel = input('');
+  readonly actionDisabled = input(false);
+  readonly action = output<void>();
 }

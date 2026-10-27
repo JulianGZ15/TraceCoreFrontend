@@ -8,4 +8,10 @@ describe('AccountsComponent', () => {
       fixture.nativeElement.querySelectorAll('button[type=submit]:not(:disabled)').length,
     ).toBe(0);
   });
+
+  it('uses the published credit-account directory contract', async () => {
+    const { fixture } = await renderFinance(AccountsComponent, {});
+
+    expect(fixture.componentInstance.collection).toBe('credit-accounts/directory');
+  });
 });

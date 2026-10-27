@@ -9,6 +9,7 @@ import { Api, Company, Yard, errorMessage } from '../../../core/http/api';
 import { Session } from '../../../core/auth/session';
 import { PageHeading, Feedback, Status } from '../../../shared/ui/page';
 import { Field, codeValidator, confirm } from '../../../shared/ui/editor';
+import { TIME_ZONE_OPTIONS, timeZoneValidator } from '../../../shared/time-zones';
 export const yardFields: Field[] = [
   {
     key: 'code',
@@ -21,9 +22,12 @@ export const yardFields: Field[] = [
   { key: 'address', label: 'Dirección', required: true },
   {
     key: 'timezone',
-    label: 'Zona horaria IANA',
+    label: 'Zona horaria',
+    type: 'select',
+    options: TIME_ZONE_OPTIONS,
     required: true,
-    help: 'Ejemplo: America/Mexico_City',
+    validators: [timeZoneValidator],
+    help: 'Selecciona la zona horaria del patio.',
   },
 ];
 @Component({
@@ -64,9 +68,12 @@ export class OrganizationDetail {
         },
         {
           key: 'timezone',
-          label: 'Zona horaria IANA',
+          label: 'Zona horaria',
+          type: 'select',
+          options: TIME_ZONE_OPTIONS,
           required: true,
-          help: 'Ejemplo: America/Mexico_City',
+          validators: [timeZoneValidator],
+          help: 'Selecciona la zona horaria de la empresa.',
         },
         {
           key: 'folioPrefix',

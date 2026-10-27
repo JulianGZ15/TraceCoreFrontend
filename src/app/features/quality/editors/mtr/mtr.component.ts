@@ -27,6 +27,7 @@ export class MtrComponent extends QualityEditor {
   readonly operationCapability = 'QUALITY_MANAGE';
   override readonly companyOperation = true;
   readonly pending = inject(QualityPending);
+  readonly uploadingEvidence = signal(false);
   readonly form = this.fb.group({
     issuerUuid: ['', this.uuid],
     number: ['', this.required],

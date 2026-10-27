@@ -14,6 +14,11 @@ describe('read-only record precision', () => {
     expect(recordFields({ value: 1 })[0].value).toContain('incompatible');
     expect(recordFields({ value: null, valueExact: null })[0].value).toBe('Sin dato');
   });
+  it('shows an explicit state when the current-data record is empty', () => {
+    expect(recordFields({})).toEqual([
+      { label: 'Datos actuales', value: 'No hay datos disponibles para esta consulta.' },
+    ]);
+  });
 });
 
 it('consume campos exactos nuevos sin caer al número redondeado', () => {

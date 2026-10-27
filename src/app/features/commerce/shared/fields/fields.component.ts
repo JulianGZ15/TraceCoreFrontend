@@ -6,6 +6,8 @@ import { Field } from '../../models';
 import { label } from '../../rules';
 import { Session } from '../../../../core/auth/session';
 import { HelpTipComponent } from '../../../../shared/ui/help-tip/help-tip.component';
+import { TIME_ZONE_OPTIONS } from '../../../../shared/time-zones';
+
 @Component({
   selector: 'tc-commerce-fields',
   imports: [ReactiveFormsModule, LookupComponent, DateFieldComponent, HelpTipComponent],
@@ -18,9 +20,11 @@ export class FieldsComponent {
   readonly fields = input<Field[]>([]);
   readonly yard = input('');
   readonly label = label;
+  readonly timeZones = TIME_ZONE_OPTIONS;
   private readonly paramsCache = new Map<string, { party: string; value: Record<string, string> }>();
+  private readonly emptyParams: Record<string, string> = {};
   lookupParams(field: Field): Record<string, string> {
-    if (!field.relatedPartyKey) return field.params ?? {};
+    if (!field.relatedPartyKey) return field.params ?? this.emptyParams;
     const party = String(this.form().get(field.relatedPartyKey)?.value ?? '');
     const cached = this.paramsCache.get(field.key);
     if (cached?.party === party) return cached.value;

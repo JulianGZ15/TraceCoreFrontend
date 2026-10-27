@@ -10,7 +10,14 @@
 
   <ng-container listFeedback>
     <tc-commerce-pending-requests />
-    <tc-feedback [message]="error()" />
+    @if (error()) {
+      <tc-feedback
+        [message]="error()"
+        actionLabel="Volver a cargar"
+        [actionDisabled]="loading()"
+        (action)="reload()"
+      />
+    }
     @if (loading()) {
       <p role="status">Cargando…</p>
     }
@@ -152,31 +159,26 @@
     </form>
   </ng-template>
 
-  <tc-commerce-records
-    listTable
-    [rows]="rows()"
-    [columns]="columns"
-    (selected)="selected.set($event)"
-    layout="fill"
-    appearance="embedded"
-    tableLabel="Órdenes comerciales"
-    [busy]="loading()"
-  />
-  <tc-pagination
-    listPagination
-    [offset]="offset"
-    [limit]="limit"
-    [count]="rows().length"
-    [busy]="loading()"
-    (move)="move($event)"
-  />
+  @if (!error() || rows().length > 0) {
+    <tc-commerce-records
+      listTable
+      [rows]="rows()"
+      [columns]="columns"
+      (selected)="openOrder($event.uuid)"
+      layout="fill"
+      appearance="embedded"
+      tableLabel="Órdenes comerciales"
+      [busy]="loading()"
+    />
+  }
+  @if (!error() || rows().length > 0) {
+    <tc-pagination
+      listPagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="rows().length"
+      [busy]="loading()"
+      (move)="move($event)"
+    />
+  }
 </tc-list-container>
-@if (selected(); as row) {
-  <section class="selection">
-    <h2>{{ row.folio || row.concept || row.filename || 'Registro seleccionado' }}</h2>
-    <p class="mono">{{ row.uuid }} · versión {{ row.version }}</p>
-    <div class="toolbar">
-      <a class="btn secondary" [routerLink]="'/comercial/ordenes/' + row.uuid + '/general'">Abrir expediente</a>
-    </div>
-  </section>
-}

@@ -140,7 +140,7 @@ export class DateFieldComponent implements ControlValueAccessor, Validator {
       this.propagateChange(next);
     } catch {
       this.conversionError.set(true);
-      this.propagateChange('');
+      this.propagateChange(value);
       this.validatorChanged();
     }
   }

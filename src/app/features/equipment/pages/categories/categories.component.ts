@@ -132,10 +132,11 @@ export class CategoriesComponent extends EquipmentPage {
   readonly columns = [
     { key: 'code', label: 'Código' },
     { key: 'name', label: 'Nombre' },
-    { key: 'parentUuid', label: 'Padre UUID' },
+    { key: 'parentUuid', label: 'Categoría padre' },
     { key: 'technicalKind', label: 'Perfil' },
     { key: 'active', label: 'Activo' },
   ];
+  readonly parentLabels = signal<Record<string, string>>({});
   readonly modelFilters = signal<Record<string, string | number>>({});
 
   constructor() {
@@ -160,6 +161,23 @@ export class CategoriesComponent extends EquipmentPage {
         }),
       (rows) => this.rows.set(rows),
     );
+    if (this.error()) return;
+    const parents = [...new Set(this.rows().map((row) => row.parentUuid).filter((uuid): uuid is string => !!uuid))];
+    const known = this.parentLabels();
+    const missing = parents.filter((uuid) => !(uuid in known));
+    await Promise.all(
+      missing.map(async (uuid) => {
+        try {
+          const category = await this.api.category(uuid);
+          this.parentLabels.update((labels) => ({
+            ...labels,
+            [uuid]: `${category.code} · ${category.name}`,
+          }));
+        } catch {
+          this.parentLabels.update((labels) => ({ ...labels, [uuid]: 'Categoría no disponible' }));
+        }
+      }),
+    );
   }
 
   query() {
@@ -183,6 +201,10 @@ export class CategoriesComponent extends EquipmentPage {
 
   value(row: Category, key: string) {
     const value = (row as unknown as Record<string, unknown>)[key];
+    if (key === 'parentUuid')
+      return typeof value === 'string'
+        ? this.parentLabels()[value] ?? 'Consultando categoría…'
+        : 'Categoría raíz';
     return typeof value === 'boolean'
       ? value
         ? 'Sí'

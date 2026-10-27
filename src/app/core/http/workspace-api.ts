@@ -1,13 +1,18 @@
 import { Injectable, inject, Injector } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom, merge, Subject, takeUntil } from 'rxjs';
-import { Api, errorMessage as apiError } from './api';
+import { Api, errorMessage as apiError, readErrorMessage as apiReadError } from './api';
 import { Session } from '../auth/session';
 export type Params = Record<string, string | number | boolean | null | undefined>;
 export function workspaceError(error: unknown) {
   return error instanceof Error && !(error instanceof HttpErrorResponse)
     ? error.message
     : apiError(error);
+}
+export function workspaceReadError(error: unknown) {
+  return error instanceof Error && !(error instanceof HttpErrorResponse)
+    ? error.message
+    : apiReadError(error);
 }
 export interface Page<T> {
   items: T[];

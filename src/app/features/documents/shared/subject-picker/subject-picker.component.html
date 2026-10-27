@@ -4,6 +4,7 @@
     placeholder="Nombre, código o folio…"
     [value]="chosen()?.uuid ?? value()"
     [selectedLabel]="chosen()?.label ?? ''"
+    [searchError]="error()"
     [searchFn]="searchFn"
     (select)="choose($event)"
   />

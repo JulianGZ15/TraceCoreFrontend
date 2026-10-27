@@ -46,14 +46,11 @@ export class RequirementsComponent extends QualityPage {
   }
 
   async load() {
-    if (!this.sheet.value) {
-      this.rows.set([]);
-      return;
-    }
+    const sheetUuid = this.sheet.value?.trim();
     await this.request(
       () =>
         this.get<M.Requirement[]>('/requirements', {
-          sheetUuid: this.sheet.value,
+          ...(sheetUuid ? { sheetUuid } : {}),
           offset: this.offset(),
           limit: this.limit(),
         }),

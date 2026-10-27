@@ -5,6 +5,7 @@
     placeholder="Buscar por nombre, código o folio…"
     [value]="chosen()?.uuid ?? value()"
     [selectedLabel]="chosen()?.label ?? ''"
+    [searchError]="error()"
     [searchFn]="searchFn"
     [disabled]="busy()"
     (select)="choose($event)"

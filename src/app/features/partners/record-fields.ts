@@ -47,6 +47,7 @@ export const addressFields: Field[] = [
   text('region', 'Región'),
   text('postalCode', 'Código postal', false, 30),
   country,
+  { key: 'externalDeliveryEnabled', label: 'Usar como sitio externo de entrega', type: 'checkbox' },
   active,
 ];
 export const taxFields: Field[] = [

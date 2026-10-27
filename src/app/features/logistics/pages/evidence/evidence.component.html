@@ -20,15 +20,20 @@
       ['IN_TRANSIT', 'PARTIALLY_DELIVERED'].includes(s.manifest.state))
   ) {
     <section class="panel">
-      <label for="shipment-file">PDF, PNG o JPEG · máximo 10 MiB</label
-      ><input
-        id="shipment-file"
-        type="file"
-        accept=".pdf,.png,.jpg,.jpeg"
-        (change)="pickFile($event)"
-      /><button class="btn primary" [disabled]="loading() || !file" (click)="upload()">
-        Cargar archivo
-      </button>
+      <div class="tc-file-upload">
+        <label for="shipment-file">Agregar evidencia al envío</label>
+        <p>PDF, PNG o JPEG · máximo 10 MiB.</p>
+        <input
+          id="shipment-file"
+          type="file"
+          accept=".pdf,.png,.jpg,.jpeg"
+          (change)="pickFile($event)"
+        />
+        @if (file) { <p class="tc-file-upload__selected">{{ file.name }}</p> }
+        <button class="btn primary" [disabled]="loading() || !file" (click)="upload()">
+          {{ loading() ? 'Cargando…' : 'Cargar archivo' }}
+        </button>
+      </div>
     </section>
   }
 }

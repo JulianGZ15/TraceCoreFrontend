@@ -7,6 +7,7 @@ import { SectionNavComponent } from '../../shared/section-nav/section-nav.compon
 import { PendingRequestsComponent } from '../../shared/pending-requests/pending-requests.component';
 import { LineComponent } from '../../editors/line/line.component';
 import { TransitionComponent } from '../../editors/transition/transition.component';
+import { Entity } from '../../models';
 @Component({
   selector: 'tc-commerce-order-lines',
   imports: [
@@ -32,4 +33,13 @@ export class OrderLinesComponent extends CommercePage {
   ];
   readonly editor = LineComponent;
   readonly transition = TransitionComponent;
+
+  openLine(row: Entity) {
+    if (this.can('COMMERCIAL_MANAGE') && this.summary()?.order?.state === 'DRAFT') {
+      this.selected.set(null);
+      void this.edit(this.editor, row);
+      return;
+    }
+    this.selected.set(row);
+  }
 }

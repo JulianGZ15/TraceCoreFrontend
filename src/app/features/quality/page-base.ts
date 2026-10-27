@@ -4,7 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { Dialog } from '@angular/cdk/dialog';
 import { Subject, Subscription, combineLatest, firstValueFrom } from 'rxjs';
 import { Session } from '../../core/auth/session';
-import { errorMessage } from '../../core/http/api';
+import { errorMessage, readErrorMessage } from '../../core/http/api';
 import { confirm } from '../../shared/ui/editor';
 import { QualityAccess } from './access';
 import { QualityApi } from './quality-api';
@@ -71,7 +71,7 @@ export abstract class QualityPage implements OnDestroy {
     } catch (error) {
       if (this.alive && g === this.generation && e === this.session.epoch())
         this.error.set(
-          error instanceof Error && !('status' in error) ? error.message : errorMessage(error),
+          error instanceof Error && !('status' in error) ? error.message : readErrorMessage(error),
         );
     } finally {
       if (this.alive && g === this.generation) this.busy.set(false);

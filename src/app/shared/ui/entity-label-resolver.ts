@@ -79,7 +79,8 @@ export class EntityLabelResolver {
         >('/party-options', { limit: 100 });
         const match = options.find((o) => (o.uuid || o.record?.uuid) === uuid);
         if (match) {
-          const label = match.label || match.record?.tradeName || match.record?.legalName || uuid;
+          const label =
+            match.label || match.record?.tradeName || match.record?.legalName || 'Tercero no disponible';
           this.cache.set(key, label);
           return label;
         }
@@ -89,14 +90,14 @@ export class EntityLabelResolver {
         >('/parties/directory', { limit: 100 });
         const pMatch = parties.find((p) => p.uuid === uuid);
         if (pMatch) {
-          const label = pMatch.tradeName || pMatch.legalName || uuid;
+          const label = pMatch.tradeName || pMatch.legalName || 'Tercero no disponible';
           this.cache.set(key, label);
           return label;
         }
       } catch {
         // Fall back gracefully
       }
-      return uuid.length > 8 ? `${uuid.slice(0, 8)}…` : uuid;
+      return 'Tercero no disponible';
     })();
 
     this.inFlight.set(key, promise);
@@ -121,14 +122,14 @@ export class EntityLabelResolver {
         );
         const match = users.find((u) => u.uuid === uuid);
         if (match) {
-          const label = match.name || match.label || uuid;
+          const label = match.name || match.label || 'Usuario no disponible';
           this.cache.set(key, label);
           return label;
         }
       } catch {
         // Fall back gracefully
       }
-      return uuid.length > 8 ? `${uuid.slice(0, 8)}…` : uuid;
+      return 'Usuario no disponible';
     })();
 
     this.inFlight.set(key, promise);
@@ -145,6 +146,6 @@ export class EntityLabelResolver {
     if (this.cache.has(key)) return this.cache.get(key)!;
     if (kind === 'party') return this.resolveParty(uuid);
     if (kind === 'user') return this.resolveUser(uuid);
-    return uuid.length > 8 ? `${uuid.slice(0, 8)}…` : uuid;
+    return 'Referencia no disponible';
   }
 }

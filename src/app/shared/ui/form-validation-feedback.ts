@@ -1,6 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { clearFormValidationFeedback, presentValidationFeedback } from './form-validation';
+import {
+  clearControlValidationFeedback,
+  clearFormValidationFeedback,
+  presentValidationFeedback,
+} from './form-validation';
 
 @Injectable({ providedIn: 'root' })
 export class FormValidationFeedback implements OnDestroy {
@@ -26,8 +30,7 @@ export class FormValidationFeedback implements OnDestroy {
     window.setTimeout(() => {
       const control = target.closest<HTMLElement>('[aria-invalid="true"]');
       if (control?.classList.contains('ng-valid')) {
-        control.removeAttribute('aria-invalid');
-        control.closest('.field')?.querySelector('.tc-validation-error')?.remove();
+        clearControlValidationFeedback(control);
       }
       if (form.classList.contains('ng-valid')) clearFormValidationFeedback(form);
       else this.updateSummary(form);
@@ -65,7 +68,7 @@ export class FormValidationFeedback implements OnDestroy {
       'input.ng-invalid, select.ng-invalid, textarea.ng-invalid, [formControlName].ng-invalid, [formcontrol].ng-invalid, [role="combobox"].ng-invalid',
     ).length;
     summary.textContent = count
-      ? `Hay ${count} ${count === 1 ? 'campo' : 'campos'} por corregir. Revisa la información marcada.`
-      : 'Revisa los campos obligatorios y su formato.';
+      ? `Hay ${count} ${count === 1 ? 'dato pendiente' : 'datos pendientes'}. Revisa ${count === 1 ? 'el campo marcado' : 'los campos marcados'} para continuar.`
+      : 'Completa los campos pendientes o revisa los datos marcados para continuar.';
   }
 }

@@ -68,7 +68,7 @@ export abstract class QualityEditor extends QualityPage {
     }
     attemptFormValidation(this.form);
     if (this.form.invalid) {
-      this.error.set('Revisa los campos obligatorios y su formato.');
+      this.error.set('');
       return;
     }
     await this.mutate(

@@ -99,7 +99,7 @@ export class MaintenanceComponent extends QualityPage {
   async load() {
     await this.request(
       () =>
-        this.get<M.Row<M.WorkOrder>[]>('/work-orders', {
+        this.get<M.Row<M.WorkOrder>[]>('/maintenance', {
           yardUuid: this.yard() || null,
           assetUuid: this.assetUuid || null,
           state: this.state || null,

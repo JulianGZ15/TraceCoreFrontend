@@ -38,14 +38,47 @@
           [timeZone]="session.context()?.company?.timezone ?? 'UTC'"
           [required]="true"
           formControlName="scheduledAt"
-        /></label
-      ><label>Instalación<input type="text" formControlName="facility" /></label>
+      /></label>
+      <div class="field">
+        <label for="quality-inspection-facility">Lugar de inspección (instalación) *</label>
+        <input
+          id="quality-inspection-facility"
+          type="text"
+          formControlName="facility"
+          required
+          maxlength="500"
+          placeholder="Ej. Taller de mantenimiento, área de pruebas"
+          [attr.aria-invalid]="
+            form.controls.facility.touched && form.controls.facility.invalid ? 'true' : null
+          "
+          [attr.aria-describedby]="
+            'quality-inspection-facility-help quality-inspection-facility-limit' +
+            (form.controls.facility.touched && form.controls.facility.invalid
+              ? ' quality-inspection-facility-error'
+              : '')
+          "
+        />
+        <small id="quality-inspection-facility-help">
+          Escribe el nombre del lugar donde se realizará la inspección, como un taller, laboratorio
+          o área de pruebas.
+        </small>
+        <small id="quality-inspection-facility-limit">
+          {{ form.controls.facility.value?.length ?? 0 }} / 500 caracteres
+        </small>
+        <span
+          id="quality-inspection-facility-error"
+          class="field-error"
+          role="alert"
+          [hidden]="!form.controls.facility.touched || form.controls.facility.valid"
+        >
+          {{
+            form.controls.facility.hasError('required')
+              ? 'Indica el lugar donde se realizará la inspección.'
+              : 'El lugar de inspección admite hasta 500 caracteres.'
+          }}
+        </span>
+      </div>
     </div>
-    @if (form.invalid && form.touched) {
-      <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales."
-      />
-    }
     <div class="actions">
       <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">
         {{ busy() ? 'Guardando…' : 'Guardar' }}</button

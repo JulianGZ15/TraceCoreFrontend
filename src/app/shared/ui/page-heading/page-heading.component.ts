@@ -10,4 +10,5 @@ export class PageHeading {
   readonly section = input('Organización');
   readonly title = input.required<string>();
   readonly description = input('');
+  readonly descriptionAttention = input<'warning' | 'info' | ''>('');
 }

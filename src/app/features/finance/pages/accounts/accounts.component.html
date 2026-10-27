@@ -15,7 +15,12 @@
   <ng-container listFeedback>
     <tc-finance-pending-requests />
     @if (error()) {
-      <tc-feedback [message]="error()" />
+      <tc-feedback
+        [message]="error()"
+        actionLabel="Volver a cargar"
+        [actionDisabled]="loading()"
+        (action)="reload()"
+      />
     }
     @if (loading()) {
       <p role="status">Consultando…</p>
@@ -134,21 +139,25 @@
     </form>
   </ng-template>
 
-  <tc-finance-records
-    listTable
-    [rows]="rows()"
-    [columns]="columns"
-    (selected)="open($event)"
-    layout="fill"
-    appearance="embedded"
-    tableLabel="Cuentas de crédito"
-    [busy]="loading()"
-  />
-  <tc-pagination
-    listPagination
-    [offset]="offset"
-    [limit]="limit"
-    [count]="rows().length"
-    (move)="move($event)"
-  />
+  @if (!error() || rows().length > 0) {
+    <tc-finance-records
+      listTable
+      [rows]="rows()"
+      [columns]="columns"
+      (selected)="open($event)"
+      layout="fill"
+      appearance="embedded"
+      tableLabel="Cuentas de crédito"
+      [busy]="loading()"
+    />
+  }
+  @if (!error() || rows().length > 0) {
+    <tc-pagination
+      listPagination
+      [offset]="offset"
+      [limit]="limit"
+      [count]="rows().length"
+      (move)="move($event)"
+    />
+  }
 </tc-list-container>

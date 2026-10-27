@@ -222,7 +222,7 @@ export function recordFields(
       },
     ];
   const record = value as Record<string, unknown>;
-  return Object.entries(record)
+  const fields = Object.entries(record)
     .filter(([k]) => !privateFields.has(k) && !k.endsWith('Exact'))
     .flatMap(([key, v]) => {
       const label = [prefix, fieldNames[key] ?? key.replace(/([a-z])([A-Z])/g, '$1 $2')]
@@ -249,6 +249,9 @@ export function recordFields(
       }
       return recordFields(v, label, zone);
     });
+  return fields.length
+    ? fields
+    : [{ label: prefix || 'Datos actuales', value: 'No hay datos disponibles para esta consulta.' }];
 }
 @Component({
   selector: 'tc-record-values',

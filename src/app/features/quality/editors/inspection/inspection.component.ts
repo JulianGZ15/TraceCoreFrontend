@@ -24,7 +24,13 @@ export class InspectionComponent extends QualityEditor {
     policyUuid: ['', this.uuid],
     inspectorUuid: ['', this.uuid],
     scheduledAt: ['', this.required],
-    facility: ['', this.required],
+    facility: [
+      '',
+      [
+        (control: AbstractControl) => (control.value?.trim() ? null : { required: true }),
+        Validators.maxLength(500),
+      ],
+    ],
   });
   async reload() {
     if (await this.discard()) {
@@ -36,6 +42,7 @@ export class InspectionComponent extends QualityEditor {
       const r = this.form.getRawValue();
       return this.pending.create<M.Inspection>('inspections', {
         ...r,
+        facility: r.facility?.trim(),
         scheduledAt: r.scheduledAt,
       });
     });

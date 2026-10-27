@@ -28,12 +28,16 @@
       @if (session.can('CONTRACT_MANAGE')) {
         <button class="btn secondary" (click)="edit(transition, r, 'end-framework')">
           Finalizar marco</button
-        ><label
-          >Evidencia privada<input
+        ><div class="tc-file-upload compact">
+          <label for="framework-evidence-file">Adjuntar evidencia privada</label>
+          <p>PDF, PNG o JPEG · máximo 10 MiB.</p>
+          <input
+            id="framework-evidence-file"
             type="file"
             accept="application/pdf,image/png,image/jpeg"
             (change)="upload($event)"
-        /></label>
+          />
+        </div>
       }
     </div>
     @for (doc of documents(); track doc.uuid) {

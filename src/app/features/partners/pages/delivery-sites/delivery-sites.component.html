@@ -1,7 +1,12 @@
 <section class="panel">
   <div class="panel-heading">
     <h2>Sitios de entrega</h2>
-    <a class="btn secondary" [routerLink]="['/terceros', uuid, 'domicilios']">Administrar domicilios</a>
+    <div class="panel-actions">
+      @if (session.can('PARTY_MANAGE')) {
+        <button class="btn primary" [disabled]="busy()" (click)="edit()">+ Nuevo sitio de entrega</button>
+      }
+      <a class="btn secondary" [routerLink]="['/terceros', uuid, 'domicilios']">Administrar domicilios</a>
+    </div>
   </div>
   <p>Estos domicilios están habilitados como sitios externos y pueden seleccionarse en órdenes de este tercero.</p>
 </section>

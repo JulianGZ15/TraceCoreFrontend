@@ -67,16 +67,16 @@ export class ManifestNewComponent extends LogisticsPage {
       resource: 'party-options',
       required: true,
     },
-    { key: 'destinationYardUuid', label: 'Patio destino (TRANSFER/RETURN)' },
+    { key: 'destinationYardUuid', label: 'Patio de destino' },
     {
       key: 'destinationSiteUuid',
-      label: 'Sitio destino (OUTBOUND)',
+      label: 'Sitio de destino',
       type: 'lookup',
       resource: 'site-options',
     },
     {
       key: 'destinationCustodianUuid',
-      label: 'Custodio externo (OUTBOUND)',
+      label: 'Custodio externo',
       type: 'lookup',
       resource: 'party-options',
       params: { purpose: 'CUSTODIAN' },
@@ -97,6 +97,15 @@ export class ManifestNewComponent extends LogisticsPage {
   readonly requirement = signal('');
   private storage = 'tracecore.logistics.draft';
   private restored = false;
+  get visibleFields(): Field[] {
+    const type = this.form.controls['type']?.value;
+    return this.fields.filter((field) => {
+      if (field.key === 'destinationYardUuid') return type === 'RETURN' || type === 'TRANSFER';
+      if (field.key === 'destinationSiteUuid' || field.key === 'destinationCustodianUuid')
+        return type === 'OUTBOUND';
+      return true;
+    });
+  }
   context(): Record<string, string> {
     return {
       ...this.form.getRawValue(),
@@ -327,7 +336,16 @@ export class ManifestNewComponent extends LogisticsPage {
   private syncDestinationRequirements(): void {
     const type = this.form.getRawValue()['type'];
     if (type === this.requirementType) return;
+    const previousType = this.requirementType;
     this.requirementType = type;
+    if (previousType) {
+      if (type === 'OUTBOUND') {
+        this.form.get('destinationYardUuid')?.setValue('', { emitEvent: false });
+      } else {
+        this.form.get('destinationSiteUuid')?.setValue('', { emitEvent: false });
+        this.form.get('destinationCustodianUuid')?.setValue('', { emitEvent: false });
+      }
+    }
     const conditional = new Set(
       type === 'OUTBOUND'
         ? ['destinationSiteUuid', 'destinationCustodianUuid']

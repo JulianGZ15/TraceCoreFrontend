@@ -33,7 +33,7 @@
       @if (yardControl.invalid && yardControl.touched) {
         <small id="new-yard-error" class="field-error" role="alert">Selecciona el patio operativo.</small>
       }
-      <tc-logistics-fields [form]="form" [fields]="fields" [yard]="yard" />
+      <tc-logistics-fields [form]="form" [fields]="visibleFields" [yard]="yard" />
     }
 
     @if (step() === 2) {

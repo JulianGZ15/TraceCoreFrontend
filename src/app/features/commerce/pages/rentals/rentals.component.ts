@@ -1,5 +1,4 @@
 import { Component, signal, computed, TemplateRef, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { CommercePage } from '../../page';
 import {
@@ -25,7 +24,6 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
   selector: 'tc-commerce-rentals',
   imports: [
     LookupComponent,
-    RouterLink,
     ReactiveFormsModule,
     PageHeading,
     ListContainer,
@@ -157,5 +155,9 @@ export class RentalsComponent extends CommercePage {
 
   onPartyPicked(field: 'partyUuid' | 'distributorUuid' | 'endCustomerUuid', uuid: string) {
     this.drawerForm.controls[field].setValue(uuid);
+  }
+
+  openRental(uuid: string) {
+    void this.router.navigate(['/comercial/rentas', uuid, 'general']);
   }
 }

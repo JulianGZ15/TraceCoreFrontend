@@ -15,13 +15,6 @@
   <h2>Tu espacio de trabajo</h2>
   <span class="small-muted">Accesos disponibles para tu cuenta</span>
 </div>
-@if (session.inventoryRead()) {
-  <a routerLink="/inventario/patios" class="access-card"
-    ><h3>Inventario y patios</h3>
-    <p>Ubicaciones, movimientos, reservas, custodia y conteos.</p>
-    <span class="card-link">Abrir inventario ↗</span></a
-  >
-}
 @if (session.inventoryWrite() && !session.inventoryRead()) {
   <p class="feedback info">
     Tienes capacidades de operación de inventario, pero necesitas INVENTORY_READ en el alcance
@@ -29,6 +22,14 @@
   </p>
 }
 <div class="access-cards">
+  @if (session.inventoryRead()) {
+    <a routerLink="/inventario/patios" class="access-card"
+      ><span class="card-icon"><tc-icon name="warehouse" /></span>
+      <h3>Inventario y patios</h3>
+      <p>Ubicaciones, movimientos, reservas, custodia y conteos.</p>
+      <span class="card-link">Abrir inventario <span aria-hidden="true">↗</span></span></a
+    >
+  }
   @if (session.documentRead()) { <a class="access-card" routerLink="/documentos"><h3>Biblioteca documental</h3><p>Versiones, decisiones y vínculos con sus permisos de origen.</p><span class="card-link">Abrir documentos ↗</span></a> }
   @if (session.queryRead()) { <a class="access-card" routerLink="/consultas"><h3>Consultas operativas</h3><p>Panel por patio, expedientes integrales y exportaciones por página.</p><span class="card-link">Abrir consultas ↗</span></a> }
   @if (session.supportRead()) { <a class="access-card" routerLink="/soporte"><h3>Soporte y trazabilidad</h3><p>Recibos persistidos y auditoría de metadatos.</p><span class="card-link">Abrir soporte ↗</span></a> }

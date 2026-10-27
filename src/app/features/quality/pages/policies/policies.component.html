@@ -9,7 +9,14 @@
   </tc-page-heading>
 
   <ng-container listFeedback>
-    <tc-feedback [message]="error()" />
+    @if (error()) {
+      <tc-feedback
+        [message]="error()"
+        actionLabel="Volver a cargar"
+        [actionDisabled]="busy()"
+        (action)="load()"
+      />
+    }
     <tc-feedback [message]="success()" kind="success" />
     @if (busy()) {
       <p role="status">Cargando…</p>
@@ -26,13 +33,14 @@
     </div>
   }
 
-  <tc-data-table
-    label="Políticas de inspección"
-    listTable
-    appearance="embedded"
-    layout="fill"
-    [busy]="busy()"
-  >
+  @if (!error() || rows().length > 0) {
+    <tc-data-table
+      label="Políticas de inspección"
+      listTable
+      appearance="embedded"
+      layout="fill"
+      [busy]="busy()"
+    >
     @if (busy() && !rows().length) {
       <tc-skeleton variant="table" [columns]="5" label="Cargando registros…" />
     }
@@ -74,15 +82,18 @@
         }
       </tbody>
     </table>
-  </tc-data-table>
+    </tc-data-table>
+  }
 
-  <tc-pagination
-    listPagination
-    [offset]="offset()"
-    [limit]="limit()"
-    [count]="rows().length"
-    [busy]="busy()"
-    (move)="page($event)"
-    (resize)="filter({ limit: $event.toString() })"
-  />
+  @if (!error() || rows().length > 0) {
+    <tc-pagination
+      listPagination
+      [offset]="offset()"
+      [limit]="limit()"
+      [count]="rows().length"
+      [busy]="busy()"
+      (move)="page($event)"
+      (resize)="filter({ limit: $event.toString() })"
+    />
+  }
 </tc-list-container>

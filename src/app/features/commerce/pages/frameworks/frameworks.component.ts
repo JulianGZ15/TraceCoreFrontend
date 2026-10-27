@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommercePage } from '../../page';
 import { PageHeading, ListContainer, Feedback, Pagination } from '../../../../shared/ui/page';
 import { RecordsComponent } from '../../shared/records/records.component';
@@ -9,7 +8,6 @@ import { FrameworkComponent } from '../../editors/framework/framework.component'
 @Component({
   selector: 'tc-commerce-frameworks',
   imports: [
-    RouterLink,
     PageHeading,
     ListContainer,
     Feedback,
@@ -32,4 +30,8 @@ export class FrameworksComponent extends CommercePage {
     { key: 'validTo', label: 'Fin' },
   ];
   readonly editor = FrameworkComponent;
+
+  openFramework(uuid: string) {
+    void this.router.navigate(['/comercial/marcos', uuid]);
+  }
 }

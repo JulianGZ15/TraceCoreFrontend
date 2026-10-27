@@ -5,7 +5,14 @@
   <div class="heading-titles">
     <h1 tabindex="-1">{{ title() }}</h1>
     @if (description()) {
-      <p class="page-description">{{ description() }}</p>
+      <p
+        class="page-description"
+        [class.attention-note]="!!descriptionAttention()"
+        [class.info]="descriptionAttention() === 'info'"
+        [attr.role]="descriptionAttention() ? 'note' : null"
+      >
+        {{ description() }}
+      </p>
     }
   </div>
   <div class="page-actions">

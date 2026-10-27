@@ -11,17 +11,50 @@
   }
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
     <div class="form-grid">
-      <label>Código<input type="text" formControlName="code" /></label
+      <div class="field">
+        <label for="quality-task-code">Código de tarea *</label>
+        <input
+          id="quality-task-code"
+          type="text"
+          formControlName="code"
+          required
+          maxlength="80"
+          placeholder="Ej. REV-01"
+          aria-describedby="quality-task-code-help"
+          [attr.aria-invalid]="
+            form.controls.code.touched && form.controls.code.invalid ? 'true' : null
+          "
+        />
+        <small id="quality-task-code-help"
+          >Empieza con una letra; después admite letras, números, _, : y -. Máximo 80
+          caracteres.</small
+        >
+        @if (form.controls.code.touched && form.controls.code.hasError('pattern')) {
+          <span class="field-error" role="alert"
+            >El código debe empezar con una letra y solo usar letras, números, _, : o -.</span
+          >
+        }
+      </div>
+      <label class="wide"
+        >Descripción *<textarea
+          formControlName="description"
+          rows="3"
+          required
+          maxlength="500"
+        ></textarea>
+        <small>Máximo 500 caracteres.</small></label
       ><label class="wide"
-        >Descripción<textarea formControlName="description" rows="3"></textarea></label
-      ><label class="wide"
-        >Requisitos<textarea formControlName="requirements" rows="3"></textarea>
+        >Requisitos *<textarea
+          formControlName="requirements"
+          rows="3"
+          required
+          maxlength="1000"
+        ></textarea>
+        <small>Máximo 1000 caracteres.</small>
       </label>
     </div>
     @if (form.invalid && form.touched) {
-      <tc-feedback
-        message="Revisa los datos obligatorios, UUID, intervalos y decimales. Las fechas requieren Z o desplazamiento UTC."
-      />
+      <tc-feedback message="Completa los campos obligatorios y corrige los valores marcados." />
     }
     <div class="actions">
       <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">

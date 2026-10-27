@@ -31,7 +31,13 @@
           formControlName="issuedAt"
         /></label
       >
-      <div class="wide"><tc-quality-evidence [control]="form.controls['evidenceUuid']" /></div>
+      <div class="wide">
+        <tc-quality-evidence
+          [control]="form.controls['evidenceUuid']"
+          [allowUpload]="true"
+          (uploadingChange)="uploadingEvidence.set($event)"
+        />
+      </div>
     </div>
     @if (form.invalid && form.touched) {
       <tc-feedback
@@ -39,9 +45,18 @@
       />
     }
     <div class="actions">
-      <button class="btn primary" type="submit" [disabled]="busy() || !compatible() || !canWrite()">
+      <button
+        class="btn primary"
+        type="submit"
+        [disabled]="busy() || uploadingEvidence() || !compatible() || !canWrite()"
+      >
         {{ busy() ? 'Guardando…' : 'Guardar' }}</button
-      ><button class="btn secondary" type="button" [disabled]="busy()" (click)="cancel()">
+      ><button
+        class="btn secondary"
+        type="button"
+        [disabled]="busy() || uploadingEvidence()"
+        (click)="cancel()"
+      >
         Cancelar
       </button>
     </div>

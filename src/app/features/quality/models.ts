@@ -29,6 +29,8 @@ export interface Standard extends Versioned {
   active: boolean;
 }
 export interface Requirement extends Versioned {
+  folio: string;
+  name: string;
   sheetUuid: string;
   standardUuid: string;
   scope: string;

@@ -7,6 +7,7 @@ import { CommerceAccess } from './access';
 import { CommerceEditor } from './editor';
 import { Entity, Row, Summary, EditorContext } from './models';
 import { message, label, numberText, prettyDate } from './rules';
+import { readErrorMessage } from '../../core/http/api';
 import { UnsavedChanges } from '../../shared/ui/unsaved-changes';
 export const orderSections = [
   { key: 'general', label: 'Resumen' },
@@ -254,7 +255,7 @@ export abstract class CommercePage implements OnInit, OnDestroy {
       await this.afterLoad();
     } catch (e) {
       if (seq === this.seq) {
-        this.error.set(message(e));
+        this.error.set(readErrorMessage(e));
         if ([401, 403].includes((e as { status?: number })?.status ?? 0)) this.rows.set([]);
         if (e && typeof e === 'object' && 'status' in e && e.status === 403)
           void this.session.refresh();

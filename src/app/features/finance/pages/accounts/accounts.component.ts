@@ -43,7 +43,7 @@ import { LookupComponent } from '../../shared/lookup/lookup.component';
 export class AccountsComponent extends FinancePage {
   override title = 'Cuentas de crédito';
   override mode = 'directory';
-  override collection = 'accounts/directory';
+  override collection = 'credit-accounts/directory';
   override resource = '';
   override columns = [
     { key: 'direction', label: 'Dirección' },

@@ -27,4 +27,8 @@ export class OrderReceiptsComponent extends CommercePage {
     { key: 'folio', label: 'Folio' },
     { key: 'receivedAt', label: 'Instante' },
   ];
+
+  openReceipt(uuid: string) {
+    void this.router.navigate(['/comercial/recepciones', uuid]);
+  }
 }

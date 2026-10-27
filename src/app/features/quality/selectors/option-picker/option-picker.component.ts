@@ -1,6 +1,9 @@
 import { Component, input, signal, effect } from '@angular/core';
 import { FormControl, AbstractControl } from '@angular/forms';
-import { EntitySearchComponent, EntityOption } from '../../../../shared/ui/entity-search/entity-search.component';
+import {
+  EntitySearchComponent,
+  EntityOption,
+} from '../../../../shared/ui/entity-search/entity-search.component';
 import { Feedback } from '../../../../shared/ui/page';
 import { QualityPage } from '../../page-base';
 import * as M from '../../models';
@@ -20,18 +23,24 @@ export class OptionPickerComponent extends QualityPage {
   readonly title = input.required<string>();
   readonly nullable = input(false);
   readonly selected = signal('');
+  readonly errorId = 'quality-option-error-' + crypto.randomUUID();
   readonly searchFn = (query: string) => this.searchOptions(query);
+  private selectionContext = '';
   constructor() {
     super();
     effect(() => {
-      this.kind();
-      this.assetUuid();
+      const kind = this.kind();
+      const assetUuid = ['POLICY', 'TRACE'].includes(kind) ? this.assetUuid() : '';
+      const context = `${kind}:${assetUuid}`;
+      if (context === this.selectionContext) return;
+      this.selectionContext = context;
       this.selected.set('');
     });
   }
   select(v: EntityOption | null) {
     this.control().setValue(v?.value ?? '');
     this.control().markAsDirty();
+    this.control().markAsTouched();
     this.selected.set(v?.label ?? '');
   }
   unset() {
@@ -40,6 +49,7 @@ export class OptionPickerComponent extends QualityPage {
     this.selected.set('');
   }
   async searchOptions(search: string): Promise<EntityOption[]> {
+    this.error.set('');
     const kind = this.kind();
     let path = '/catalog-options',
       params: Record<string, string | number | null> = {
@@ -83,10 +93,18 @@ export class OptionPickerComponent extends QualityPage {
       params = {};
     }
     try {
-      const rows = await this.get<(M.Option | M.Asset | M.Standard | M.Policy | M.Trace)[]>(path, params);
-      const filtered = kind === 'POLICY'
-        ? rows.filter((v) => `${'method' in v ? v.method : ''} ${'revision' in v ? v.revision : ''}`.toLowerCase().includes(search.toLowerCase()))
-        : rows;
+      const rows = await this.get<(M.Option | M.Asset | M.Standard | M.Policy | M.Trace)[]>(
+        path,
+        params,
+      );
+      const filtered =
+        kind === 'POLICY'
+          ? rows.filter((v) =>
+              `${'method' in v ? v.method : ''} ${'revision' in v ? v.revision : ''}`
+                .toLowerCase()
+                .includes(search.toLowerCase()),
+            )
+          : rows;
       return filtered.slice(0, 25).map((v) => ({
         value: v.uuid,
         label:

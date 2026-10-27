@@ -2,6 +2,8 @@
   section="RFID e integración"
   title="Importar recibos a conteo"
   description="Selecciona, revisa y confirma. La ubicación observada no se deduce de la señal."
+  descriptionAttention="info"
+  descriptionAttention="info"
   ><tc-rfid-nav /></tc-page-heading
 ><tc-feedback [message]="error()" /><tc-feedback [message]="success()" kind="success" />
 @if (busy()) {
@@ -106,7 +108,10 @@
         /><button type="button" class="btn" (click)="applyLocation()">
           Aplicar ubicación a recibos revisados
         </button>
-        <p>Sin ubicación elegida: desconocida. La ubicación esperada no se copiará.</p>
+        <aside class="attention-note info" role="note">
+          <strong>La ubicación observada es opcional</strong>
+          Si no eliges una, quedará como desconocida; no copiaremos la ubicación esperada.
+        </aside>
         <div formArrayName="entries" class="form-grid">
           @for (e of entries.controls; track $index) {
             <section class="panel" [formGroupName]="$index">

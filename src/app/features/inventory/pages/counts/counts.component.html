@@ -37,7 +37,13 @@
   <div listToolbar class="toolbar">
     <tc-inventory-yard-picker [value]="yard()" (picked)="changeYard($event)" />
     @if (access.can('INVENTORY_OBSERVE', yard())) {
-      <button class="btn primary" (click)="opening.set(!opening())">Abrir conteo manual</button>
+      @if (yard()) {
+        <button class="btn primary" (click)="opening.set(!opening())">Abrir conteo manual</button>
+      } @else {
+        <button class="btn secondary" type="button" disabled>
+          Selecciona un patio para abrir un conteo
+        </button>
+      }
     }
   </div>
 

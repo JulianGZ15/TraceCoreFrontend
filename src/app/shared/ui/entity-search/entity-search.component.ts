@@ -10,7 +10,7 @@ import {
   HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { AbstractControl, Validators } from '@angular/forms';
 import { Icon } from '../icon/icon.component';
 
 export interface EntityOption {
@@ -22,7 +22,7 @@ export interface EntityOption {
 
 @Component({
   selector: 'tc-entity-search',
-  imports: [CommonModule, FormsModule, Icon],
+  imports: [CommonModule, Icon],
   templateUrl: './entity-search.component.html',
   styleUrl: './entity-search.component.scss',
 })
@@ -31,10 +31,15 @@ export class EntitySearchComponent implements OnDestroy {
   readonly placeholder = input<string>('Escribe para buscar…');
   readonly value = input<string>('');
   readonly selectedLabel = input<string>('');
+  readonly searchError = input<string>('');
+  readonly showSelectedTitle = input<boolean>(true);
   readonly optionsList = input<EntityOption[]>([]);
   readonly searchFn = input<(query: string) => Promise<EntityOption[]>>();
   readonly disabled = input<boolean>(false);
   readonly controlId = input<string>('');
+  readonly validationControl = input<AbstractControl | null>(null);
+  readonly describedBy = input('');
+  readonly requiredValidator = Validators.required;
 
   readonly select = output<EntityOption | null>();
 
@@ -114,6 +119,10 @@ export class EntitySearchComponent implements OnDestroy {
     } finally {
       if (sequence === this.searchSequence) this.busy.set(false);
     }
+  }
+
+  retrySearch(): void {
+    void this.performSearch(this.query().trim());
   }
 
   selectOption(option: EntityOption): void {

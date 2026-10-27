@@ -45,6 +45,7 @@ import { InventoryNavComponent } from '../../components/inventory-nav/inventory-
 })
 export class MovementsComponent extends InventoryPage {
   readonly rows = signal<M.Movement[]>([]);
+  readonly siteLabels = signal<Record<string, string>>({});
   state = '';
 
   readonly drawerForm = new FormGroup({
@@ -74,10 +75,37 @@ export class MovementsComponent extends InventoryPage {
   }
 
   async load() {
-    await this.request(
+    const loaded = await this.request(
       () => this.api.get<M.Movement[]>('/movements', this.params({ state: this.state || null })),
       (r) => this.rows.set(r),
     );
+    if (!loaded) return;
+    const siteUuids = [
+      ...new Set(
+        this.rows()
+          .flatMap((row) => [row.sourceSiteUuid, row.destinationSiteUuid])
+          .filter((uuid): uuid is string => !!uuid && !(uuid in this.siteLabels())),
+      ),
+    ];
+    await Promise.all(
+      siteUuids.map(async (uuid) => {
+        try {
+          const site = await this.api.get<M.Site>('/sites/' + uuid);
+          this.siteLabels.update((labels) => ({ ...labels, [uuid]: `${site.code} · ${site.name}` }));
+        } catch {
+          this.siteLabels.update((labels) => ({ ...labels, [uuid]: 'Sitio externo no disponible' }));
+        }
+      }),
+    );
+  }
+
+  locationName(yardUuid: string | null, siteUuid: string | null, empty: string) {
+    if (yardUuid) {
+      const yard = this.session.context()?.yards.find((item) => item.uuid === yardUuid);
+      return yard ? `${yard.code} · ${yard.name}` : 'Patio no disponible';
+    }
+    if (siteUuid) return this.siteLabels()[siteUuid] ?? 'Sitio externo';
+    return empty;
   }
 
   onRemoveChip(chip: FilterChip) {

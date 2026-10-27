@@ -154,4 +154,8 @@ export class OrdersComponent extends CommercePage {
   onPartyPicked(uuid: string) {
     this.drawerForm.controls.partyUuid.setValue(uuid);
   }
+
+  openOrder(uuid: string) {
+    void this.router.navigate(['/comercial/ordenes', uuid, 'general']);
+  }
 }
