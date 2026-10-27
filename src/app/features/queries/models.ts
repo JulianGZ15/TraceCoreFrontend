@@ -39,6 +39,55 @@ export interface Dashboard {
   logistics: { authorized: boolean; data: unknown };
   qualityHolds: { authorized: boolean; data: unknown };
 }
+export interface MetricSection<T> {
+  authorized: boolean;
+  data: T | null;
+}
+export interface HomeDashboard {
+  generatedAt: string;
+  scope: { type: 'COMPANY' | 'YARD'; companyUuid: string; yardUuid: string | null };
+  period: { from: string; to: string; timezone: string };
+  inventory: MetricSection<{
+    identifiedPieces: number;
+    positions: number;
+    knownWeightKgExact: string;
+    unknownWeightGroups: number;
+    assetsInTransit: number;
+    pendingProposals: number;
+  }>;
+  commercial: MetricSection<{ byState: Record<string, number>; createdThisMonth: number }>;
+  logistics: MetricSection<{ byState: Record<string, number>; createdThisMonth: number }>;
+  quality: MetricSection<{
+    openHolds: number;
+    overdueInspections: number;
+    overdueMaintenance: number;
+    certificationsExpiring30Days: number;
+  }>;
+  partners: MetricSection<{
+    activeParties: number;
+    pendingCertifications: number;
+    overdueAvlReviews: number;
+    expiredCertifications: number;
+    certificationsExpiring30Days: number;
+    expiredAuthorizations: number;
+    authorizationsExpiring30Days: number;
+  }>;
+  finance: MetricSection<{
+    currency: string;
+    receivableExact: string;
+    payableExact: string;
+    overdueReceivableExact: string;
+    overduePayableExact: string;
+    commitmentsExact: string;
+  }[]>;
+  documents: MetricSection<{ pendingDecisions: number; linksExpiring30Days: number }>;
+  rfid: MetricSection<{
+    receiptsByState: Record<string, number>;
+    unlinkedReceiptsThisMonth: number;
+  }>;
+  organization: MetricSection<{ activeYards: number }>;
+  access: MetricSection<{ activeUsersWithoutAssignment: number }>;
+}
 export const equipmentSections: Record<
   string,
   { label: string; backend: string; collections: Record<string, string> }

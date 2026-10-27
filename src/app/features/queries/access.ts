@@ -13,7 +13,7 @@ export class QueryAccess {
     );
   }
   dashboard(yard: string) {
-    return !!yard && this.can('QUERY_READ', yard) && this.can('INVENTORY_READ', yard);
+    return !!yard && this.can('QUERY_READ', yard) && this.can('INVENTORY_READ', yard) && this.session.can('EQUIPMENT_READ');
   }
   inventory(yard: string) {
     return (

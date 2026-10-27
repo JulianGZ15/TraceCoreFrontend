@@ -14,6 +14,9 @@ export const accessGuard: CanActivateFn = async (route, state) => {
       queryParams: { returnUrl: safeReturn(state.url), validation: 'retry' },
     });
   }
+  if (session.consumeResumeLanding() && state.url.split(/[?#]/)[0] !== '/inicio')
+    return router.createUrlTree(['/inicio']);
+
   const permission = route.data['permission'] as string | undefined;
   if (permission && !session.can(permission)) return router.createUrlTree(['/sin-acceso']);
   if ((route.data['permissions'] as string[] | undefined)?.some(p => !session.can(p))) return router.createUrlTree(['/sin-acceso']);

@@ -9,12 +9,13 @@ import { vi } from 'vitest';
 import { Session } from './session';
 import { accessGuard } from './guards';
 describe('Route authorization', () => {
-  const session = { valid: vi.fn(), refresh: vi.fn(), can: vi.fn(), hasAccess: vi.fn() };
+  const session = { valid: vi.fn(), refresh: vi.fn(), can: vi.fn(), hasAccess: vi.fn(), consumeResumeLanding: vi.fn() };
   beforeEach(() => {
     vi.resetAllMocks();
     session.valid.mockReturnValue(true);
     session.refresh.mockResolvedValue(undefined);
     session.hasAccess.mockReturnValue(true);
+    session.consumeResumeLanding.mockReturnValue(false);
     session.can.mockReturnValue(false);
     TestBed.configureTestingModule({
       providers: [
@@ -44,6 +45,11 @@ describe('Route authorization', () => {
   it('allows account access without assignments', async () => {
     session.hasAccess.mockReturnValue(false);
     expect(await guard({})).toBe(true);
+  });
+  it('routes a restored session to home once before opening a deep link', async () => {
+    session.consumeResumeLanding.mockReturnValue(true);
+    expect(await guard({ permission: 'ACCESS_MANAGE' })).toMatchObject({ path: ['/inicio'] });
+    expect(session.can).not.toHaveBeenCalled();
   });
   it('denies home to a user with no available capabilities', async () => {
     session.hasAccess.mockReturnValue(false);

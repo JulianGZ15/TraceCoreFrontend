@@ -66,8 +66,8 @@
 }
 @if (!access.dashboard(yard)) {
   <p class="feedback info">
-    Selecciona un patio con QUERY_READ e INVENTORY_READ. Las capacidades se comprueban de forma
-    independiente.
+    Selecciona un patio con QUERY_READ e INVENTORY_READ, además de EQUIPMENT_READ de empresa. Las
+    capacidades se comprueban de forma independiente.
   </p>
 }
 @if (data(); as d) {

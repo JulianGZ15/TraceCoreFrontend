@@ -164,6 +164,7 @@ export class Session implements OnDestroy {
   readonly epoch = signal(0);
   private expires = 0;
   private timer?: ReturnType<typeof setTimeout>;
+  private resumeLanding = false;
   private refreshing?: Promise<void>;
   private readonly visibility = () => {
     if (document.visibilityState === 'visible') this.checkExpiry();
@@ -320,6 +321,7 @@ export class Session implements OnDestroy {
       ) {
         this.token.set(value.token);
         this.expires = Date.parse(value.expiresAt);
+        this.resumeLanding = true;
         this.schedule();
       } else this.clear();
     } catch {
@@ -336,6 +338,11 @@ export class Session implements OnDestroy {
   }
   valid() {
     return !!this.token() && this.expires > Date.now();
+  }
+  consumeResumeLanding() {
+    const pending = this.resumeLanding;
+    this.resumeLanding = false;
+    return pending;
   }
   can(permission: string, yard?: string) {
     const c = this.context();
@@ -403,6 +410,7 @@ export class Session implements OnDestroy {
     });
   }
   private clear() {
+    this.resumeLanding = false;
     sessionStorage.removeItem('tracecore.documents.pending');
     sessionStorage.removeItem('tracecore.logistics.pending');
     sessionStorage.removeItem('tracecore.logistics.draft');

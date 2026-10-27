@@ -47,6 +47,8 @@ describe('Session boundaries', () => {
   it('restores a future token but exposes no profile or permissions until validation', async () => {
     const s = restore();
     expect(s.valid()).toBe(true);
+    expect(s.consumeResumeLanding()).toBe(true);
+    expect(s.consumeResumeLanding()).toBe(false);
     expect(s.context()).toBeNull();
     expect(s.can('YARD_MANAGE')).toBe(false);
     await s.refresh();

@@ -11,6 +11,163 @@
   </div>
   <tc-status [active]="session.context()?.company?.active ?? false" />
 </section>
+<section class="dashboard" aria-labelledby="dashboard-title">
+  <div class="dashboard-heading">
+    <div>
+      <p class="eyebrow">Resumen operativo</p>
+      <h2 id="dashboard-title">Indicadores de operación</h2>
+      <p class="small-muted">Estado actual y actividad del mes, según tus permisos.</p>
+    </div>
+    @if (hasQueryScope()) {
+      <div class="dashboard-controls">
+        <label for="dashboard-scope">Alcance</label>
+        <select id="dashboard-scope" [value]="selectedScope()" (change)="changeScope($any($event.target).value)">
+          @for (scope of scopeOptions(); track scope.id) {
+            <option [value]="scope.id">{{ scope.label }}</option>
+          }
+        </select>
+        <button type="button" class="btn secondary" (click)="loadDashboard()" [disabled]="dashboardLoading()">
+          Actualizar
+        </button>
+      </div>
+    }
+  </div>
+  @if (!hasQueryScope()) {
+    <div class="feedback info dashboard-message" role="status">
+      <h3>Indicadores no disponibles</h3>
+      <p>Necesitas QUERY_READ en la empresa o en un patio activo para consultar el resumen. Tus accesos autorizados siguen disponibles abajo.</p>
+    </div>
+  } @else if (dashboardLoading()) {
+    <div class="feedback info dashboard-message" role="status" aria-live="polite">Cargando indicadores del alcance seleccionado…</div>
+  } @else if (dashboardForbidden()) {
+    <div class="feedback info dashboard-message" role="status">
+      <h3>Acceso denegado</h3>
+      <p>El servidor no autorizó esta consulta. Revisa tus permisos o selecciona otro alcance autorizado.</p>
+    </div>
+  } @else if (dashboardError()) {
+    <div class="feedback danger dashboard-message" role="alert">
+      <p>{{ dashboardError() }}</p>
+      <button type="button" class="btn secondary" (click)="loadDashboard()">Reintentar</button>
+    </div>
+  } @else if (dashboard(); as data) {
+    <div class="dashboard-meta">
+      <span>Generado {{ data.generatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+      <span>Periodo del mes desde {{ data.period.from | date: 'dd/MM/yyyy' }} · {{ data.period.timezone }}</span>
+    </div>
+    @if (!hasAnyMetrics(data)) {
+      <div class="feedback info dashboard-message" role="status">
+        <h3>Sin secciones de métricas autorizadas</h3>
+        <p>Tu cuenta puede consultar el panel, pero no tiene permisos de lectura para las áreas de este alcance.</p>
+      </div>
+    }
+    <div class="metric-sections">
+      @if (hasAuthorizedSection(data.inventory)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Inventario y equipos</h3><a routerLink="/consultas/inventario">Ver desglose <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            <article class="metric-card"><span>Piezas identificadas</span><strong>{{ formatCount(data.inventory.data!.identifiedPieces) }}</strong></article>
+            <article class="metric-card"><span>Posiciones físicas</span><strong>{{ formatCount(data.inventory.data!.positions) }}</strong></article>
+            <article class="metric-card"><span>Peso conocido</span><strong>{{ formatWeight(data.inventory.data!.knownWeightKgExact) }} <small>kg</small></strong></article>
+            <article class="metric-card"><span>Grupos sin peso</span><strong>{{ formatCount(data.inventory.data!.unknownWeightGroups) }}</strong></article>
+            <article class="metric-card"><span>Piezas en tránsito</span><strong>{{ formatCount(data.inventory.data!.assetsInTransit) }}</strong></article>
+            <article class="metric-card"><span>Propuestas pendientes</span><strong>{{ formatCount(data.inventory.data!.pendingProposals) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.commercial)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Comercial</h3><a routerLink="/comercial/ordenes">Ver órdenes <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            @for (state of (data.commercial.data!.byState | keyvalue); track state.key) { <article class="metric-card"><span>Órdenes · {{ stateLabel(state.key) }}</span><strong>{{ formatCount(state.value) }}</strong></article> }
+            <article class="metric-card accent"><span>Órdenes creadas este mes</span><strong>{{ formatCount(data.commercial.data!.createdThisMonth) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.logistics)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Logística</h3><a routerLink="/logistica/manifiestos">Ver manifiestos <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            @for (state of (data.logistics.data!.byState | keyvalue); track state.key) { <article class="metric-card"><span>Manifiestos · {{ stateLabel(state.key) }}</span><strong>{{ formatCount(state.value) }}</strong></article> }
+            <article class="metric-card accent"><span>Manifiestos creados este mes</span><strong>{{ formatCount(data.logistics.data!.createdThisMonth) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.quality)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Calidad y mantenimiento</h3><a routerLink="/calidad/equipos">Ver calidad <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            <article class="metric-card"><span>Retenciones abiertas</span><strong>{{ formatCount(data.quality.data!.openHolds) }}</strong></article>
+            <article class="metric-card"><span>Inspecciones vencidas</span><strong>{{ formatCount(data.quality.data!.overdueInspections) }}</strong></article>
+            <article class="metric-card"><span>Mantenimiento abierto vencido</span><strong>{{ formatCount(data.quality.data!.overdueMaintenance) }}</strong></article>
+            <article class="metric-card"><span>Certificaciones por vencer</span><strong>{{ formatCount(data.quality.data!.certificationsExpiring30Days) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.partners)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Terceros y AVL</h3><a routerLink="/terceros">Ver terceros <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            <article class="metric-card"><span>Terceros activos</span><strong>{{ formatCount(data.partners.data!.activeParties) }}</strong></article>
+            <article class="metric-card"><span>Certificaciones pendientes de verificación</span><strong>{{ formatCount(data.partners.data!.pendingCertifications) }}</strong></article>
+            <article class="metric-card"><span>Revisiones AVL vencidas</span><strong>{{ formatCount(data.partners.data!.overdueAvlReviews) }}</strong></article>
+            <article class="metric-card"><span>Certificaciones vencidas</span><strong>{{ formatCount(data.partners.data!.expiredCertifications) }}</strong></article>
+            <article class="metric-card"><span>Certificaciones por vencer</span><strong>{{ formatCount(data.partners.data!.certificationsExpiring30Days) }}</strong></article>
+            <article class="metric-card"><span>Autorizaciones vencidas</span><strong>{{ formatCount(data.partners.data!.expiredAuthorizations) }}</strong></article>
+            <article class="metric-card"><span>Autorizaciones por vencer</span><strong>{{ formatCount(data.partners.data!.authorizationsExpiring30Days) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.finance)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Finanzas</h3><a routerLink="/finanzas/cuentas">Ver cuentas <span aria-hidden="true">↗</span></a></div>
+          @if (data.finance.data!.length) {
+            <div class="currency-list">
+              @for (account of data.finance.data!; track account.currency) {
+                <div class="currency-block"><h4>{{ account.currency }}</h4><div class="metric-grid">
+                  <article class="metric-card"><span>Cuentas por cobrar</span><strong>{{ formatMoney(account.receivableExact, account.currency) }}</strong></article>
+                  <article class="metric-card"><span>Cuentas por pagar</span><strong>{{ formatMoney(account.payableExact, account.currency) }}</strong></article>
+                  <article class="metric-card"><span>Cobranza vencida</span><strong>{{ formatMoney(account.overdueReceivableExact, account.currency) }}</strong></article>
+                  <article class="metric-card"><span>Pagos vencidos</span><strong>{{ formatMoney(account.overduePayableExact, account.currency) }}</strong></article>
+                  <article class="metric-card"><span>Compromisos abiertos</span><strong>{{ formatMoney(account.commitmentsExact, account.currency) }}</strong></article>
+                </div></div>
+              }
+            </div>
+          } @else { <p class="feedback info empty-state">Sin saldos financieros registrados por divisa.</p> }
+        </section>
+      }
+      @if (hasAuthorizedSection(data.documents)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Documentos</h3><a routerLink="/documentos">Abrir biblioteca <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            <article class="metric-card"><span>Versiones pendientes de decisión</span><strong>{{ formatCount(data.documents.data!.pendingDecisions) }}</strong></article>
+            <article class="metric-card"><span>Vínculos por vencer</span><strong>{{ formatCount(data.documents.data!.linksExpiring30Days) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.rfid)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>RFID y soporte</h3><a routerLink="/soporte/recibos-rfid">Ver recibos <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid">
+            @for (state of (data.rfid.data!.receiptsByState | keyvalue); track state.key) { <article class="metric-card"><span>Recibos · {{ stateLabel(state.key) }}</span><strong>{{ formatCount(state.value) }}</strong></article> }
+            <article class="metric-card"><span>Eventos sin conciliar este mes</span><strong>{{ formatCount(data.rfid.data!.unlinkedReceiptsThisMonth) }}</strong></article>
+          </div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.organization)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Organización</h3><a routerLink="/organizacion/empresa">Ver organización <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid"><article class="metric-card"><span>Patios activos</span><strong>{{ formatCount(data.organization.data!.activeYards) }}</strong></article></div>
+        </section>
+      }
+      @if (hasAuthorizedSection(data.access)) {
+        <section class="metric-section">
+          <div class="metric-section-heading"><h3>Acceso</h3><a routerLink="/acceso/usuarios">Ver usuarios <span aria-hidden="true">↗</span></a></div>
+          <div class="metric-grid"><article class="metric-card"><span>Usuarios activos sin asignación efectiva</span><strong>{{ formatCount(data.access.data!.activeUsersWithoutAssignment) }}</strong></article></div>
+        </section>
+      }
+    </div>
+  }
+</section>
 <div class="section-heading">
   <h2>Tu espacio de trabajo</h2>
   <span class="small-muted">Accesos disponibles para tu cuenta</span>
