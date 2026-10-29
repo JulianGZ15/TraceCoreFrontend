@@ -1,27 +1,25 @@
 import * as bwipjs from 'bwip-js/browser';
 import { BarcodeFormat, EncodeHintType, QRCodeWriter } from '@zxing/library';
 
-function png(matrix: { getWidth(): number; getHeight(): number; get(x: number, y: number): boolean }, scale: number, quiet: number) {
-  const canvas = document.createElement('canvas');
-  const width = matrix.getWidth(), height = matrix.getHeight();
-  canvas.width = (width + quiet * 2) * scale;
-  canvas.height = (height + quiet * 2) * scale;
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('No se pudo crear la imagen del código.');
-  context.fillStyle = '#fff';
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = '#111';
+function qrSvg(matrix: { getWidth(): number; getHeight(): number; get(x: number, y: number): boolean }, quiet: number) {
+  const width = matrix.getWidth();
+  const height = matrix.getHeight();
+  const modules: string[] = [];
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (matrix.get(x, y)) context.fillRect((x + quiet) * scale, (y + quiet) * scale, scale, scale);
+      if (matrix.get(x, y)) modules.push(`M${x + quiet} ${y + quiet}h1v1h-1z`);
     }
   }
-  return canvas.toDataURL('image/png');
+  const size = Math.max(width, height) + quiet * 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h${size}v${size}H0z"/><path fill="#000" d="${modules.join('')}"/></svg>`;
 }
 
 export function createIdentifierCodes(uuid: string, url: string) {
-  const qr = new QRCodeWriter().encode(url, BarcodeFormat.QR_CODE, 180, 180, new Map<EncodeHintType, unknown>());
-  const barcode = document.createElement('canvas');
-  bwipjs.toCanvas(barcode, { bcid: 'code128', text: uuid, scale: 3, height: 18, includetext: false, padding: 10, backgroundcolor: 'FFFFFF' });
-  return { qr: png(qr, 4, 4), barcode: barcode.toDataURL('image/png') };
+  const qr = new QRCodeWriter().encode(url, BarcodeFormat.QR_CODE, 0, 0, new Map<EncodeHintType, unknown>());
+  const qrSource = qrSvg(qr, 4);
+  const barcodeSource = bwipjs.toSVG({ bcid: 'code128', text: uuid, scale: 3, height: 18, includetext: false, padding: 10, backgroundcolor: 'FFFFFF', barcolor: '000000' });
+  return {
+    qr: URL.createObjectURL(new Blob([qrSource], { type: 'image/svg+xml' })),
+    barcode: URL.createObjectURL(new Blob([barcodeSource], { type: 'image/svg+xml' })),
+  };
 }

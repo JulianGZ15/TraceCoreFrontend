@@ -48,6 +48,10 @@
             <img class="barcode" [src]="label.barcode" alt="Código de barras Code 128 del activo" />
           </div>
           <small class="mono">{{ label.asset.uuid }}</small>
+          <div class="downloads" aria-label="Descargas individuales del activo">
+            <a class="btn secondary" [href]="label.qr" [download]="downloadName(label, 'qr')">Descargar QR SVG</a>
+            <a class="btn secondary" [href]="label.barcode" [download]="downloadName(label, 'barcode')">Descargar barras SVG</a>
+          </div>
         </article>
       }
     </div>

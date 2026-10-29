@@ -14,6 +14,8 @@
 .codes { width: 100%; display: grid; justify-items: center; gap: 4px; }
 .codes img { width: 150px; height: 150px; object-fit: contain; }
 .codes .barcode { width: 100%; height: auto; max-height: 70px; }
+.downloads { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+.downloads .btn { min-height: 40px; }
 .print-pages { display: none; }
 .print-sheet { display: none; }
 .mono { font-family: var(--tc-font-mono); font-size: 11px; }

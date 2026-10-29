@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { InventoryPage } from '../../page-base';
@@ -15,7 +15,7 @@ import { createIdentifierCodes } from '../../identifier-codes';
   templateUrl: './identifiers.component.html',
   styleUrl: './identifiers.component.scss',
 })
-export class IdentifiersComponent extends InventoryPage {
+export class IdentifiersComponent extends InventoryPage implements OnDestroy {
   readonly rows = signal<M.AssetRow[]>([]);
   readonly selected = signal(new Set<string>());
   readonly labels = signal<M.IdentifierLabel[]>([]);
@@ -24,6 +24,11 @@ export class IdentifiersComponent extends InventoryPage {
 
   constructor() {
     super();
+  }
+
+  override ngOnDestroy() {
+    this.releaseCodeUrls();
+    super.ngOnDestroy();
   }
 
   private readonly location = inject(Location);
@@ -60,6 +65,8 @@ export class IdentifiersComponent extends InventoryPage {
   }
 
   async generate() {
+    this.releaseCodeUrls();
+    this.labels.set([]);
     const ids = [...this.selected()].slice(0, 100);
     if (!ids.length) {
       this.error.set('Selecciona al menos un activo.');
@@ -79,8 +86,21 @@ export class IdentifiersComponent extends InventoryPage {
   }
 
   clearSelection() {
+    this.releaseCodeUrls();
     this.selected.set(new Set());
     this.labels.set([]);
+  }
+
+  downloadName(label: M.IdentifierLabel, kind: 'qr' | 'barcode') {
+    const code = label.asset.internalCode.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-|-$/g, '') || label.asset.uuid;
+    return `${code}-${kind === 'qr' ? 'qr' : 'code128'}.svg`;
+  }
+
+  private releaseCodeUrls() {
+    for (const label of this.labels()) {
+      URL.revokeObjectURL(label.qr);
+      URL.revokeObjectURL(label.barcode);
+    }
   }
 
   print() {
