@@ -1,5 +1,5 @@
 import { attemptFormValidation } from '../../../shared/ui/form-validation';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -36,7 +36,7 @@ export const yardFields: Field[] = [
   templateUrl: './organization-detail.component.html',
   styleUrl: './organization-detail.component.scss',
 })
-export class OrganizationDetail {
+export class OrganizationDetail implements OnDestroy {
   readonly session = inject(Session);
   private api = inject(Api);
   private dialog = inject(Dialog);
@@ -90,6 +90,11 @@ export class OrganizationDetail {
   readonly error = signal('');
   readonly success = signal('');
   readonly conflict = signal(false);
+  readonly logoUrl = signal<string | null>(null);
+  readonly logoFile = signal<File | null>(null);
+  readonly logoBusy = signal(false);
+  readonly logoError = signal('');
+  readonly logoSuccess = signal('');
   constructor() {
     for (const field of this.fields)
       this.form.addControl(
@@ -134,11 +139,80 @@ export class OrganizationDetail {
       this.form.reset({ ...data });
       if (!this.canEdit()) this.form.disable();
       this.conflict.set(false);
+      if (!this.isYard) await this.loadLogo();
     } catch (e) {
       if (generation === this.generation) this.error.set(errorMessage(e));
     } finally {
       if (generation === this.generation) this.busy.set(false);
     }
+  }
+  private async loadLogo() {
+    const previous = this.logoUrl();
+    if (previous) URL.revokeObjectURL(previous);
+    this.logoUrl.set(null);
+    this.logoError.set('');
+    try {
+      const blob = await this.api.getBlob('/company/logo');
+      this.logoUrl.set(URL.createObjectURL(blob));
+    } catch (e) {
+      if (!(e instanceof HttpErrorResponse && e.status === 404)) this.logoError.set(errorMessage(e));
+    }
+  }
+  chooseLogo(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.logoFile.set(file);
+    this.logoError.set('');
+    this.logoSuccess.set('');
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      this.logoFile.set(null);
+      this.logoError.set('El logo supera el límite de 5 MiB.');
+      return;
+    }
+    if (!/\.(png|svg)$/i.test(file.name)) {
+      this.logoFile.set(null);
+      this.logoError.set('Selecciona un archivo PNG o SVG.');
+    }
+  }
+  async uploadLogo() {
+    const file = this.logoFile();
+    if (!file || this.logoBusy() || !this.canEdit()) return;
+    this.logoBusy.set(true);
+    this.logoError.set('');
+    this.logoSuccess.set('');
+    try {
+      await this.api.putFile('/company/logo', file);
+      this.logoFile.set(null);
+      await this.loadLogo();
+      this.logoSuccess.set('Logo de empresa actualizado.');
+    } catch (e) {
+      this.logoError.set(errorMessage(e));
+    } finally {
+      this.logoBusy.set(false);
+    }
+  }
+  async removeLogo() {
+    if (!this.logoUrl() || this.logoBusy() || !this.canEdit()) return;
+    if (!(await confirm(this.dialog, 'Eliminar logo', 'Los nuevos QR y documentos se generarán sin el logo de empresa.'))) return;
+    this.logoBusy.set(true);
+    this.logoError.set('');
+    this.logoSuccess.set('');
+    try {
+      await this.api.delete('/company/logo');
+      const previous = this.logoUrl();
+      if (previous) URL.revokeObjectURL(previous);
+      this.logoUrl.set(null);
+      this.logoFile.set(null);
+      this.logoSuccess.set('Logo de empresa eliminado.');
+    } catch (e) {
+      this.logoError.set(errorMessage(e));
+    } finally {
+      this.logoBusy.set(false);
+    }
+  }
+  ngOnDestroy() {
+    const url = this.logoUrl();
+    if (url) URL.revokeObjectURL(url);
   }
   async reload() {
     if (

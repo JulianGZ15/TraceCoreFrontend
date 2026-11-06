@@ -11,6 +11,36 @@
 @if (busy() && !loaded()) {
   <div class="panel" role="status">Cargando información…</div>
 }
+@if (!isYard && loaded()) {
+  <section class="panel branding-panel" aria-labelledby="company-logo-heading">
+    <div>
+      <h2 id="company-logo-heading">Logo de empresa</h2>
+      <p>El logo se usa en los códigos QR y en los documentos generados. PNG o SVG · máximo 5 MiB.</p>
+    </div>
+    @if (logoUrl()) {
+      <img class="company-logo-preview" [src]="logoUrl()" alt="Vista previa del logo de empresa" />
+    } @else {
+      <p class="small-muted">Aún no hay un logo cargado.</p>
+    }
+    @if (logoError()) { <p class="field-error" role="alert">{{ logoError() }}</p> }
+    @if (logoSuccess()) { <p class="success-message" role="status">{{ logoSuccess() }}</p> }
+    @if (canEdit()) {
+      <div class="logo-actions">
+        <label class="field" for="company-logo-file">
+          <span>Seleccionar logo</span>
+          <input id="company-logo-file" type="file" accept="image/png,image/svg+xml,.png,.svg" (change)="chooseLogo($event)" [disabled]="logoBusy()" />
+        </label>
+        <span class="small-muted">{{ logoFile()?.name ?? 'Ningún archivo seleccionado' }}</span>
+        <button class="btn primary" type="button" (click)="uploadLogo()" [disabled]="logoBusy() || !logoFile()">
+          {{ logoBusy() ? 'Guardando…' : 'Cargar logo' }}
+        </button>
+        @if (logoUrl()) {
+          <button class="btn secondary" type="button" (click)="removeLogo()" [disabled]="logoBusy()">Eliminar logo</button>
+        }
+      </div>
+    }
+  </section>
+}
 @if (!busy() && !loaded()) {
   <button class="btn secondary" (click)="load()">Volver a consultar</button>
 }

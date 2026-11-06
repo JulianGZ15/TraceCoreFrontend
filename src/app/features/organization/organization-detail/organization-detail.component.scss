@@ -1,3 +1,10 @@
 :host {
   display: block;
 }
+
+.branding-panel { display: grid; gap: 16px; }
+.branding-panel h2 { margin: 0 0 6px; }
+.branding-panel p { margin: 0; }
+.company-logo-preview { display: block; width: min(100%, 320px); height: 150px; padding: 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); object-fit: contain; }
+.logo-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.logo-actions .field { min-width: min(100%, 280px); }

@@ -83,7 +83,6 @@ export interface IdentifierLabel {
   asset: IdentifierAsset;
   qr: string;
   barcode: string;
-  url: string;
 }
 export interface IdentifierAsset {
   uuid: string;

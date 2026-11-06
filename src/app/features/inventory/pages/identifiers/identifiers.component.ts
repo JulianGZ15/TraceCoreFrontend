@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, signal } from '@angular/core';
-import { Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { InventoryPage } from '../../page-base';
 import * as M from '../../models';
@@ -8,6 +8,7 @@ import { YardPickerComponent } from '../../components/yard-picker/yard-picker.co
 import { InventoryNavComponent } from '../../components/inventory-nav/inventory-nav.component';
 import { LookupComponent } from '../../components/lookup/lookup.component';
 import { createIdentifierCodes } from '../../identifier-codes';
+import { Api } from '../../../../core/http/api';
 
 @Component({
   selector: 'tc-inventory-identifiers',
@@ -31,7 +32,7 @@ export class IdentifiersComponent extends InventoryPage implements OnDestroy {
     super.ngOnDestroy();
   }
 
-  private readonly location = inject(Location);
+  private readonly coreApi = inject(Api);
 
   ngOnInit() {
     this.watch(async () => {
@@ -72,17 +73,30 @@ export class IdentifiersComponent extends InventoryPage implements OnDestroy {
       this.error.set('Selecciona al menos un activo.');
       return;
     }
-    await this.request(
-      () => this.api.post<M.IdentifierAsset[]>('/assets/identifiers', { assetUuids: ids }),
-      (rows) => {
-        const labels = rows.map((asset) => {
-          const tree = this.router.createUrlTree(['/equipos', asset.uuid, 'general']);
-          const target = new URL(this.location.prepareExternalUrl(this.router.serializeUrl(tree)), document.baseURI).href;
-          return { asset, url: target, ...createIdentifierCodes(asset.uuid, target) };
-        });
-        this.labels.set(labels);
-      },
-    );
+    await this.request(async () => {
+      const [rows, logo] = await Promise.all([
+        this.api.post<M.IdentifierAsset[]>('/assets/identifiers', { assetUuids: ids }),
+        this.logoDataUrl(),
+      ]);
+      return { rows, logo };
+    }, ({ rows, logo }) => {
+      this.labels.set(rows.map((asset) => ({ asset, ...createIdentifierCodes(asset.uuid, logo ?? undefined) })));
+    });
+  }
+
+  private async logoDataUrl(): Promise<string | null> {
+    try {
+      const blob = await this.coreApi.getBlob('/company/logo');
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => typeof reader.result === 'string' ? resolve(reader.result) : reject(new Error('Logo image could not be read'));
+        reader.onerror = () => reject(reader.error ?? new Error('Logo image could not be read'));
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 404) return null;
+      throw error;
+    }
   }
 
   clearSelection() {

@@ -41,6 +41,8 @@ export class AssetGeneralComponent extends EquipmentPage {
 
  readonly store=inject(AssetStore);
 
+ async downloadReport(){const profile=this.store.profile();if(!profile||this.busy())return;await this.request(()=>this.api.reportPdf(profile.asset.uuid),blob=>{const url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=`activo-${profile.asset.uuid}.pdf`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),0);this.success.set('Ficha PDF descargada.');});}
+
  async edit(kind:'correct'|'retire'){const profile=this.store.profile();if(!profile||!this.session.can('EQUIPMENT_MANAGE')||profile.asset.lifecycle!=='REGISTERED')return;if(await this.editor(AssetEditorComponent,{title:kind==='correct'?'Corregir identidad':'Retirar equipo',kind,path:'assets/'+profile.asset.uuid,row:profile.asset,reload:async()=>(await this.api.profile(profile.asset.uuid)).asset})){this.success.set('Equipo actualizado.');await this.store.load();}}
 
 

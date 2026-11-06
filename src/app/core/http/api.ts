@@ -92,11 +92,19 @@ export class Api {
       this.http.get<T>(this.base + path, { params: new HttpParams({ fromObject: params }) }),
     );
   }
+  getBlob(path: string) {
+    return firstValueFrom(this.http.get(this.base + path, { responseType: 'blob' }));
+  }
   post<T>(path: string, body: unknown) {
     return firstValueFrom(this.http.post<T>(this.base + path, body));
   }
   put<T>(path: string, body: unknown) {
     return firstValueFrom(this.http.put<T>(this.base + path, body));
+  }
+  putFile(path: string, file: File) {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return firstValueFrom(this.http.put<void>(this.base + path, form));
   }
   delete(path: string) {
     return firstValueFrom(this.http.delete<void>(this.base + path));

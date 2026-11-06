@@ -20,6 +20,8 @@ export class EquipmentApi {
 
   profile(uuid:string) {return this.read<Profile>('assets/'+uuid);}
 
+  reportPdf(uuid:string) {return this.api.getBlob('/equipment/assets/'+uuid+'/report.pdf');}
+
   category(uuid:string) {return this.read<Category>('categories/'+uuid);}
 
   model(uuid:string) {return this.read<Model>('models/'+uuid);}

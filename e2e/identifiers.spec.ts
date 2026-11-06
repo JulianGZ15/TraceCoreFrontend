@@ -35,9 +35,8 @@ test('genera QR y Code 128 del mismo activo y prepara etiquetas imprimibles', as
     return { width, height, pixels: Array.from(pixels) };
   });
   const bitmap = new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(new Uint8Array(qrPixels.pixels), qrPixels.width, qrPixels.height)));
-  const decodedUrl = new URL(new QRCodeReader().decode(bitmap).getText());
-  expect(decodedUrl.origin).toBe(new URL(page.url()).origin);
-  expect(decodedUrl.pathname).toBe(`/equipos/${f.asset}/general`);
+  const decodedUuid = new QRCodeReader().decode(bitmap).getText();
+  expect(decodedUuid).toBe(f.asset);
   const qrDownload = page.getByRole('link', { name: 'Descargar QR SVG' });
   const barcodeDownload = page.getByRole('link', { name: 'Descargar barras SVG' });
   await expect(qrDownload).toHaveAttribute('download', 'ROOT-01-qr.svg');
