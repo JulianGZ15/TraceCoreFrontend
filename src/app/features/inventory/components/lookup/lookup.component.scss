@@ -1,1 +1,10 @@
 @use '../../inventory';
+
+.lookup.compact {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.lookup-label { color: var(--tc-text); font-size: 14px; font-weight: 500; }

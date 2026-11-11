@@ -1,4 +1,5 @@
-<div class="lookup">
+<div class="lookup" [class.compact]="compact()">
+  @if (compact()) { <span class="lookup-label">{{ title() }}</span> }
   <tc-entity-search
     [label]="title()"
     [placeholder]="'Buscar ' + title().toLocaleLowerCase() + '…'"
@@ -8,6 +9,7 @@
     [optionsList]="suggestions()"
     [searchFn]="searchOptions"
     [disabled]="busy()"
+    [compact]="compact()"
     (select)="choose($event)"
   />
   @if (busy()) { <p role="status">Buscando opciones…</p> }

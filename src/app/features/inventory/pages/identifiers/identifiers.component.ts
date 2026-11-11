@@ -114,10 +114,10 @@ export class IdentifiersComponent extends InventoryPage implements OnDestroy {
     }
   }
 
-  private makeLabel(asset: M.IdentifierAsset, logo?: string): M.IdentifierLabel {
+  private makeLabel(asset: M.IdentifierAsset, logo?: string, includeBarcodeText = true): M.IdentifierLabel {
     const mode = this.session.context()?.company.assetIdentifierMode ?? 'UUID';
     const codeValue = mode === 'INTERNAL_CODE' ? asset.internalCode : asset.uuid;
-    return { asset, codeValue, codeMode: mode, ...createIdentifierCodes(codeValue, logo) };
+    return { asset, codeValue, codeMode: mode, ...createIdentifierCodes(codeValue, logo, { includeBarcodeText }) };
   }
 
   private async logoDataUrl(): Promise<string | null> {
@@ -188,8 +188,8 @@ export class IdentifiersComponent extends InventoryPage implements OnDestroy {
     const assets = [...this.selected()].map((id) => this.knownAssets.get(id)).filter((row): row is M.AssetRow => !!row);
     if (!assets.length) return;
     this.releasePrintLabels();
-    void this.logoDataUrl().then((logo) => {
-      this.labels.set(assets.map((asset) => this.makeLabel(asset, logo ?? undefined)));
+    try {
+      this.labels.set(assets.map((asset) => this.makeLabel(asset, undefined, false)));
       const cleanup = () => {
         document.body.classList.remove('inventory-code-print');
         this.releasePrintLabels();
@@ -198,7 +198,9 @@ export class IdentifiersComponent extends InventoryPage implements OnDestroy {
       window.addEventListener('afterprint', cleanup, { once: true });
       document.body.classList.add('inventory-code-print');
       window.print();
-    }).catch(() => this.error.set('No se pudieron preparar las etiquetas para impresión.'));
+    } catch {
+      this.error.set('No se pudieron preparar las etiquetas para impresión.');
+    }
   }
 
   private releasePreviewUrl() {

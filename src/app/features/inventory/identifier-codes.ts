@@ -17,12 +17,28 @@ function qrSvg(matrix: { getWidth(): number; getHeight(): number; get(x: number,
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h${size}v${size}H0z"/><path fill="#000" d="${modules.join('')}"/>${centerLogo}</svg>`;
 }
 
-export function createIdentifierCodes(value: string, logoDataUrl?: string) {
+export function createIdentifierCodes(
+  value: string,
+  logoDataUrl?: string,
+  options: { includeBarcodeText?: boolean } = {},
+) {
   const hints = new Map<EncodeHintType, unknown>();
   hints.set(EncodeHintType.ERROR_CORRECTION, 'H');
   const qr = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 0, 0, hints);
   const qrSource = qrSvg(qr, 4, logoDataUrl);
-  const barcodeSource = bwipjs.toSVG({ bcid: 'code128', text: value, scale: 3, height: 20, includetext: true, textsize: 13, textyoffset: 4, paddingwidth: 12, paddingheight: 8, backgroundcolor: 'FFFFFF', barcolor: '000000' });
+  const includeBarcodeText = options.includeBarcodeText ?? true;
+  const barcodeSource = bwipjs.toSVG({
+    bcid: 'code128',
+    text: value,
+    scale: 3,
+    height: 20,
+    includetext: includeBarcodeText,
+    ...(includeBarcodeText ? { textsize: 13, textyoffset: 4 } : {}),
+    paddingwidth: 12,
+    paddingheight: 8,
+    backgroundcolor: 'FFFFFF',
+    barcolor: '000000',
+  });
   return {
     qr: URL.createObjectURL(new Blob([qrSource], { type: 'image/svg+xml' })),
     barcode: URL.createObjectURL(new Blob([barcodeSource], { type: 'image/svg+xml' })),

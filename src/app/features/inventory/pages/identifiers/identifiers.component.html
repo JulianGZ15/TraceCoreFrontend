@@ -10,7 +10,7 @@
     <label for="identifier-search">Código interno o número de serie</label>
     <input id="identifier-search" [value]="search" (input)="search = $any($event.target).value" (keyup.enter)="load()" />
   </div>
-  <tc-inventory-lookup kind="locations" title="Ubicación del patio" [filters]="{ yardUuid: yard() }" [value]="locationUuid" (picked)="setLocation($event)" />
+  <tc-inventory-lookup kind="locations" title="Ubicación del patio" [filters]="{ yardUuid: yard() }" [value]="locationUuid" [compact]="true" (picked)="setLocation($event)" />
   <button class="btn secondary" type="button" (click)="load()" [disabled]="busy()">Buscar</button>
 </section>
 
@@ -109,7 +109,6 @@
       </article>
     } @else {
       <div class="preview-empty">
-        <span class="preview-icon" aria-hidden="true">▦</span>
         <strong>Elige un activo para generar su etiqueta</strong>
         <p>El código QR, Code 128 y el valor legible aparecerán aquí automáticamente.</p>
         <button class="btn secondary" type="button" (click)="mobileStep.set('assets')">Seleccionar activos</button>
@@ -122,7 +121,6 @@
   @for (label of labels(); track label.asset.uuid) {
     <article class="print-sheet" aria-hidden="true">
       <img class="print-qr" [src]="label.qr" alt="" />
-      <span class="mono">{{ sourceLabel(label.codeMode) }}: {{ label.codeValue }}</span>
     </article>
     <article class="print-sheet" aria-hidden="true">
       <img class="print-barcode" [src]="label.barcode" alt="" />

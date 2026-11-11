@@ -18,6 +18,7 @@ export class LookupComponent extends InventoryPage {
   readonly value = input('');
   readonly title = input('Seleccionar');
   readonly eligibleOnly = input(false);
+  readonly compact = input(false);
   readonly picked = output<string>();
   readonly choices = signal<{ uuid: string; label: string; disabled: boolean }[]>([]);
   readonly suggestions = computed(() => this.choices().map((choice) => ({ value: choice.uuid, label: choice.label, disabled: choice.disabled })));

@@ -1,5 +1,7 @@
 .panel { padding: 20px; margin: 16px 0; background: var(--tc-panel); border: 1px solid var(--tc-border); border-radius: var(--tc-radius-panel); }
 .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; align-items: end; }
+.filters > .field { margin-bottom: 0; }
+.filters > button { min-height: 44px; }
 .identifier-workspace { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr); gap: 16px; align-items: start; }
 .identifier-workspace > .panel { min-width: 0; margin: 0; }
 .preview-panel { position: sticky; top: 16px; }
@@ -29,7 +31,6 @@
 .encoded-value code { font-family: var(--tc-font-mono); font-size: 12px; overflow-wrap: anywhere; }
 .preview-actions { justify-content: center; }
 .preview-empty { display: grid; justify-items: center; gap: 12px; min-height: 370px; align-content: center; padding: 24px; text-align: center; }
-.preview-icon { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 18px; background: color-mix(in srgb, var(--tc-accent) 10%, var(--tc-panel)); color: var(--tc-accent); font-size: 28px; }
 .retired { color: var(--tc-danger) !important; font-weight: 600; }
 .mobile-steps { display: none; }
 .print-pages, .print-sheet { display: none; }

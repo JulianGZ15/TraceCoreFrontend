@@ -26,6 +26,7 @@
         [attr.aria-label]="label()"
         [placeholder]="placeholder()"
         [disabled]="disabled()"
+        [class.compact-input]="compact()"
         [class.ng-invalid]="validationControl()?.invalid ?? false"
         [attr.aria-invalid]="
           validationControl()?.invalid && validationControl()?.touched ? 'true' : null

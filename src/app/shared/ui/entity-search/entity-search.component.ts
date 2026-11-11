@@ -36,6 +36,7 @@ export class EntitySearchComponent implements OnDestroy {
   readonly optionsList = input<EntityOption[]>([]);
   readonly searchFn = input<(query: string) => Promise<EntityOption[]>>();
   readonly disabled = input<boolean>(false);
+  readonly compact = input<boolean>(false);
   readonly controlId = input<string>('');
   readonly validationControl = input<AbstractControl | null>(null);
   readonly describedBy = input('');
