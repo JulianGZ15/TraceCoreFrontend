@@ -64,7 +64,7 @@
                 "
                 [attr.aria-describedby]="field.key + '-help'"
               >
-                <option value="">Selecciona una zona horaria</option>
+                <option value="">Selecciona una opción</option>
                 @for (option of field.options ?? []; track option.value) {
                   <option [value]="option.value">{{ option.label }}</option>
                 }
@@ -72,6 +72,8 @@
             } @else {
               <input
                 [id]="field.key"
+                [type]="field.type === 'number' ? 'number' : 'text'"
+                [attr.step]="field.type === 'number' ? '0.5' : null"
                 [formControlName]="field.key"
                 [attr.aria-invalid]="
                   form.controls[field.key].touched && form.controls[field.key].invalid

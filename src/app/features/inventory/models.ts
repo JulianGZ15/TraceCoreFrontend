@@ -81,6 +81,8 @@ export interface AssetRow {
 }
 export interface IdentifierLabel {
   asset: IdentifierAsset;
+  codeValue: string;
+  codeMode: 'UUID' | 'INTERNAL_CODE';
   qr: string;
   barcode: string;
 }

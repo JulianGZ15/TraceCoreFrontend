@@ -1,4 +1,4 @@
-<tc-page-heading section="Inventario y patios" title="Identificación con QR y código de barras">
+<tc-page-heading section="Inventario y patios" title="Etiquetas de identificación">
   <tc-inventory-inventory-nav />
 </tc-page-heading>
 <tc-feedback [message]="error()" />
@@ -14,57 +14,118 @@
   <button class="btn secondary" type="button" (click)="load()" [disabled]="busy()">Buscar</button>
 </section>
 
-<section class="panel">
-  <div class="actions">
-    <p role="status">{{ selected().size }} de 100 activos seleccionados</p>
-    <button class="btn primary" type="button" (click)="generate()" [disabled]="busy()">Generar vista previa</button>
-    <button class="btn secondary" type="button" (click)="clearSelection()">Limpiar selección</button>
-    <button class="btn secondary" type="button" (click)="print()" [disabled]="!labels().length">Imprimir etiquetas</button>
-    <a class="btn secondary" routerLink="/inventario/identificacion/escanear">Escanear un código</a>
-  </div>
-  <div class="asset-list">
-    @for (row of rows(); track row.uuid) {
-      <label class="asset-row">
-        <input type="checkbox" [checked]="selected().has(row.uuid)" [disabled]="!selected().has(row.uuid) && selected().size >= 100" (change)="toggle(row, $any($event.target).checked)" />
-        <span><strong>{{ row.internalCode }}</strong> · {{ row.serialNumber ?? 'Sin serial' }} · {{ row.lifecycle === 'RETIRED' ? 'Retirado' : 'Activo' }}<small class="mono">{{ row.uuid }}</small></span>
-      </label>
-    } @empty {
-      <p>No hay activos para los filtros seleccionados.</p>
-    }
-  </div>
-</section>
+<nav class="mobile-steps" aria-label="Pasos de identificación">
+  <button type="button" class="btn secondary" [class.active-step]="mobileStep() === 'assets'" (click)="mobileStep.set('assets')">
+    1. Seleccionar activos <span>{{ selected().size }}</span>
+  </button>
+  <button type="button" class="btn secondary" [class.active-step]="mobileStep() === 'preview'" [disabled]="!selected().size" (click)="mobileStep.set('preview')">
+    2. Vista previa
+  </button>
+</nav>
 
-@if (labels().length) {
-  <section class="panel preview" aria-label="Vista previa de etiquetas">
-    <h2>Vista previa · {{ labels().length }} etiquetas</h2>
-    <div class="label-grid">
-      @for (label of labels(); track label.asset.uuid) {
-        <article class="asset-label">
-          <strong>{{ label.asset.internalCode }}</strong>
-          <span>{{ label.asset.serialNumber ?? 'Sin serial' }}</span>
-          @if (label.asset.lifecycle === 'RETIRED') { <span class="retired">Activo retirado</span> }
-          <div class="codes">
-            <img [src]="label.qr" alt="Código QR del activo" />
-            <img class="barcode" [src]="label.barcode" alt="Código de barras Code 128 del activo" />
-          </div>
-          <small class="mono">{{ label.asset.uuid }}</small>
-          <div class="downloads" aria-label="Descargas individuales del activo">
-            <a class="btn secondary" [href]="label.qr" [download]="downloadName(label, 'qr')">Descargar QR SVG</a>
-            <a class="btn secondary" [href]="label.barcode" [download]="downloadName(label, 'barcode')">Descargar barras SVG</a>
-          </div>
-        </article>
+<div class="identifier-workspace">
+  <section class="panel asset-panel" [class.mobile-hidden]="mobileStep() !== 'assets'" aria-labelledby="asset-selection-title">
+    <div class="section-heading">
+      <div>
+        <h2 id="asset-selection-title">Activos</h2>
+        <p>{{ selected().size }} de 100 seleccionados. La vista previa se actualiza al seleccionar.</p>
+      </div>
+      <button class="btn secondary" type="button" (click)="clearSelection()" [disabled]="!selected().size">Limpiar selección</button>
+    </div>
+    <div class="asset-list">
+      @for (row of rows(); track row.uuid) {
+        <label class="asset-row" [class.asset-selected]="selected().has(row.uuid)">
+          <input type="checkbox" [checked]="selected().has(row.uuid)" [disabled]="!selected().has(row.uuid) && selected().size >= 100" (change)="toggle(row, $any($event.target).checked)" />
+          <span class="asset-details">
+            <strong>{{ row.internalCode }}</strong>
+            <span>{{ row.serialNumber ?? 'Sin número de serie' }} · {{ row.lifecycle === 'RETIRED' ? 'Retirado' : 'Activo' }}</span>
+            <small class="mono">{{ row.uuid }}</small>
+          </span>
+          @if (selected().has(row.uuid)) { <span class="selected-mark" aria-label="Seleccionado">✓</span> }
+        </label>
+      } @empty {
+        <p class="empty-state">No hay activos para los filtros seleccionados.</p>
       }
+    </div>
+    <div class="panel-footer">
+      <a class="btn secondary" routerLink="/inventario/identificacion/escanear">Escanear un código</a>
+      @if (selected().size && dxfEnabled()) {
+        <button class="btn secondary" type="button" (click)="downloadDxf(true)" [disabled]="dxfBusy()">
+          {{ dxfBusy() ? 'Preparando DXF…' : 'Descargar DXF de la selección' }}
+        </button>
+      }
+      <button class="btn primary" type="button" (click)="print()" [disabled]="!selected().size">Imprimir selección</button>
     </div>
   </section>
 
-  <section class="print-pages" aria-hidden="true">
-    @for (label of labels(); track label.asset.uuid) {
-      <article class="print-sheet" aria-hidden="true">
-        <img class="print-qr" [src]="label.qr" alt="" />
+  <aside class="panel preview-panel" [class.mobile-hidden]="mobileStep() !== 'preview'" aria-labelledby="identifier-preview-title">
+    <div class="section-heading">
+      <div>
+        <h2 id="identifier-preview-title">Vista previa</h2>
+        @if (preview(); as label) {
+          <p>Activo {{ selectedPosition(label.asset.uuid) }} de {{ selected().size }}</p>
+        } @else {
+          <p>Los códigos se muestran aquí al seleccionar un activo.</p>
+        }
+      </div>
+      @if (selected().size > 1) {
+        <div class="preview-navigation" aria-label="Navegar activos seleccionados">
+          <button type="button" class="icon-button" aria-label="Activo anterior" (click)="goToPreview(-1)">‹</button>
+          <button type="button" class="icon-button" aria-label="Activo siguiente" (click)="goToPreview(1)">›</button>
+        </div>
+      }
+    </div>
+
+    @if (preview(); as label) {
+      <article class="asset-label">
+        <div class="asset-label-heading">
+          <strong>{{ label.asset.internalCode }}</strong>
+          <span>{{ label.asset.serialNumber ?? 'Sin número de serie' }}</span>
+          @if (label.asset.lifecycle === 'RETIRED') { <span class="retired">Activo retirado</span> }
+        </div>
+        <div class="codes">
+          <div class="code-preview">
+            <span>QR</span>
+            <img [src]="label.qr" alt="Código QR del activo" />
+          </div>
+          <div class="code-preview barcode-preview">
+            <span>Code 128</span>
+            <img [src]="label.barcode" alt="Código de barras Code 128 del activo" />
+          </div>
+        </div>
+        <p class="encoded-value"><span>{{ sourceLabel(label.codeMode) }}</span><code>{{ label.codeValue }}</code></p>
+        <div class="preview-actions">
+          <a class="btn secondary" [href]="label.qr" [download]="downloadName(label, 'qr')">Descargar QR SVG</a>
+          <a class="btn secondary" [href]="label.barcode" [download]="downloadName(label, 'barcode')">Descargar barras SVG</a>
+          @if (dxfEnabled()) {
+            <button class="btn primary" type="button" (click)="downloadDxf()" [disabled]="dxfBusy()">
+              {{ dxfBusy() ? 'Preparando DXF…' : 'Descargar DXF' }}
+            </button>
+          }
+        </div>
+        @if (dxfEnabled()) {
+          <small class="dimension-note">DXF en milímetros · {{ dxfWidth() }} × {{ dxfHeight() }} mm</small>
+        }
       </article>
-      <article class="print-sheet" aria-hidden="true">
-        <img class="print-barcode" [src]="label.barcode" alt="" />
-      </article>
+    } @else {
+      <div class="preview-empty">
+        <span class="preview-icon" aria-hidden="true">▦</span>
+        <strong>Elige un activo para generar su etiqueta</strong>
+        <p>El código QR, Code 128 y el valor legible aparecerán aquí automáticamente.</p>
+        <button class="btn secondary" type="button" (click)="mobileStep.set('assets')">Seleccionar activos</button>
+      </div>
     }
-  </section>
-}
+  </aside>
+</div>
+
+<section class="print-pages" aria-hidden="true">
+  @for (label of labels(); track label.asset.uuid) {
+    <article class="print-sheet" aria-hidden="true">
+      <img class="print-qr" [src]="label.qr" alt="" />
+      <span class="mono">{{ sourceLabel(label.codeMode) }}: {{ label.codeValue }}</span>
+    </article>
+    <article class="print-sheet" aria-hidden="true">
+      <img class="print-barcode" [src]="label.barcode" alt="" />
+    </article>
+  }
+</section>

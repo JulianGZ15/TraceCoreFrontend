@@ -18,7 +18,7 @@
   <h2>Ingresar código</h2>
   <p>También puedes usar un lector de mano configurado como teclado.</p>
   <form (ngSubmit)="resolve()">
-    <label for="scanned-identifier">UUID o enlace del QR</label>
+    <label for="scanned-identifier">UUID, marcación interna o enlace del código</label>
     <div class="manual">
       <input id="scanned-identifier" name="identifier" [ngModel]="scanned" (ngModelChange)="scanned = $event" autocomplete="off" required />
       <button class="btn primary" type="submit" [disabled]="resolving()">Abrir activo</button>

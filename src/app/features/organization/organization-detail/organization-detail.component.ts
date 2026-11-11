@@ -82,6 +82,44 @@ export class OrganizationDetail implements OnDestroy {
           validators: [Validators.maxLength(12), Validators.pattern(/^[A-Za-z0-9]{1,12}$/)],
           help: 'De 1 a 12 letras o números. Los folios existentes conservarán su prefijo.',
         },
+        {
+          key: 'identifierDxfEnabled',
+          label: 'Generar archivos DXF',
+          type: 'select',
+          options: [
+            { value: 'true', label: 'Habilitado' },
+            { value: 'false', label: 'Deshabilitado' },
+          ],
+          required: true,
+          help: 'Genera etiquetas vectoriales para marcado l\u00e1ser.',
+        },
+        {
+          key: 'identifierDxfWidthMm',
+          label: 'Ancho de etiqueta DXF (mm)',
+          type: 'number',
+          required: true,
+          validators: [Validators.min(40), Validators.max(300)],
+          help: 'Entre 40 y 300 mm.',
+        },
+        {
+          key: 'identifierDxfHeightMm',
+          label: 'Alto de etiqueta DXF (mm)',
+          type: 'number',
+          required: true,
+          validators: [Validators.min(20), Validators.max(120)],
+          help: 'Entre 20 y 120 mm.',
+        },
+        {
+          key: 'assetIdentifierMode',
+          label: 'Valor para QR y código de barras',
+          type: 'select',
+          options: [
+            { value: 'UUID', label: 'UUID del activo' },
+            { value: 'INTERNAL_CODE', label: 'Marcación interna' },
+          ],
+          required: true,
+          help: 'Se aplicará a las nuevas etiquetas y fichas PDF.',
+        },
       ];
   readonly form = new FormGroup<Record<string, FormControl>>({ active: new FormControl(true) });
   readonly loaded = signal<Company | Yard | null>(null);
@@ -136,7 +174,15 @@ export class OrganizationDetail implements OnDestroy {
       if (generation !== this.generation) return;
       this.loaded.set(data);
       this.form.enable();
-      this.form.reset({ ...data });
+      this.form.reset({
+        ...data,
+        ...(!this.isYard ? { assetIdentifierMode: (data as Partial<Company>).assetIdentifierMode ?? 'UUID' } : {}),
+        ...(!this.isYard ? {
+          identifierDxfEnabled: String((data as Partial<Company>).identifierDxfEnabled ?? true),
+          identifierDxfWidthMm: (data as Partial<Company>).identifierDxfWidthMm ?? 120,
+          identifierDxfHeightMm: (data as Partial<Company>).identifierDxfHeightMm ?? 50,
+        } : {}),
+      });
       if (!this.canEdit()) this.form.disable();
       this.conflict.set(false);
       if (!this.isYard) await this.loadLogo();
@@ -232,7 +278,13 @@ export class OrganizationDetail implements OnDestroy {
     const path = this.path;
     const version = this.loaded()?.version;
     const raw = this.form.getRawValue();
-    const value = this.isYard ? raw : { ...raw, folioPrefix: String(raw['folioPrefix'] ?? '').trim().toUpperCase() };
+    const value = this.isYard ? raw : {
+      ...raw,
+      folioPrefix: String(raw['folioPrefix'] ?? '').trim().toUpperCase(),
+      identifierDxfEnabled: raw['identifierDxfEnabled'] === 'true',
+      identifierDxfWidthMm: Number(raw['identifierDxfWidthMm']),
+      identifierDxfHeightMm: Number(raw['identifierDxfHeightMm']),
+    };
     if (
       value['active'] === false &&
       this.loaded()?.active &&
@@ -256,7 +308,15 @@ export class OrganizationDetail implements OnDestroy {
       });
       if (generation !== this.generation) return;
       this.loaded.set(result);
-      this.form.reset({ ...result });
+      this.form.reset({
+        ...result,
+        ...(!this.isYard ? { assetIdentifierMode: (result as Partial<Company>).assetIdentifierMode ?? 'UUID' } : {}),
+        ...(!this.isYard ? {
+          identifierDxfEnabled: String((result as Partial<Company>).identifierDxfEnabled ?? true),
+          identifierDxfWidthMm: (result as Partial<Company>).identifierDxfWidthMm ?? 120,
+          identifierDxfHeightMm: (result as Partial<Company>).identifierDxfHeightMm ?? 50,
+        } : {}),
+      });
       this.conflict.set(false);
       this.success.set('Información actualizada.');
       await this.session.refresh();

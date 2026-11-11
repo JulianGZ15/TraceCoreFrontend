@@ -24,6 +24,17 @@ export function assetPathFromCode(value: string, origin: string): string | null 
   }
 }
 
+export function assetInternalCodeFromCode(value: string): string | null {
+  const text = value.trim();
+  if (!text || text.length > 100 || /[\u0000-\u001f\u007f]/.test(text) || text.includes('://') || /^[/?#]/.test(text)) return null;
+  try {
+    new URL(text);
+    return null;
+  } catch {
+    return text.toUpperCase();
+  }
+}
+
 @Component({
   selector: 'tc-inventory-identifier-scan',
   imports: [FormsModule, PageHeading, Feedback, InventoryNavComponent, RouterLink],
@@ -39,6 +50,10 @@ export class IdentifierScanComponent extends InventoryPage implements OnDestroy 
   private controls?: IScannerControls;
   private reader?: BrowserMultiFormatReader;
   private readonly inventoryApi = inject(InventoryApi);
+
+  ngOnInit() {
+    this.watch(async () => {});
+  }
 
   startCamera() {
     this.stopCamera();
@@ -70,8 +85,9 @@ export class IdentifierScanComponent extends InventoryPage implements OnDestroy 
 
   async resolve(value = this.scanned) {
     const path = assetPathFromCode(value, window.location.origin);
-    if (!path) {
-      this.cameraError.set('El código no contiene un UUID o enlace de activo válido de TraceCore.');
+    const internalCode = path ? null : assetInternalCodeFromCode(value);
+    if (!path && !internalCode) {
+      this.cameraError.set('El codigo no contiene UUID, marcacion interna o enlace valido de TraceCore.');
       return;
     }
     this.stopCamera();
@@ -79,10 +95,15 @@ export class IdentifierScanComponent extends InventoryPage implements OnDestroy 
     this.cameraError.set('');
     this.status.set('Validando activo y permisos…');
     try {
-      const uuid = path.split('/')[2];
+      const uuid = path
+        ? path.split('/')[2]
+        : (await this.inventoryApi.get<M.IdentifierAsset>('/assets/resolve', {
+            internalCode: internalCode!,
+            yardUuid: this.yard() || null,
+          })).uuid;
       const profile = await this.inventoryApi.get<M.Profile>('/assets/' + uuid);
       this.status.set(profile.asset.lifecycle === 'RETIRED' ? 'Activo retirado. Abriendo su ficha.' : 'Activo identificado. Abriendo su ficha.');
-      await this.router.navigateByUrl(path);
+      await this.router.navigateByUrl(`/equipos/${uuid}/general`);
     } catch (error) {
       this.status.set('');
       this.cameraError.set(error && typeof error === 'object' && 'status' in error && error.status === 404

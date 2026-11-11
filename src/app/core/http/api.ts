@@ -19,6 +19,10 @@ export interface Company {
   country: string;
   timezone: string;
   active: boolean;
+  assetIdentifierMode?: 'UUID' | 'INTERNAL_CODE';
+  identifierDxfEnabled?: boolean;
+  identifierDxfWidthMm?: number;
+  identifierDxfHeightMm?: number;
   version: number;
 }
 export interface Yard {
@@ -70,7 +74,7 @@ export interface Audit {
   changedFields: string[];
 }
 export interface Context {
-  company: Pick<Company, 'uuid' | 'name' | 'timezone' | 'active'>;
+  company: Pick<Company, 'uuid' | 'name' | 'timezone' | 'active' | 'assetIdentifierMode' | 'identifierDxfEnabled' | 'identifierDxfWidthMm' | 'identifierDxfHeightMm'>;
   companyPermissions: string[];
   yards: (Pick<Yard, 'uuid' | 'companyUuid' | 'code' | 'name' | 'timezone' | 'active'> & {
     permissions: string[];
@@ -97,6 +101,9 @@ export class Api {
   }
   post<T>(path: string, body: unknown) {
     return firstValueFrom(this.http.post<T>(this.base + path, body));
+  }
+  postBlob(path: string, body: unknown) {
+    return firstValueFrom(this.http.post(this.base + path, body, { responseType: 'blob' }));
   }
   put<T>(path: string, body: unknown) {
     return firstValueFrom(this.http.put<T>(this.base + path, body));
